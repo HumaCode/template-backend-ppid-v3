@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — PPID Kota Pekalongan</title>
+
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --blue: #0072c6;
+      --blue-dark: #005499;
+      --blue-deep: #003d70;
+      --blue-light: #1a8fe0;
+      --blue-glow: rgba(0,114,198,0.35);
+      --glass: rgba(255,255,255,0.07);
+      --glass-border: rgba(255,255,255,0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #001f42;
+      overflow: hidden;
+    }
+
+    /* ── CANVAS BACKGROUND ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+
+    /* ── MESH GRADIENT ── */
+    .mesh {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background:
+        radial-gradient(ellipse 80% 60% at 15% 20%, rgba(0,114,198,0.55) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 85% 80%, rgba(0,84,153,0.45) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 50% 50%, rgba(0,61,112,0.3) 0%, transparent 70%);
+      animation: meshShift 12s ease-in-out infinite alternate;
+    }
+    @keyframes meshShift {
+      0%   { opacity: .85; }
+      100% { opacity: 1; }
+    }
+
+    /* ── FLOATING ORBS ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.25;
+      z-index: 1;
+      animation: orbFloat linear infinite;
+    }
+    .orb-1 { width: 500px; height: 500px; background: #0072c6; top: -100px; left: -100px; animation-duration: 20s; }
+    .orb-2 { width: 350px; height: 350px; background: #1a8fe0; bottom: -80px; right: -60px; animation-duration: 15s; animation-delay: -5s; }
+    .orb-3 { width: 250px; height: 250px; background: #005499; top: 40%; left: 60%; animation-duration: 18s; animation-delay: -9s; }
+    @keyframes orbFloat {
+      0%,100% { transform: translateY(0) scale(1); }
+      33%      { transform: translateY(-40px) scale(1.05); }
+      66%      { transform: translateY(20px) scale(0.97); }
+    }
+
+    /* ── GRID OVERLAY ── */
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* ── WRAPPER ── */
+    .page-wrapper {
+      position: relative;
+      z-index: 10;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .page-wrapper::-webkit-scrollbar { display: none; }
+
+    /* ── CARD ── */
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(28px) saturate(1.4);
+      -webkit-backdrop-filter: blur(28px) saturate(1.4);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(0,114,198,0.2),
+        0 32px 80px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255,255,255,0.12);
+      animation: cardIn .9s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity:0; transform: translateY(40px) scale(.97); }
+      to   { opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── CARD INNER SCROLL (hide scrollbar) ── */
+    .card-inner {
+      max-height: 95dvh;
+      overflow-y: auto;
+      scrollbar-width: none;
+      padding: 2.4rem 2.2rem 2.2rem;
+    }
+    .card-inner::-webkit-scrollbar { display: none; }
+
+    /* ── HEADER ── */
+    .ppid-header {
+      text-align: center;
+      margin-bottom: 1.8rem;
+      animation: fadeUp .7s .15s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    /* ── ICON BADGE ── */
+    .icon-badge {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 1rem;
+      border-radius: 22px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow:
+        0 8px 32px rgba(0,114,198,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.25);
+      animation: badgePulse 3s ease-in-out infinite;
+      position: relative;
+    }
+    .icon-badge::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 25px;
+      border: 1px solid rgba(0,114,198,0.4);
+      animation: ringPulse 3s ease-in-out infinite;
+    }
+    @keyframes badgePulse {
+      0%,100% { box-shadow: 0 8px 32px rgba(0,114,198,0.5), inset 0 1px 0 rgba(255,255,255,0.25); }
+      50%      { box-shadow: 0 12px 48px rgba(0,114,198,0.75), inset 0 1px 0 rgba(255,255,255,0.25); }
+    }
+    @keyframes ringPulse {
+      0%,100% { transform: scale(1); opacity:.5; }
+      50%      { transform: scale(1.06); opacity:1; }
+    }
+    .icon-badge i { font-size: 2rem; color: #fff; }
+
+    .ppid-label {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: rgba(0,114,198,0.2);
+      border: 1px solid rgba(0,114,198,0.35);
+      border-radius: 100px;
+      padding: .25rem .9rem;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #7ecbff;
+      margin-bottom: .6rem;
+    }
+    .ppid-label .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #7ecbff;
+      animation: blink 1.4s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity:1; } 50% { opacity:.2; }
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: .3rem;
+    }
+    .card-subtitle {
+      font-size: .82rem;
+      color: rgba(255,255,255,0.5);
+      font-weight: 300;
+    }
+
+    /* ── DIVIDER ── */
+    .line-divider {
+      display: flex; align-items: center; gap: .7rem;
+      margin-bottom: 1.6rem;
+      animation: fadeUp .7s .2s cubic-bezier(.22,1,.36,1) both;
+    }
+    .line-divider span { flex:1; height:1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent); }
+    .line-divider small { color: rgba(255,255,255,0.25); font-size:.7rem; white-space:nowrap; letter-spacing:.08em; }
+
+    /* ── FORM ── */
+    .form-wrap { animation: fadeUp .7s .25s cubic-bezier(.22,1,.36,1) both; }
+
+    .form-group { margin-bottom: 1.1rem; }
+
+    .form-label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: .45rem;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.3);
+      font-size: .95rem;
+      pointer-events: none;
+      transition: color .25s;
+    }
+    .form-control-custom {
+      width: 100%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: .75rem 1rem .75rem 2.7rem;
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .9rem;
+      outline: none;
+      transition: border-color .25s, background .25s, box-shadow .25s;
+    }
+    .form-control-custom::placeholder { color: rgba(255,255,255,0.22); }
+    .form-control-custom:focus {
+      border-color: var(--blue);
+      background: rgba(0,114,198,0.12);
+      box-shadow: 0 0 0 3px rgba(0,114,198,0.2), 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .form-control-custom:focus + .input-icon,
+    .input-wrap:focus-within .input-icon { color: var(--blue-light); }
+
+    /* eye toggle */
+    .eye-toggle {
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.3);
+      cursor: pointer;
+      padding: 0;
+      font-size: .9rem;
+      transition: color .2s;
+      line-height: 1;
+    }
+    .eye-toggle:hover { color: rgba(255,255,255,0.7); }
+
+    .pw-wrap .form-control-custom { padding-right: 2.8rem; }
+
+    /* ── EXTRAS ── */
+    .form-extras {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.3rem;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    /* custom checkbox */
+    .check-wrap {
+      display: flex; align-items: center; gap: .5rem;
+      cursor: pointer;
+    }
+    .check-wrap input[type=checkbox] { display: none; }
+    .check-box {
+      width: 18px; height: 18px;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 5px;
+      background: rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+    .check-wrap input:checked ~ .check-box {
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+    .check-wrap input:checked ~ .check-box::after {
+      content: '';
+      width: 5px; height: 9px;
+      border: 2px solid #fff;
+      border-top: none; border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+    }
+    .check-label { font-size: .8rem; color: rgba(255,255,255,0.5); }
+
+    .forgot-link {
+      font-size: .8rem;
+      color: #7ecbff;
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .forgot-link:hover { color: #fff; }
+
+    /* ── BUTTON ── */
+    .btn-login {
+      width: 100%;
+      padding: .82rem;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .95rem;
+      font-weight: 600;
+      letter-spacing: .03em;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 8px 28px rgba(0,114,198,0.45);
+    }
+    .btn-login::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.15) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity .25s;
+    }
+    .btn-login:hover::before { opacity: 1; }
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(0,114,198,0.55); }
+    .btn-login:active { transform: translateY(0); }
+
+    /* shine sweep */
+    .btn-login::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
+      transform: skewX(-20deg);
+      animation: btnShine 3.5s ease-in-out infinite 1s;
+    }
+    @keyframes btnShine {
+      0%,100% { left: -100%; }
+      40%,60%  { left: 140%; }
+    }
+
+    .btn-icon { margin-right: .5rem; }
+
+    /* ── FOOTER ── */
+    .card-footer-custom {
+      text-align: center;
+      margin-top: 1.4rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      animation: fadeUp .7s .35s cubic-bezier(.22,1,.36,1) both;
+    }
+    .footer-text { font-size: .75rem; color: rgba(255,255,255,0.3); line-height: 1.6; }
+    .footer-text strong { color: rgba(255,255,255,0.55); font-weight: 600; }
+
+    /* ── ALERT ── */
+    .alert-glass {
+      background: rgba(220,50,50,0.15);
+      border: 1px solid rgba(220,50,50,0.3);
+      border-radius: 10px;
+      padding: .65rem .9rem;
+      color: #ffaaaa;
+      font-size: .82rem;
+      margin-bottom: 1rem;
+      display: none;
+      animation: shakeX .4s;
+    }
+    @keyframes shakeX {
+      0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── FLOATING PARTICLES ── */
+    .particles {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(0,180,255,0.6);
+      animation: particleFloat linear infinite;
+    }
+    @keyframes particleFloat {
+      0%   { transform: translateY(100vh) translateX(0); opacity:0; }
+      10%  { opacity:.8; }
+      90%  { opacity:.5; }
+      100% { transform: translateY(-20vh) translateX(var(--drift)); opacity:0; }
+    }
+
+    /* ── LOADING SPINNER ── */
+    .spinner {
+      display: none;
+      width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESPONSIVE TWEAKS ── */
+    @media (max-width: 480px) {
+      .card-inner { padding: 1.8rem 1.4rem; }
+      .card-title  { font-size: 1.4rem; }
+      .icon-badge  { width: 64px; height: 64px; border-radius: 18px; }
+      .icon-badge i { font-size: 1.6rem; }
+    }
+    @media (min-width: 992px) {
+      .login-card { max-width: 460px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Layers -->
+  <canvas id="bg-canvas"></canvas>
+  <div class="mesh"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- Floating Particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- Page -->
+  <div class="page-wrapper">
+    <div class="login-card">
+      <div class="card-inner">
+
+        <!-- Header -->
+        <div class="ppid-header">
+          <div class="icon-badge">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+          <div class="ppid-label">
+            <span class="dot"></span>
+            Portal PPID
+          </div>
+          <h1 class="card-title">Selamat Datang</h1>
+          <p class="card-subtitle">Pejabat Pengelola Informasi dan Dokumentasi<br><strong style="color:rgba(255,255,255,0.65);">Kota Pekalongan</strong></p>
+        </div>
+
+        <!-- Divider -->
+        <div class="line-divider">
+          <span></span>
+          <small>Masuk ke Sistem</small>
+          <span></span>
+        </div>
+
+        <!-- Alert -->
+        <div class="alert-glass" id="alertBox">
+          <i class="bi bi-exclamation-circle me-1"></i>
+          <span id="alertMsg">Username atau password salah.</span>
+        </div>
+
+        <!-- Form -->
+        <form id="loginForm" class="form-wrap" novalidate>
+
+          <!-- Username -->
+          <div class="form-group">
+            <label class="form-label" for="username">Username / Email</label>
+            <div class="input-wrap">
+              <input
+                type="text"
+                id="username"
+                class="form-control-custom"
+                placeholder="Masukkan username atau email"
+                autocomplete="username"
+              />
+              <i class="bi bi-person input-icon"></i>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label class="form-label" for="password">Kata Sandi</label>
+            <div class="input-wrap pw-wrap">
+              <input
+                type="password"
+                id="password"
+                class="form-control-custom"
+                placeholder="Masukkan kata sandi"
+                autocomplete="current-password"
+              />
+              <i class="bi bi-lock input-icon"></i>
+              <button type="button" class="eye-toggle" id="eyeToggle" title="Tampilkan sandi">
+                <i class="bi bi-eye" id="eyeIcon"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Extras -->
+          <div class="form-extras">
+            <label class="check-wrap">
+              <input type="checkbox" id="rememberMe" />
+              <span class="check-box"></span>
+              <span class="check-label">Ingat saya</span>
+            </label>
+            <a href="#" class="forgot-link">Lupa kata sandi?</a>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn-login" id="btnLogin">
+            <span id="btnText"><i class="bi bi-box-arrow-in-right btn-icon"></i>Masuk</span>
+            <div class="spinner" id="spinner"></div>
+          </button>
+
+        </form>
+
+        <!-- Footer -->
+        <div class="card-footer-custom">
+          <p class="footer-text">
+            <strong>PPID Kota Pekalongan</strong><br>
+            Jl. Majapahit No.1, Kota Pekalongan &nbsp;·&nbsp; &copy; 2025<br>
+            <span style="color:rgba(255,255,255,0.2); font-size:.7rem;">Sistem Informasi Layanan Publik</span>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    /* ── CANVAS WAVE BG ── */
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, t = 0;
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function drawWaves() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#001229';
+      ctx.fillRect(0, 0, W, H);
+
+      const waves = [
+        { amp: 60, freq: 0.008, speed: 0.4, y: H * 0.65, alpha: 0.06 },
+        { amp: 40, freq: 0.012, speed: 0.6, y: H * 0.72, alpha: 0.05 },
+        { amp: 80, freq: 0.005, speed: 0.25, y: H * 0.80, alpha: 0.04 },
+      ];
+
+      waves.forEach(w => {
+        ctx.beginPath();
+        ctx.moveTo(0, w.y);
+        for (let x = 0; x <= W; x += 4) {
+          const y = w.y + Math.sin(x * w.freq + t * w.speed) * w.amp
+                        + Math.cos(x * w.freq * 0.5 + t * w.speed * 0.7) * (w.amp * 0.4);
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+        ctx.fillStyle = `rgba(0,114,198,${w.alpha})`;
+        ctx.fill();
+      });
+
+      t += 0.012;
+      requestAnimationFrame(drawWaves);
+    }
+    drawWaves();
+
+    /* ── PARTICLES ── */
+    const pContainer = document.getElementById('particles');
+    for (let i = 0; i < 28; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 3 + 1;
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%;
+        animation-duration:${8+Math.random()*12}s;
+        animation-delay:-${Math.random()*15}s;
+        --drift:${(Math.random()-0.5)*120}px;
+        opacity:${0.3+Math.random()*0.5};
+      `;
+      pContainer.appendChild(p);
+    }
+
+    /* ── EYE TOGGLE ── */
+    const eye = document.getElementById('eyeToggle');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const pwInput = document.getElementById('password');
+    eye.addEventListener('click', () => {
+      const show = pwInput.type === 'password';
+      pwInput.type = show ? 'text' : 'password';
+      eyeIcon.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+    });
+
+    /* ── FORM SUBMIT ── */
+    const form      = document.getElementById('loginForm');
+    const btnText   = document.getElementById('btnText');
+    const spinner   = document.getElementById('spinner');
+    const alertBox  = document.getElementById('alertBox');
+    const alertMsg  = document.getElementById('alertMsg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertBox.style.display = 'none';
+
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value;
+
+      if (!user || !pass) {
+        showAlert('Username dan kata sandi harus diisi.');
+        return;
+      }
+
+      // Loading state
+      btnText.style.display = 'none';
+      spinner.style.display = 'block';
+      document.getElementById('btnLogin').disabled = true;
+
+      // Simulate API call — ganti dengan fetch aktual
+      await new Promise(r => setTimeout(r, 1800));
+
+      // Demo: selalu gagal untuk menampilkan alert
+      btnText.style.display = 'block';
+      spinner.style.display = 'none';
+      document.getElementById('btnLogin').disabled = false;
+      showAlert('Username atau kata sandi tidak sesuai.');
+    });
+
+    function showAlert(msg) {
+      alertMsg.textContent = msg;
+      alertBox.style.display = 'block';
+      alertBox.style.animation = 'none';
+      void alertBox.offsetWidth; // reflow
+      alertBox.style.animation = 'shakeX .4s';
+    }
+
+    /* ── INPUT FOCUS RIPPLE ── */
+    document.querySelectorAll('.form-control-custom').forEach(inp => {
+      inp.addEventListener('focus', function() {
+        this.closest('.input-wrap').style.transform = 'scale(1.01)';
+      });
+      inp.addEventListener('blur', function() {
+        this.closest('.input-wrap').style.transform = '';
+      });
+    });
+    document.querySelectorAll('.input-wrap').forEach(w => {
+      w.style.transition = 'transform .2s';
+    });
+  </script>
+</body>
+</html>

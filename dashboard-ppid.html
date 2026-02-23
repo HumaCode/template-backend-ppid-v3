@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — PPID Kota Pekalongan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       ROOT VARIABLES
+    ============================================================ */
+    :root {
+      --blue:          #0072c6;
+      --blue-dark:     #005499;
+      --blue-deep:     #003d70;
+      --blue-light:    #1a8fe0;
+      --blue-glow:     rgba(0,114,198,0.25);
+      --blue-soft:     rgba(0,114,198,0.08);
+      --sidebar-w:     260px;
+      --sidebar-w-col: 68px;
+      --topbar-h:      64px;
+      --glass:         rgba(255,255,255,0.06);
+      --glass-border:  rgba(255,255,255,0.14);
+      --sidebar-bg:    #001f42;
+      --topbar-bg:     #ffffff;
+      --content-bg:    #f0f4f9;
+      --card-bg:       #ffffff;
+      --text-main:     #0f1c2e;
+      --text-muted:    #6b7a8d;
+      --border-light:  rgba(0,0,0,0.07);
+      --shadow-card:   0 2px 16px rgba(0,50,100,0.08);
+      --shadow-sidebar:4px 0 24px rgba(0,18,50,0.18);
+      --transition:    .28s cubic-bezier(.22,1,.36,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--content-bg);
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    /* ============================================================
+       LAYOUT SHELL
+    ============================================================ */
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       SIDEBAR
+    ============================================================ */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      z-index: 1000;
+      transition: width var(--transition);
+      box-shadow: var(--shadow-sidebar);
+      overflow: hidden;
+    }
+
+    /* collapsed state */
+    .sidebar.collapsed { width: var(--sidebar-w-col); }
+
+    /* ── Sidebar Brand ── */
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+      padding: 1.3rem 1.1rem 1.2rem 1.25rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      min-height: var(--topbar-h);
+      text-decoration: none;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .brand-icon {
+      width: 38px; height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(0,114,198,0.45);
+      animation: badgePulse 3s ease-in-out infinite;
+    }
+    .brand-icon i { font-size: 1.1rem; color: #fff; }
+    .brand-text { overflow: hidden; white-space: nowrap; }
+    .brand-title {
+      font-family: 'Playfair Display', serif;
+      font-size: .95rem; font-weight: 700;
+      color: #fff; line-height: 1.15;
+    }
+    .brand-sub {
+      font-size: .65rem; color: rgba(255,255,255,0.4);
+      font-weight: 400; letter-spacing: .04em;
+      white-space: nowrap;
+    }
+
+    /* ── Sidebar Scroll Area ── */
+    .sidebar-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.08) transparent;
+      padding: .8rem 0;
+    }
+    .sidebar-scroll::-webkit-scrollbar { width: 3px; }
+    .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+    /* ── Nav Section Label ── */
+    .nav-section-label {
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      padding: 1rem 1.25rem .35rem;
+      white-space: nowrap;
+      overflow: hidden;
+      transition: opacity var(--transition), padding var(--transition);
+    }
+    .sidebar.collapsed .nav-section-label {
+      opacity: 0; padding-top: .5rem; padding-bottom: .2rem;
+    }
+
+    /* ── Nav Item ── */
+    .nav-item-wrapper { padding: .08rem .7rem; }
+    .nav-link-custom {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .65rem .75rem;
+      border-radius: 10px;
+      text-decoration: none;
+      color: rgba(255,255,255,0.5);
+      font-size: .84rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+      position: relative;
+    }
+    .nav-link-custom .nav-icon {
+      font-size: 1.05rem;
+      flex-shrink: 0;
+      width: 20px;
+      text-align: center;
+      transition: color var(--transition);
+    }
+    .nav-link-custom .nav-label {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: opacity var(--transition), max-width var(--transition);
+    }
+    .nav-link-custom:hover {
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.88);
+    }
+    .nav-link-custom.active {
+      background: linear-gradient(90deg, rgba(0,114,198,0.35), rgba(0,114,198,0.1));
+      color: #fff;
+      box-shadow: inset 3px 0 0 var(--blue);
+    }
+    .nav-link-custom.active .nav-icon { color: #7ecbff; }
+
+    /* badge */
+    .nav-badge {
+      background: var(--blue);
+      color: #fff;
+      font-size: .6rem;
+      font-weight: 700;
+      padding: .1rem .42rem;
+      border-radius: 100px;
+      flex-shrink: 0;
+      transition: opacity var(--transition);
+    }
+
+    /* collapsed: hide labels + badges */
+    .sidebar.collapsed .nav-label,
+    .sidebar.collapsed .nav-badge { opacity: 0; max-width: 0; overflow: hidden; }
+    .sidebar.collapsed .nav-link-custom { justify-content: center; padding: .65rem; }
+    .sidebar.collapsed .nav-item-wrapper { padding-left: .5rem; padding-right: .5rem; }
+
+    /* tooltip on collapsed */
+    .sidebar.collapsed .nav-link-custom[data-tip] {
+      position: relative;
+    }
+    .sidebar.collapsed .nav-link-custom[data-tip]::after {
+      content: attr(data-tip);
+      position: absolute;
+      left: calc(100% + 10px);
+      top: 50%; transform: translateY(-50%);
+      background: #0d2340;
+      color: #fff;
+      font-size: .74rem;
+      font-weight: 500;
+      padding: .3rem .7rem;
+      border-radius: 7px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999;
+    }
+    .sidebar.collapsed .nav-link-custom[data-tip]:hover::after { opacity: 1; }
+
+    /* ── Sidebar Footer ── */
+    .sidebar-footer {
+      padding: .9rem 1rem;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+    .sidebar-footer-inner {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      overflow: hidden;
+    }
+    .sf-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.07);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .sf-icon i { font-size: .9rem; color: rgba(255,255,255,0.4); }
+    .sf-text { overflow: hidden; white-space: nowrap; }
+    .sf-version { font-size: .68rem; color: rgba(255,255,255,0.25); }
+    .sf-copy    { font-size: .63rem; color: rgba(255,255,255,0.18); }
+    .sidebar.collapsed .sf-text { opacity: 0; max-width: 0; }
+
+    /* ============================================================
+       MAIN AREA
+    ============================================================ */
+    .main-area {
+      flex: 1;
+      margin-left: var(--sidebar-w);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: margin-left var(--transition);
+    }
+    .main-area.collapsed { margin-left: var(--sidebar-w-col); }
+
+    /* ============================================================
+       TOPBAR
+    ============================================================ */
+    .topbar {
+      height: var(--topbar-h);
+      background: var(--topbar-bg);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 900;
+      box-shadow: 0 1px 12px rgba(0,40,100,0.06);
+      gap: 1rem;
+    }
+
+    /* toggle btn */
+    .toggle-btn {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      border: 1px solid var(--border-light);
+      background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      transition: background .2s, color .2s, transform .3s;
+      flex-shrink: 0;
+    }
+    .toggle-btn:hover { background: var(--blue-soft); color: var(--blue); }
+    .toggle-btn.collapsed-state { transform: rotate(180deg); }
+
+    /* topbar center spacer */
+    .topbar-spacer { flex: 1; }
+
+    /* topbar right */
+    .topbar-right { display: flex; align-items: center; gap: .6rem; }
+
+    /* notification btn */
+    .topbar-icon-btn {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      border: 1px solid var(--border-light);
+      background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: background .2s, color .2s;
+      position: relative;
+    }
+    .topbar-icon-btn:hover { background: var(--blue-soft); color: var(--blue); }
+    .notif-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #e84242;
+      border: 1.5px solid #fff;
+      animation: notifPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes notifPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(232,66,66,0.5); }
+      50%     { box-shadow: 0 0 0 5px rgba(232,66,66,0); }
+    }
+
+    /* user dropdown */
+    .user-menu { position: relative; }
+    .user-trigger {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .35rem .65rem .35rem .45rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-light);
+      background: transparent;
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+    }
+    .user-trigger:hover { background: var(--blue-soft); border-color: rgba(0,114,198,0.2); }
+    .user-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: .85rem; font-weight: 700;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,114,198,0.4);
+    }
+    .user-info { text-align: left; }
+    .user-name { font-size: .8rem; font-weight: 600; color: var(--text-main); line-height: 1.2; }
+    .user-role { font-size: .68rem; color: var(--text-muted); }
+    .user-caret { font-size: .7rem; color: var(--text-muted); transition: transform .25s; }
+    .user-trigger[aria-expanded="true"] .user-caret { transform: rotate(180deg); }
+
+    /* dropdown menu */
+    .user-dropdown {
+      position: absolute;
+      right: 0; top: calc(100% + 8px);
+      min-width: 190px;
+      background: #fff;
+      border: 1px solid var(--border-light);
+      border-radius: 13px;
+      box-shadow: 0 10px 40px rgba(0,40,100,0.13);
+      padding: .45rem;
+      display: none;
+      z-index: 999;
+      animation: dropIn .25s cubic-bezier(.22,1,.36,1);
+    }
+    .user-dropdown.show { display: block; }
+    @keyframes dropIn {
+      from { opacity:0; transform:translateY(-8px) scale(.97); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+    .dd-item {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .55rem .75rem;
+      border-radius: 8px;
+      font-size: .82rem;
+      color: var(--text-main);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .18s, color .18s;
+      font-weight: 500;
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .dd-item i { font-size: .95rem; color: var(--text-muted); width: 18px; }
+    .dd-item:hover { background: var(--blue-soft); color: var(--blue); }
+    .dd-item:hover i { color: var(--blue); }
+    .dd-item.danger:hover { background: rgba(220,50,50,0.06); color: #c0392b; }
+    .dd-item.danger:hover i { color: #c0392b; }
+    .dd-divider { height: 1px; background: var(--border-light); margin: .35rem 0; }
+
+    /* ============================================================
+       CONTENT AREA
+    ============================================================ */
+    .content-area {
+      flex: 1;
+      padding: 1.6rem;
+      position: relative;
+    }
+
+    /* content subtle pattern bg */
+    .content-area::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 1px 1px, rgba(0,100,200,0.045) 1px, transparent 0);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── BREADCRUMB BANNER ── */
+    .breadcrumb-banner {
+      background: linear-gradient(120deg, var(--blue-dark) 0%, var(--blue) 55%, var(--blue-light) 100%);
+      border-radius: 16px;
+      padding: 1.3rem 1.6rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(0,114,198,0.28);
+      z-index: 1;
+    }
+    /* decorative circles on breadcrumb */
+    .breadcrumb-banner::before,
+    .breadcrumb-banner::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+    .breadcrumb-banner::before { width:200px;height:200px;top:-60px;right:80px; }
+    .breadcrumb-banner::after  { width:120px;height:120px;bottom:-40px;right:20px; }
+
+    .bb-left { position: relative; z-index: 1; }
+    .bb-page-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem; font-weight: 700;
+      color: #fff; margin-bottom: .18rem;
+    }
+    .bb-desc { font-size: .78rem; color: rgba(255,255,255,0.6); font-weight: 300; }
+
+    .bb-right {
+      display: flex; align-items: center; gap: .5rem;
+      position: relative; z-index: 1;
+    }
+    .bb-crumb-item {
+      display: flex; align-items: center; gap: .35rem;
+      font-size: .78rem; color: rgba(255,255,255,0.7); font-weight: 500;
+    }
+    .bb-crumb-item i { font-size: .85rem; }
+    .bb-crumb-item.active { color: #fff; font-weight: 600; }
+    .bb-crumb-sep { color: rgba(255,255,255,0.35); font-size: .8rem; }
+
+    /* ── WIDGETS GRID ── */
+    .widgets-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      position: relative; z-index: 1;
+    }
+
+    .widget-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 1.2rem 1.3rem;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-card);
+      display: flex; align-items: flex-start;
+      gap: 1rem;
+      transition: transform .22s, box-shadow .22s;
+      animation: fadeUp .5s cubic-bezier(.22,1,.36,1) both;
+      overflow: hidden;
+      position: relative;
+    }
+    .widget-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      opacity: .045;
+      transform: translate(25px,-25px);
+    }
+    .widget-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,50,100,0.12); }
+    .widget-card:nth-child(1) { animation-delay: .05s; }
+    .widget-card:nth-child(2) { animation-delay: .10s; }
+    .widget-card:nth-child(3) { animation-delay: .15s; }
+    .widget-card:nth-child(4) { animation-delay: .20s; }
+
+    .w-icon-wrap {
+      width: 46px; height: 46px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.25rem;
+    }
+    .w-icon-blue   { background:rgba(0,114,198,0.1);  color:var(--blue); }
+    .w-icon-green  { background:rgba(16,185,100,0.1); color:#10b964; }
+    .w-icon-amber  { background:rgba(245,158,11,0.1); color:#f59e0b; }
+    .w-icon-red    { background:rgba(220,53,69,0.1);  color:#dc3545; }
+
+    .w-body { flex: 1; min-width: 0; }
+    .w-value {
+      font-size: 1.55rem; font-weight: 700;
+      color: var(--text-main); line-height: 1.1;
+      margin-bottom: .15rem;
+    }
+    .w-label { font-size: .75rem; color: var(--text-muted); font-weight: 500; margin-bottom: .4rem; }
+    .w-trend {
+      display: inline-flex; align-items: center; gap: .3rem;
+      font-size: .7rem; font-weight: 600;
+      padding: .15rem .5rem; border-radius: 100px;
+    }
+    .trend-up   { background:rgba(16,185,100,0.1); color:#10b964; }
+    .trend-down { background:rgba(220,53,69,0.1);  color:#dc3545; }
+    .trend-flat { background:rgba(100,116,139,0.1);color:#64748b; }
+
+    /* ── SECOND ROW CARDS ── */
+    .cards-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      position: relative; z-index: 1;
+    }
+
+    .dash-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      animation: fadeUp .5s .22s cubic-bezier(.22,1,.36,1) both;
+    }
+    .dash-card-header {
+      padding: 1rem 1.3rem .75rem;
+      border-bottom: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .dash-card-title {
+      font-size: .88rem; font-weight: 700;
+      color: var(--text-main); display: flex; align-items: center; gap: .5rem;
+    }
+    .dash-card-title i { color: var(--blue); }
+    .dash-card-body { padding: 1rem 1.3rem; }
+
+    /* Activity list */
+    .activity-list { list-style: none; }
+    .activity-item {
+      display: flex; align-items: flex-start; gap: .75rem;
+      padding: .6rem 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .activity-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .act-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0; margin-top: 5px;
+    }
+    .act-text { font-size: .8rem; color: var(--text-main); line-height: 1.5; }
+    .act-time { font-size: .7rem; color: var(--text-muted); margin-top: .1rem; }
+
+    /* Status table */
+    .status-table { width: 100%; border-collapse: collapse; }
+    .status-table th {
+      font-size: .7rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--text-muted);
+      padding: .4rem .5rem; text-align: left;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .status-table td {
+      font-size: .8rem; color: var(--text-main);
+      padding: .6rem .5rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+    }
+    .status-table tr:last-child td { border-bottom: none; }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: .3rem;
+      padding: .18rem .6rem; border-radius: 100px;
+      font-size: .68rem; font-weight: 600;
+    }
+    .pill-success { background:rgba(16,185,100,0.1); color:#10b964; }
+    .pill-warning { background:rgba(245,158,11,0.1); color:#f59e0b; }
+    .pill-danger  { background:rgba(220,53,69,0.1);  color:#dc3545; }
+    .pill-info    { background:rgba(0,114,198,0.1);  color:var(--blue); }
+
+    /* ── THIRD ROW — full width card ── */
+    .full-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      margin-bottom: 1.2rem;
+      animation: fadeUp .5s .3s cubic-bezier(.22,1,.36,1) both;
+      position: relative; z-index: 1;
+    }
+
+    /* mini chart bars */
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 90px;
+      padding: .5rem 0;
+    }
+    .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .chart-bar {
+      width: 100%;
+      border-radius: 5px 5px 0 0;
+      background: linear-gradient(180deg, var(--blue-light), var(--blue));
+      min-height: 4px;
+      transition: height .6s cubic-bezier(.22,1,.36,1);
+      position: relative;
+      animation: barGrow .8s cubic-bezier(.22,1,.36,1) both;
+    }
+    .chart-bar.secondary {
+      background: linear-gradient(180deg, #a8d8ff, rgba(0,114,198,0.3));
+    }
+    @keyframes barGrow {
+      from { transform: scaleY(0); transform-origin: bottom; }
+      to   { transform: scaleY(1); transform-origin: bottom; }
+    }
+    .chart-bar-wrap:nth-child(1) .chart-bar { animation-delay:.05s; }
+    .chart-bar-wrap:nth-child(2) .chart-bar { animation-delay:.1s; }
+    .chart-bar-wrap:nth-child(3) .chart-bar { animation-delay:.15s; }
+    .chart-bar-wrap:nth-child(4) .chart-bar { animation-delay:.2s; }
+    .chart-bar-wrap:nth-child(5) .chart-bar { animation-delay:.25s; }
+    .chart-bar-wrap:nth-child(6) .chart-bar { animation-delay:.3s; }
+    .chart-bar-wrap:nth-child(7) .chart-bar { animation-delay:.35s; }
+    .chart-month { font-size: .65rem; color: var(--text-muted); }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    .main-footer {
+      background: #fff;
+      border-top: 1px solid var(--border-light);
+      padding: 1rem 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      position: relative; z-index: 1;
+    }
+    .footer-left { font-size: .75rem; color: var(--text-muted); }
+    .footer-left strong { color: var(--blue); }
+    .footer-right { display: flex; align-items: center; gap: .5rem; }
+    .footer-link {
+      font-size: .73rem; color: var(--text-muted);
+      text-decoration: none; transition: color .18s;
+    }
+    .footer-link:hover { color: var(--blue); }
+    .footer-sep { color: var(--border-light); }
+
+    /* ============================================================
+       LOGOUT MODAL
+    ============================================================ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,15,40,0.55);
+      backdrop-filter: blur(6px);
+      z-index: 9998;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+
+    .logout-modal {
+      background: #fff;
+      border-radius: 20px;
+      padding: 2.2rem 2rem 1.8rem;
+      max-width: 360px; width: 90%;
+      text-align: center;
+      box-shadow: 0 24px 80px rgba(0,20,60,0.22);
+      transform: scale(.88) translateY(20px);
+      transition: transform .35s cubic-bezier(.22,1,.36,1);
+    }
+    .modal-overlay.show .logout-modal { transform: scale(1) translateY(0); }
+
+    /* animated logout icon */
+    .logout-icon-ring {
+      width: 76px; height: 76px;
+      margin: 0 auto 1.1rem;
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logout-icon-ring svg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      animation: ringRotate 3s linear infinite;
+    }
+    @keyframes ringRotate { to { transform: rotate(360deg); } }
+    .ring-dashed { fill:none; stroke:var(--blue); stroke-width:2; stroke-dasharray:6 4; stroke-linecap:round; }
+    .logout-icon-inner {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fff0f0 0%, #ffe5e5 100%);
+      border: 1.5px solid rgba(220,53,69,0.2);
+      display: flex; align-items: center; justify-content: center;
+      animation: iconPop .5s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes iconPop {
+      from { transform:scale(.5); opacity:0; }
+      to   { transform:scale(1);  opacity:1; }
+    }
+    .logout-icon-inner i { font-size: 1.4rem; color: #dc3545; }
+
+    /* floating particles in modal */
+    .modal-particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: mParticle linear infinite;
+      pointer-events: none;
+    }
+    @keyframes mParticle {
+      0%   { transform:translateY(0) rotate(0deg); opacity:.7; }
+      100% { transform:translateY(-60px) rotate(360deg); opacity:0; }
+    }
+    .logout-icon-ring .modal-particle:nth-child(1) { width:5px;height:5px;background:rgba(0,114,198,0.4);left:6px;bottom:10px;animation-duration:2.2s; }
+    .logout-icon-ring .modal-particle:nth-child(2) { width:4px;height:4px;background:rgba(220,53,69,0.3);right:4px;bottom:14px;animation-duration:1.8s;animation-delay:.4s; }
+    .logout-icon-ring .modal-particle:nth-child(3) { width:3px;height:3px;background:rgba(0,114,198,0.3);left:50%;bottom:0;animation-duration:2.5s;animation-delay:.8s; }
+
+    .logout-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: .4rem; }
+    .logout-desc  { font-size: .82rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; }
+
+    .logout-btns { display: flex; gap: .7rem; }
+    .btn-modal-cancel {
+      flex: 1; padding: .7rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-light);
+      background: #f8f9fb;
+      color: var(--text-muted);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .85rem; font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .btn-modal-cancel:hover { background: #eef0f5; color: var(--text-main); }
+    .btn-modal-confirm {
+      flex: 1; padding: .7rem;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #dc3545, #c0392b);
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .85rem; font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(220,53,69,0.35);
+      transition: transform .2s, box-shadow .2s;
+      position: relative; overflow: hidden;
+    }
+    .btn-modal-confirm:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(220,53,69,0.4); }
+    .btn-modal-confirm::after {
+      content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+      transform:skewX(-20deg);
+      animation:btnShine 2.5s ease-in-out infinite 1s;
+    }
+    @keyframes btnShine { 0%,100%{left:-100%} 40%,60%{left:140%} }
+
+    /* ============================================================
+       FLOAT ACTION BUTTON (scroll to top)
+    ============================================================ */
+    .fab-top {
+      position: fixed;
+      right: 1.6rem; bottom: 1.8rem;
+      width: 46px; height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+      border: none;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 24px rgba(0,114,198,0.45);
+      z-index: 800;
+      opacity: 0; pointer-events: none;
+      transform: translateY(20px) scale(.85);
+      transition: opacity .35s cubic-bezier(.22,1,.36,1),
+                  transform .35s cubic-bezier(.22,1,.36,1),
+                  box-shadow .2s;
+    }
+    .fab-top.visible {
+      opacity: 1; pointer-events: all;
+      transform: translateY(0) scale(1);
+    }
+    .fab-top:hover {
+      box-shadow: 0 10px 32px rgba(0,114,198,0.6);
+      transform: translateY(-3px) scale(1.05);
+    }
+    .fab-top:active { transform: translateY(0) scale(.97); }
+    /* ripple */
+    .fab-top::before {
+      content: '';
+      position: absolute; inset: -4px;
+      border-radius: 18px;
+      border: 2px solid rgba(0,114,198,0.4);
+      animation: fabRing 2s ease-in-out infinite;
+    }
+    @keyframes fabRing {
+      0%,100% { transform:scale(1); opacity:.6; }
+      50%     { transform:scale(1.12); opacity:1; }
+    }
+
+    /* ============================================================
+       MOBILE OVERLAY (sidebar backdrop)
+    ============================================================ */
+    .sidebar-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,15,40,0.5);
+      z-index: 999;
+      display: none;
+      opacity: 0; transition: opacity .3s;
+    }
+    .sidebar-overlay.show { display: block; opacity: 1; }
+
+    /* ============================================================
+       SHARED ANIMATIONS
+    ============================================================ */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes badgePulse {
+      0%,100% { box-shadow:0 4px 14px rgba(0,114,198,0.45); }
+      50%     { box-shadow:0 6px 22px rgba(0,114,198,0.7); }
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+
+    /* Tablet (768–991px) */
+    @media (max-width:991px) {
+      .widgets-row { grid-template-columns: repeat(2,1fr); }
+    }
+
+    /* Mobile + Tablet sidebar behavior (≤ 991px) */
+    @media (max-width:991px) {
+      .sidebar {
+        transform: translateX(-100%);
+        width: var(--sidebar-w) !important;
+        transition: transform var(--transition);
+      }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .main-area { margin-left: 0 !important; }
+      .topbar  { padding: 0 1rem; }
+      .content-area { padding: 1rem; }
+    }
+
+    /* Small mobile (≤ 575px) */
+    @media (max-width:575px) {
+      .widgets-row  { grid-template-columns: 1fr; }
+      .cards-row    { grid-template-columns: 1fr; }
+      .user-info    { display: none; }
+      .bb-right     { display: none; }
+      .breadcrumb-banner { padding: 1rem 1.2rem; }
+      .bb-page-name { font-size: 1.1rem; }
+      .main-footer  { flex-direction: column; text-align: center; gap: .5rem; }
+    }
+
+    /* Large desktop (≥ 1400px) */
+    @media (min-width:1400px) {
+      .widgets-row { grid-template-columns: repeat(4,1fr); gap: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR MOBILE OVERLAY ══ -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<!-- ══ LOGOUT MODAL ══ -->
+<div class="modal-overlay" id="logoutModal">
+  <div class="logout-modal">
+    <div class="logout-icon-ring">
+      <!-- spinning dashed ring -->
+      <svg viewBox="0 0 76 76">
+        <circle class="ring-dashed" cx="38" cy="38" r="34"></circle>
+      </svg>
+      <!-- floating particles -->
+      <span class="modal-particle"></span>
+      <span class="modal-particle"></span>
+      <span class="modal-particle"></span>
+      <!-- center icon -->
+      <div class="logout-icon-inner">
+        <i class="bi bi-box-arrow-right"></i>
+      </div>
+    </div>
+    <h4 class="logout-title">Keluar dari Sistem?</h4>
+    <p class="logout-desc">Anda akan keluar dari sesi ini. Pastikan semua pekerjaan Anda telah tersimpan sebelum melanjutkan.</p>
+    <div class="logout-btns">
+      <button class="btn-modal-cancel" onclick="closeLogoutModal()">Batal</button>
+      <button class="btn-modal-confirm" onclick="window.location.href='login-ppid.html'">
+        <i class="bi bi-box-arrow-right me-1"></i>Ya, Keluar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP SHELL ══ -->
+<div class="app-shell">
+
+  <!-- ════════════════ SIDEBAR ════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Brand -->
+    <a class="sidebar-brand" href="#">
+      <div class="brand-icon"><i class="bi bi-shield-lock-fill"></i></div>
+      <div class="brand-text">
+        <div class="brand-title">PPID Pekalongan</div>
+        <div class="brand-sub">Kota Pekalongan · v2.0</div>
+      </div>
+    </a>
+
+    <!-- Nav Scroll -->
+    <nav class="sidebar-scroll">
+
+      <!-- Dashboard -->
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom active" data-tip="Dashboard">
+          <i class="bi bi-grid-1x2-fill nav-icon"></i>
+          <span class="nav-label">Dashboard</span>
+        </a>
+      </div>
+
+      <!-- MASTER DATA -->
+      <div class="nav-section-label">Master Data</div>
+
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Admin Pengelola">
+          <i class="bi bi-person-badge-fill nav-icon"></i>
+          <span class="nav-label">Admin Pengelola</span>
+          <span class="nav-badge">3</span>
+        </a>
+      </div>
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Pemohon">
+          <i class="bi bi-people-fill nav-icon"></i>
+          <span class="nav-label">Pemohon</span>
+          <span class="nav-badge">12</span>
+        </a>
+      </div>
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Instansi">
+          <i class="bi bi-building nav-icon"></i>
+          <span class="nav-label">Instansi / OPD</span>
+        </a>
+      </div>
+
+      <!-- KELOMPOK INFORMASI -->
+      <div class="nav-section-label">Kelompok Informasi</div>
+
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Kelinfo DIP">
+          <i class="bi bi-folder2-open nav-icon"></i>
+          <span class="nav-label">Kelinfo DIP</span>
+        </a>
+      </div>
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Kelinfo DIB">
+          <i class="bi bi-folder-fill nav-icon"></i>
+          <span class="nav-label">Kelinfo DIB</span>
+        </a>
+      </div>
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Kelinfo DIBS">
+          <i class="bi bi-folder-symlink-fill nav-icon"></i>
+          <span class="nav-label">Kelinfo DIBS</span>
+        </a>
+      </div>
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Kelinfo DIU">
+          <i class="bi bi-archive-fill nav-icon"></i>
+          <span class="nav-label">Kelinfo DIU</span>
+        </a>
+      </div>
+
+      <!-- PERMOHONAN -->
+      <div class="nav-section-label">Permohonan</div>
+
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Permohonan Masuk">
+          <i class="bi bi-inbox-fill nav-icon"></i>
+          <span class="nav-label">Permohonan Masuk</span>
+          <span class="nav-badge">7</span>
+        </a>
+      </div>
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Riwayat Permohonan">
+          <i class="bi bi-clock-history nav-icon"></i>
+          <span class="nav-label">Riwayat Permohonan</span>
+        </a>
+      </div>
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Laporan">
+          <i class="bi bi-bar-chart-fill nav-icon"></i>
+          <span class="nav-label">Laporan & Statistik</span>
+        </a>
+      </div>
+
+      <!-- KONTEN WEBSITE -->
+      <div class="nav-section-label">Konten Website</div>
+
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Galeri">
+          <i class="bi bi-images nav-icon"></i>
+          <span class="nav-label">Galeri</span>
+        </a>
+      </div>
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Infografis">
+          <i class="bi bi-pie-chart-fill nav-icon"></i>
+          <span class="nav-label">Infografis</span>
+        </a>
+      </div>
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Menu">
+          <i class="bi bi-list-nested nav-icon"></i>
+          <span class="nav-label">Kelola Menu</span>
+        </a>
+      </div>
+
+      <!-- PENGATURAN -->
+      <div class="nav-section-label">Pengaturan</div>
+
+      <div class="nav-item-wrapper">
+        <a href="#" class="nav-link-custom" data-tip="Pengaturan">
+          <i class="bi bi-gear-fill nav-icon"></i>
+          <span class="nav-label">Pengaturan Sistem</span>
+        </a>
+      </div>
+
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-inner">
+        <div class="sf-icon"><i class="bi bi-info-circle"></i></div>
+        <div class="sf-text">
+          <div class="sf-version">Versi 2.0.1 — Stabil</div>
+          <div class="sf-copy">&copy; 2025 PPID Kota Pekalongan</div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+  <!-- end sidebar -->
+
+  <!-- ════════════════ MAIN AREA ════════════════ -->
+  <div class="main-area" id="mainArea">
+
+    <!-- ── TOPBAR ── -->
+    <header class="topbar">
+      <!-- Toggle / hamburger -->
+      <button class="toggle-btn" id="toggleBtn" onclick="toggleSidebar()" title="Toggle Sidebar">
+        <i class="bi bi-arrow-bar-left" id="toggleIcon"></i>
+      </button>
+
+      <div class="topbar-spacer"></div>
+
+      <div class="topbar-right">
+        <!-- Notifikasi -->
+        <button class="topbar-icon-btn" title="Notifikasi">
+          <i class="bi bi-bell"></i>
+          <span class="notif-dot"></span>
+        </button>
+        <!-- Full screen -->
+        <button class="topbar-icon-btn" id="fsBtn" title="Layar Penuh" onclick="toggleFullscreen()">
+          <i class="bi bi-fullscreen" id="fsIcon"></i>
+        </button>
+
+        <!-- User menu -->
+        <div class="user-menu">
+          <button class="user-trigger" id="userTrigger" onclick="toggleUserMenu()" aria-expanded="false">
+            <div class="user-avatar">AS</div>
+            <div class="user-info">
+              <div class="user-name">Admin Sistem</div>
+              <div class="user-role">@admin.ppid</div>
+            </div>
+            <i class="bi bi-chevron-down user-caret"></i>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <a class="dd-item" href="#">
+              <i class="bi bi-person-circle"></i> Profil Saya
+            </a>
+            <a class="dd-item" href="#">
+              <i class="bi bi-gear"></i> Pengaturan
+            </a>
+            <div class="dd-divider"></div>
+            <button class="dd-item danger" onclick="openLogoutModal()">
+              <i class="bi bi-box-arrow-right"></i> Keluar
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── CONTENT ── -->
+    <main class="content-area" id="contentArea">
+
+      <!-- Breadcrumb Banner -->
+      <div class="breadcrumb-banner">
+        <div class="bb-left">
+          <div class="bb-page-name">Dashboard</div>
+          <div class="bb-desc">Selamat datang kembali, Admin — Ini ringkasan sistem hari ini.</div>
+        </div>
+        <div class="bb-right">
+          <div class="bb-crumb-item">
+            <i class="bi bi-house-fill"></i> Home
+          </div>
+          <span class="bb-crumb-sep">/</span>
+          <div class="bb-crumb-item active">
+            <i class="bi bi-grid-1x2-fill"></i> Dashboard
+          </div>
+        </div>
+      </div>
+
+      <!-- Widgets Row -->
+      <div class="widgets-row">
+        <!-- Widget 1 -->
+        <div class="widget-card">
+          <div class="w-icon-wrap w-icon-blue"><i class="bi bi-inbox-fill"></i></div>
+          <div class="w-body">
+            <div class="w-value" id="wVal1">0</div>
+            <div class="w-label">Total Permohonan</div>
+            <span class="w-trend trend-up"><i class="bi bi-arrow-up-short"></i>+12%</span>
+          </div>
+        </div>
+        <!-- Widget 2 -->
+        <div class="widget-card">
+          <div class="w-icon-wrap w-icon-green"><i class="bi bi-check-circle-fill"></i></div>
+          <div class="w-body">
+            <div class="w-value" id="wVal2">0</div>
+            <div class="w-label">Permohonan Selesai</div>
+            <span class="w-trend trend-up"><i class="bi bi-arrow-up-short"></i>+8%</span>
+          </div>
+        </div>
+        <!-- Widget 3 -->
+        <div class="widget-card">
+          <div class="w-icon-wrap w-icon-amber"><i class="bi bi-hourglass-split"></i></div>
+          <div class="w-body">
+            <div class="w-value" id="wVal3">0</div>
+            <div class="w-label">Sedang Diproses</div>
+            <span class="w-trend trend-flat"><i class="bi bi-dash"></i>Stabil</span>
+          </div>
+        </div>
+        <!-- Widget 4 -->
+        <div class="widget-card">
+          <div class="w-icon-wrap w-icon-red"><i class="bi bi-x-circle-fill"></i></div>
+          <div class="w-body">
+            <div class="w-value" id="wVal4">0</div>
+            <div class="w-label">Permohonan Ditolak</div>
+            <span class="w-trend trend-down"><i class="bi bi-arrow-down-short"></i>-3%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Second Row -->
+      <div class="cards-row">
+
+        <!-- Activity -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div class="dash-card-title"><i class="bi bi-activity"></i> Aktivitas Terkini</div>
+            <span style="font-size:.72rem;color:var(--text-muted);">Hari ini</span>
+          </div>
+          <div class="dash-card-body">
+            <ul class="activity-list">
+              <li class="activity-item">
+                <div class="act-dot" style="background:#10b964;"></div>
+                <div>
+                  <div class="act-text">Permohonan <strong>#PMH-2025-0048</strong> diterima dari Budi Santoso</div>
+                  <div class="act-time">08:32 · Kelinfo DIP</div>
+                </div>
+              </li>
+              <li class="activity-item">
+                <div class="act-dot" style="background:var(--blue);"></div>
+                <div>
+                  <div class="act-text">Admin <strong>Siti Rahma</strong> menambahkan dokumen baru ke Galeri</div>
+                  <div class="act-time">09:15 · Galeri</div>
+                </div>
+              </li>
+              <li class="activity-item">
+                <div class="act-dot" style="background:#f59e0b;"></div>
+                <div>
+                  <div class="act-text">Permohonan <strong>#PMH-2025-0047</strong> menunggu tindak lanjut</div>
+                  <div class="act-time">10:04 · Permohonan</div>
+                </div>
+              </li>
+              <li class="activity-item">
+                <div class="act-dot" style="background:#dc3545;"></div>
+                <div>
+                  <div class="act-text">Permohonan <strong>#PMH-2025-0045</strong> ditolak — dokumen tidak lengkap</div>
+                  <div class="act-time">11:20 · Permohonan</div>
+                </div>
+              </li>
+              <li class="activity-item">
+                <div class="act-dot" style="background:#10b964;"></div>
+                <div>
+                  <div class="act-text">Infografis baru diterbitkan oleh Admin <strong>Eko Wahyu</strong></div>
+                  <div class="act-time">13:45 · Infografis</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Status Table -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div class="dash-card-title"><i class="bi bi-table"></i> Status Permohonan</div>
+            <a href="#" style="font-size:.72rem;color:var(--blue);text-decoration:none;font-weight:600;">Lihat semua</a>
+          </div>
+          <div class="dash-card-body">
+            <table class="status-table">
+              <thead>
+                <tr>
+                  <th>No. Permohonan</th>
+                  <th>Pemohon</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code style="font-size:.72rem;">#PMH-0048</code></td>
+                  <td>Budi Santoso</td>
+                  <td><span class="status-pill pill-info">Baru</span></td>
+                </tr>
+                <tr>
+                  <td><code style="font-size:.72rem;">#PMH-0047</code></td>
+                  <td>Dewi Kurnia</td>
+                  <td><span class="status-pill pill-warning">Diproses</span></td>
+                </tr>
+                <tr>
+                  <td><code style="font-size:.72rem;">#PMH-0046</code></td>
+                  <td>Rudi Hartono</td>
+                  <td><span class="status-pill pill-success">Selesai</span></td>
+                </tr>
+                <tr>
+                  <td><code style="font-size:.72rem;">#PMH-0045</code></td>
+                  <td>Anisa Putri</td>
+                  <td><span class="status-pill pill-danger">Ditolak</span></td>
+                </tr>
+                <tr>
+                  <td><code style="font-size:.72rem;">#PMH-0044</code></td>
+                  <td>Hari Wibowo</td>
+                  <td><span class="status-pill pill-success">Selesai</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Full Width Chart Card -->
+      <div class="full-card">
+        <div class="dash-card-header">
+          <div class="dash-card-title"><i class="bi bi-bar-chart-line-fill"></i> Statistik Permohonan Bulanan</div>
+          <span style="font-size:.72rem;color:var(--text-muted);">Tahun 2025</span>
+        </div>
+        <div class="dash-card-body">
+          <div style="display:flex;align-items:center;gap:1.2rem;margin-bottom:.8rem;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-muted);">
+              <div style="width:12px;height:12px;border-radius:3px;background:var(--blue);"></div> Masuk
+            </div>
+            <div style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-muted);">
+              <div style="width:12px;height:12px;border-radius:3px;background:rgba(0,114,198,0.3);"></div> Selesai
+            </div>
+          </div>
+          <div class="chart-bars" id="chartBars"></div>
+        </div>
+      </div>
+
+      <!-- Quick Links Row -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:1.2rem;position:relative;z-index:1;">
+        <div class="widget-card" style="flex-direction:column;align-items:center;text-align:center;padding:1.2rem .8rem;gap:.6rem;cursor:pointer;" onclick="">
+          <div class="w-icon-wrap w-icon-blue" style="width:40px;height:40px;font-size:1rem;border-radius:10px;"><i class="bi bi-folder2-open"></i></div>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-main);">Kelinfo DIP</div>
+          <div style="font-size:.68rem;color:var(--text-muted);">Daftar Informasi Publik</div>
+        </div>
+        <div class="widget-card" style="flex-direction:column;align-items:center;text-align:center;padding:1.2rem .8rem;gap:.6rem;cursor:pointer;">
+          <div class="w-icon-wrap w-icon-green" style="width:40px;height:40px;font-size:1rem;border-radius:10px;"><i class="bi bi-images"></i></div>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-main);">Galeri</div>
+          <div style="font-size:.68rem;color:var(--text-muted);">Kelola Foto & Media</div>
+        </div>
+        <div class="widget-card" style="flex-direction:column;align-items:center;text-align:center;padding:1.2rem .8rem;gap:.6rem;cursor:pointer;">
+          <div class="w-icon-wrap w-icon-amber" style="width:40px;height:40px;font-size:1rem;border-radius:10px;"><i class="bi bi-pie-chart-fill"></i></div>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-main);">Infografis</div>
+          <div style="font-size:.68rem;color:var(--text-muted);">Data Visual Publik</div>
+        </div>
+        <div class="widget-card" style="flex-direction:column;align-items:center;text-align:center;padding:1.2rem .8rem;gap:.6rem;cursor:pointer;">
+          <div class="w-icon-wrap w-icon-red" style="width:40px;height:40px;font-size:1rem;border-radius:10px;"><i class="bi bi-bar-chart-fill"></i></div>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-main);">Laporan</div>
+          <div style="font-size:.68rem;color:var(--text-muted);">Statistik & Analitik</div>
+        </div>
+        <div class="widget-card" style="flex-direction:column;align-items:center;text-align:center;padding:1.2rem .8rem;gap:.6rem;cursor:pointer;">
+          <div class="w-icon-wrap" style="width:40px;height:40px;font-size:1rem;border-radius:10px;background:rgba(100,116,139,0.1);color:#64748b;"><i class="bi bi-gear-fill"></i></div>
+          <div style="font-size:.78rem;font-weight:600;color:var(--text-main);">Pengaturan</div>
+          <div style="font-size:.68rem;color:var(--text-muted);">Konfigurasi Sistem</div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ── FOOTER ── -->
+    <footer class="main-footer">
+      <div class="footer-left">
+        &copy; 2025 <strong>PPID Kota Pekalongan</strong> — Sistem Informasi Layanan Publik. All rights reserved.
+      </div>
+      <div class="footer-right">
+        <a class="footer-link" href="#">Bantuan</a>
+        <span class="footer-sep">·</span>
+        <a class="footer-link" href="#">Kebijakan Privasi</a>
+        <span class="footer-sep">·</span>
+        <a class="footer-link" href="#">Kontak</a>
+      </div>
+    </footer>
+
+  </div><!-- end main-area -->
+</div><!-- end app-shell -->
+
+<!-- Float Action Button -->
+<button class="fab-top" id="fabTop" onclick="scrollToTop()" title="Kembali ke atas">
+  <i class="bi bi-arrow-up"></i>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  /* ══════════════════════════════════════════
+     SIDEBAR TOGGLE
+  ══════════════════════════════════════════ */
+  const sidebar    = document.getElementById('sidebar');
+  const mainArea   = document.getElementById('mainArea');
+  const toggleBtn  = document.getElementById('toggleBtn');
+  const toggleIcon = document.getElementById('toggleIcon');
+  const overlay    = document.getElementById('sidebarOverlay');
+
+  let isCollapsed  = false;
+  let isMobile     = () => window.innerWidth <= 991;
+
+  function toggleSidebar() {
+    if (isMobile()) {
+      toggleMobileSidebar();
+    } else {
+      isCollapsed = !isCollapsed;
+      sidebar.classList.toggle('collapsed', isCollapsed);
+      mainArea.classList.toggle('collapsed', isCollapsed);
+      toggleBtn.classList.toggle('collapsed-state', isCollapsed);
+    }
+  }
+
+  function toggleMobileSidebar() {
+    const open = sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('show', open);
+  }
+
+  function closeMobileSidebar() {
+    sidebar.classList.remove('mobile-open');
+    overlay.classList.remove('show');
+  }
+
+  /* ══════════════════════════════════════════
+     USER DROPDOWN
+  ══════════════════════════════════════════ */
+  const userTrigger  = document.getElementById('userTrigger');
+  const userDropdown = document.getElementById('userDropdown');
+
+  function toggleUserMenu() {
+    const open = userDropdown.classList.toggle('show');
+    userTrigger.setAttribute('aria-expanded', open);
+  }
+
+  document.addEventListener('click', e => {
+    if (!userTrigger.contains(e.target) && !userDropdown.contains(e.target)) {
+      userDropdown.classList.remove('show');
+      userTrigger.setAttribute('aria-expanded', false);
+    }
+  });
+
+  /* ══════════════════════════════════════════
+     LOGOUT MODAL
+  ══════════════════════════════════════════ */
+  function openLogoutModal() {
+    userDropdown.classList.remove('show');
+    document.getElementById('logoutModal').classList.add('show');
+  }
+  function closeLogoutModal() {
+    document.getElementById('logoutModal').classList.remove('show');
+  }
+  document.getElementById('logoutModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('logoutModal')) closeLogoutModal();
+  });
+
+  /* ══════════════════════════════════════════
+     FULLSCREEN
+  ══════════════════════════════════════════ */
+  function toggleFullscreen() {
+    const icon = document.getElementById('fsIcon');
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      icon.className = 'bi bi-fullscreen-exit';
+    } else {
+      document.exitFullscreen();
+      icon.className = 'bi bi-fullscreen';
+    }
+  }
+
+  /* ══════════════════════════════════════════
+     FLOAT ACTION BUTTON — scroll to top
+  ══════════════════════════════════════════ */
+  const fabTop = document.getElementById('fabTop');
+  window.addEventListener('scroll', () => {
+    fabTop.classList.toggle('visible', window.scrollY > 300);
+  });
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ══════════════════════════════════════════
+     COUNTER ANIMATION (widgets)
+  ══════════════════════════════════════════ */
+  const targets = { wVal1:248, wVal2:191, wVal3:34, wVal4:23 };
+  function animateCount(id, target, duration=1200) {
+    const el = document.getElementById(id);
+    let start = null;
+    const step = ts => {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(ease * target);
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+  Object.entries(targets).forEach(([id, val]) => animateCount(id, val));
+
+  /* ══════════════════════════════════════════
+     CHART BARS
+  ══════════════════════════════════════════ */
+  const months    = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul'];
+  const masuk     = [42,58,35,71,63,84,56];
+  const selesai   = [30,44,28,60,55,72,48];
+  const maxVal    = Math.max(...masuk);
+  const chartEl   = document.getElementById('chartBars');
+
+  months.forEach((m, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'chart-bar-wrap';
+    wrap.innerHTML = `
+      <div style="display:flex;gap:3px;align-items:flex-end;width:100%;">
+        <div class="chart-bar" style="height:${(masuk[i]/maxVal)*80}px;animation-delay:${i*0.06}s;flex:1;"></div>
+        <div class="chart-bar secondary" style="height:${(selesai[i]/maxVal)*80}px;animation-delay:${i*0.06+0.03}s;flex:1;"></div>
+      </div>
+      <span class="chart-month">${m}</span>
+    `;
+    chartEl.appendChild(wrap);
+  });
+
+  /* ══════════════════════════════════════════
+     ACTIVE NAV LINK
+  ══════════════════════════════════════════ */
+  document.querySelectorAll('.nav-link-custom').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.nav-link-custom').forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+      if (isMobile()) closeMobileSidebar();
+    });
+  });
+</script>
+</body>
+</html>
