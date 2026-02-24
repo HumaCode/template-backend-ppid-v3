@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Berita — PPID Kota Pekalongan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════
+       ROOT
+    ═══════════════════════════════════════ */
+    :root {
+      --blue:       #0072c6;
+      --blue-dark:  #005499;
+      --blue-deep:  #003d70;
+      --blue-light: #1a8fe0;
+      --blue-soft:  rgba(0,114,198,0.08);
+      --sidebar-w:  260px;
+      --sidebar-col:68px;
+      --topbar-h:   64px;
+      --sidebar-bg: #001f42;
+      --content-bg: #f0f4f9;
+      --card-bg:    #ffffff;
+      --text-main:  #0f1c2e;
+      --text-muted: #6b7a8d;
+      --border:     rgba(0,0,0,0.07);
+      --shadow:     0 2px 16px rgba(0,50,100,0.08);
+      --ease:       .28s cubic-bezier(.22,1,.36,1);
+      --r:          14px;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+    html { scroll-behavior:smooth }
+    body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--content-bg); color:var(--text-main); min-height:100vh }
+
+    /* ═══════════════════════════════════════
+       LAYOUT SHELL
+    ═══════════════════════════════════════ */
+    .shell { display:flex; min-height:100vh; width:100%; overflow-x:hidden }
+    .main  {
+      flex:1; margin-left:var(--sidebar-w);
+      display:flex; flex-direction:column; min-height:100vh;
+      min-width:0; max-width:calc(100vw - var(--sidebar-w));
+      transition:margin-left var(--ease), max-width var(--ease);
+    }
+    .main.collapsed { margin-left:var(--sidebar-col); max-width:calc(100vw - var(--sidebar-col)) }
+
+    /* ═══════════════════════════════════════
+       SIDEBAR
+    ═══════════════════════════════════════ */
+    .sidebar {
+      width:var(--sidebar-w); min-height:100vh;
+      background:var(--sidebar-bg); display:flex; flex-direction:column;
+      position:fixed; left:0; top:0; bottom:0; z-index:1000;
+      overflow:hidden; transition:width var(--ease);
+      box-shadow:4px 0 24px rgba(0,18,50,0.18);
+    }
+    .sidebar.collapsed { width:var(--sidebar-col) }
+
+    .sb-brand {
+      display:flex; align-items:center; gap:.85rem;
+      padding:1.3rem 1.1rem 1.2rem 1.25rem;
+      border-bottom:1px solid rgba(255,255,255,0.07);
+      min-height:var(--topbar-h); text-decoration:none;
+      overflow:hidden; flex-shrink:0;
+    }
+    .sb-icon {
+      width:38px; height:38px; border-radius:11px; flex-shrink:0;
+      background:linear-gradient(135deg,var(--blue),var(--blue-light));
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 4px 14px rgba(0,114,198,0.45);
+      animation:iconPulse 3s ease-in-out infinite;
+    }
+    .sb-icon i { font-size:1.1rem; color:#fff }
+    @keyframes iconPulse {
+      0%,100% { box-shadow:0 4px 14px rgba(0,114,198,0.45) }
+      50%      { box-shadow:0 6px 22px rgba(0,114,198,0.7)  }
+    }
+    .sb-text  { overflow:hidden; white-space:nowrap }
+    .sb-title { font-family:'Playfair Display',serif; font-size:.95rem; font-weight:700; color:#fff; line-height:1.15 }
+    .sb-sub   { font-size:.65rem; color:rgba(255,255,255,0.4); letter-spacing:.04em }
+
+    .sb-scroll {
+      flex:1; overflow-y:auto; overflow-x:hidden;
+      scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.08) transparent;
+      padding:.8rem 0;
+    }
+    .sb-scroll::-webkit-scrollbar { width:3px }
+    .sb-scroll::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:3px }
+
+    .sb-sec {
+      font-size:.6rem; font-weight:700; letter-spacing:.13em;
+      text-transform:uppercase; color:rgba(255,255,255,0.28);
+      padding:1rem 1.25rem .35rem; white-space:nowrap; overflow:hidden;
+      transition:opacity var(--ease);
+    }
+    .sidebar.collapsed .sb-sec { opacity:0 }
+
+    .sb-iw { padding:.08rem .7rem }
+    .sb-link {
+      display:flex; align-items:center; gap:.75rem;
+      padding:.65rem .75rem; border-radius:10px;
+      text-decoration:none; color:rgba(255,255,255,0.5);
+      font-size:.84rem; font-weight:500;
+      white-space:nowrap; overflow:hidden;
+      transition:background var(--ease), color var(--ease);
+      position:relative;
+    }
+    .sb-link .ico { font-size:1.05rem; flex-shrink:0; width:20px; text-align:center }
+    .sb-link .lbl { flex:1; overflow:hidden; text-overflow:ellipsis; transition:opacity var(--ease),max-width var(--ease) }
+    .sb-link:hover  { background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.88) }
+    .sb-link.active { background:linear-gradient(90deg,rgba(0,114,198,0.35),rgba(0,114,198,0.1)); color:#fff; box-shadow:inset 3px 0 0 var(--blue) }
+    .sb-link.active .ico { color:#7ecbff }
+    .sb-badge { background:var(--blue); color:#fff; font-size:.6rem; font-weight:700; padding:.1rem .42rem; border-radius:100px; flex-shrink:0 }
+
+    .sidebar.collapsed .lbl,
+    .sidebar.collapsed .sb-badge { opacity:0; max-width:0; overflow:hidden }
+    .sidebar.collapsed .sb-link  { justify-content:center; padding:.65rem }
+    .sidebar.collapsed .sb-iw    { padding-left:.5rem; padding-right:.5rem }
+    .sidebar.collapsed .sb-link[data-tip]::after {
+      content:attr(data-tip); position:absolute;
+      left:calc(100% + 10px); top:50%; transform:translateY(-50%);
+      background:#0d2340; color:#fff; font-size:.74rem;
+      padding:.3rem .7rem; border-radius:7px; white-space:nowrap;
+      opacity:0; transition:opacity .2s; pointer-events:none; z-index:9999;
+      box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    }
+    .sidebar.collapsed .sb-link[data-tip]:hover::after { opacity:1 }
+
+    .sb-foot { padding:.9rem 1rem; border-top:1px solid rgba(255,255,255,0.07); flex-shrink:0 }
+    .sb-foot-inner { display:flex; align-items:center; gap:.7rem; overflow:hidden }
+    .sb-ficon {
+      width:32px; height:32px; border-radius:8px;
+      background:rgba(255,255,255,0.07);
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+    .sb-ficon i { font-size:.9rem; color:rgba(255,255,255,0.4) }
+    .sb-ftext   { overflow:hidden; white-space:nowrap }
+    .sb-fver    { font-size:.68rem; color:rgba(255,255,255,0.25) }
+    .sb-fcopy   { font-size:.63rem; color:rgba(255,255,255,0.18) }
+    .sidebar.collapsed .sb-ftext { opacity:0; max-width:0 }
+
+    /* ═══════════════════════════════════════
+       TOPBAR
+    ═══════════════════════════════════════ */
+    .topbar {
+      height:var(--topbar-h); background:#fff;
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center;
+      padding:0 1.5rem; position:sticky; top:0; z-index:900;
+      box-shadow:0 1px 12px rgba(0,40,100,0.06); gap:1rem;
+    }
+    .tog-btn {
+      width:36px; height:36px; border-radius:9px;
+      border:1px solid var(--border); background:transparent;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; color:var(--text-muted); font-size:1.05rem;
+      transition:background .2s, color .2s, transform .3s; flex-shrink:0;
+    }
+    .tog-btn:hover { background:var(--blue-soft); color:var(--blue) }
+    .tog-btn.flip  { transform:rotate(180deg) }
+    .tb-space { flex:1 }
+    .tb-right { display:flex; align-items:center; gap:.6rem }
+    .tb-ibtn {
+      width:36px; height:36px; border-radius:9px;
+      border:1px solid var(--border); background:transparent;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; color:var(--text-muted); font-size:1rem;
+      transition:background .2s, color .2s; position:relative;
+    }
+    .tb-ibtn:hover { background:var(--blue-soft); color:var(--blue) }
+    .notif-dot {
+      position:absolute; top:6px; right:6px;
+      width:7px; height:7px; border-radius:50%;
+      background:#e84242; border:1.5px solid #fff;
+      animation:notifPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes notifPulse {
+      0%,100% { box-shadow:0 0 0 0 rgba(232,66,66,.5) }
+      50%      { box-shadow:0 0 0 5px rgba(232,66,66,0) }
+    }
+    .user-menu { position:relative }
+    .user-trig {
+      display:flex; align-items:center; gap:.6rem;
+      padding:.35rem .65rem .35rem .45rem;
+      border-radius:10px; border:1px solid var(--border);
+      background:transparent; cursor:pointer; transition:background .2s;
+    }
+    .user-trig:hover { background:var(--blue-soft) }
+    .user-av {
+      width:34px; height:34px; border-radius:50%;
+      background:linear-gradient(135deg,var(--blue),var(--blue-light));
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; font-size:.85rem; font-weight:700; flex-shrink:0;
+      box-shadow:0 2px 8px rgba(0,114,198,0.4);
+    }
+    .user-info .uname { font-size:.8rem; font-weight:600; color:var(--text-main); line-height:1.2 }
+    .user-info .urole { font-size:.68rem; color:var(--text-muted) }
+    .user-caret { font-size:.7rem; color:var(--text-muted); transition:transform .25s }
+    .user-trig[aria-expanded="true"] .user-caret { transform:rotate(180deg) }
+    .user-dd {
+      position:absolute; right:0; top:calc(100% + 8px);
+      min-width:190px; background:#fff;
+      border:1px solid var(--border); border-radius:13px;
+      box-shadow:0 10px 40px rgba(0,40,100,0.13);
+      padding:.45rem; display:none; z-index:999;
+      animation:dropIn .25s var(--ease);
+    }
+    .user-dd.open { display:block }
+    @keyframes dropIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+    .dd-item {
+      display:flex; align-items:center; gap:.6rem;
+      padding:.55rem .75rem; border-radius:8px;
+      font-size:.82rem; color:var(--text-main);
+      text-decoration:none; cursor:pointer;
+      transition:background .18s; font-weight:500;
+      border:none; background:none; width:100%; text-align:left;
+    }
+    .dd-item i { font-size:.95rem; color:var(--text-muted); width:18px }
+    .dd-item:hover        { background:var(--blue-soft); color:var(--blue) }
+    .dd-item.danger:hover { background:rgba(220,50,50,0.06); color:#c0392b }
+    .dd-div { height:1px; background:var(--border); margin:.35rem 0 }
+
+    /* ═══════════════════════════════════════
+       CONTENT AREA
+    ═══════════════════════════════════════ */
+    .content {
+      flex:1; padding:1.6rem; position:relative;
+      width:100%; overflow-x:hidden;
+    }
+    .content::before {
+      content:''; position:fixed; inset:0;
+      background-image:radial-gradient(circle at 1px 1px, rgba(0,100,200,0.04) 1px, transparent 0);
+      background-size:28px 28px; pointer-events:none; z-index:0;
+    }
+
+    /* ═══════════════════════════════════════
+       BREADCRUMB BANNER
+    ═══════════════════════════════════════ */
+    .bb {
+      background:linear-gradient(120deg, var(--blue-deep) 0%, var(--blue) 55%, var(--blue-light) 100%);
+      border-radius:16px; padding:1.3rem 1.6rem;
+      margin-bottom:1.4rem;
+      display:flex; align-items:center; justify-content:space-between; gap:1rem;
+      position:relative; overflow:hidden;
+      box-shadow:0 8px 28px rgba(0,114,198,0.28); z-index:1; width:100%;
+    }
+    .bb::before { content:''; position:absolute; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,0.06); top:-60px; right:80px }
+    .bb::after  { content:''; position:absolute; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,0.06); bottom:-40px; right:20px }
+    .bb-left    { position:relative; z-index:1 }
+    .bb-title   { font-family:'Playfair Display',serif; font-size:1.35rem; font-weight:700; color:#fff; margin-bottom:.18rem }
+    .bb-desc    { font-size:.78rem; color:rgba(255,255,255,0.6); font-weight:300 }
+    .bb-right   { display:flex; align-items:center; gap:.35rem; position:relative; z-index:1; flex-wrap:wrap }
+    .bc         { display:flex; align-items:center; gap:.3rem; font-size:.78rem; color:rgba(255,255,255,0.7); font-weight:500 }
+    .bc.cur     { color:#fff; font-weight:600 }
+    .bc-sep     { color:rgba(255,255,255,0.35) }
+
+    /* ═══════════════════════════════════════
+       STAT MINI CARDS
+    ═══════════════════════════════════════ */
+    .stat-grid {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      gap:1rem; margin-bottom:1.4rem; width:100%;
+    }
+    .stat-card {
+      background:#fff; border-radius:12px;
+      border:1px solid var(--border); box-shadow:var(--shadow);
+      padding:.85rem 1.1rem; display:flex; align-items:center; gap:.8rem;
+      animation:fadeUp .4s var(--ease) both;
+    }
+    .stat-card:nth-child(2) { animation-delay:.06s }
+    .stat-card:nth-child(3) { animation-delay:.12s }
+    .stat-card:nth-child(4) { animation-delay:.18s }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    .st-ico {
+      width:42px; height:42px; border-radius:11px;
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0; font-size:1.05rem;
+    }
+    .st-ico.blue  { background:rgba(0,114,198,0.1);  color:var(--blue)  }
+    .st-ico.green { background:rgba(16,185,100,0.1); color:#10b964 }
+    .st-ico.amber { background:rgba(245,158,11,0.1); color:#f59e0b }
+    .st-ico.slate { background:rgba(100,116,139,0.1);color:#64748b }
+    .st-val { font-size:1.5rem; font-weight:800; color:var(--text-main); line-height:1 }
+    .st-lbl { font-size:.71rem; color:var(--text-muted); margin-top:.1rem }
+
+    /* ═══════════════════════════════════════
+       CARD
+    ═══════════════════════════════════════ */
+    .card {
+      background:var(--card-bg); border-radius:var(--r);
+      border:1px solid var(--border); box-shadow:var(--shadow);
+      position:relative; z-index:1;
+      animation:fadeUp .45s var(--ease) both;
+      width:100%; overflow:hidden;
+    }
+    .card-head {
+      padding:1rem 1.4rem; border-bottom:1px solid var(--border);
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:.7rem;
+    }
+    .card-head-l { display:flex; align-items:center; gap:.55rem }
+    .card-head-l i { color:var(--blue); font-size:1rem }
+    .card-head-l h6 { font-size:.92rem; font-weight:700; color:var(--text-main); margin:0 }
+    .card-body { padding:1.2rem 1.4rem; width:100%; overflow:hidden }
+
+    /* ═══════════════════════════════════════
+       BUTTONS
+    ═══════════════════════════════════════ */
+    .btn-primary {
+      display:inline-flex; align-items:center; gap:.42rem;
+      padding:.52rem 1rem; border-radius:9px; border:none;
+      background:linear-gradient(135deg,var(--blue),var(--blue-light));
+      color:#fff; font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:.82rem; font-weight:600; cursor:pointer;
+      box-shadow:0 4px 14px rgba(0,114,198,0.3);
+      transition:transform .2s, box-shadow .2s;
+      white-space:nowrap; text-decoration:none;
+    }
+    .btn-primary:hover { transform:translateY(-1px); box-shadow:0 7px 20px rgba(0,114,198,0.4); color:#fff }
+    .btn-outline {
+      display:inline-flex; align-items:center; gap:.4rem;
+      padding:.5rem .9rem; border-radius:9px;
+      border:1px solid var(--border); background:#fff;
+      color:var(--text-muted); font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:.82rem; font-weight:500; cursor:pointer;
+      transition:background .2s, color .2s;
+      white-space:nowrap; text-decoration:none;
+    }
+    .btn-outline:hover { background:var(--blue-soft); color:var(--blue); border-color:rgba(0,114,198,0.3) }
+
+    .btn-ico {
+      width:30px; height:30px; border-radius:8px;
+      border:1px solid var(--border); background:#fff;
+      display:inline-flex; align-items:center; justify-content:center;
+      cursor:pointer; font-size:.8rem; color:var(--text-muted);
+      transition:background .18s, color .18s, border-color .18s;
+      text-decoration:none;
+    }
+    .btn-ico:hover           { background:var(--blue-soft); color:var(--blue); border-color:rgba(0,114,198,0.25) }
+    .btn-ico.ico-edit:hover  { background:rgba(245,158,11,0.1); color:#f59e0b; border-color:rgba(245,158,11,0.3) }
+    .btn-ico.ico-del:hover   { background:rgba(220,53,69,0.08); color:#dc3545; border-color:rgba(220,53,69,0.25) }
+    .aksi-wrap { display:flex; align-items:center; gap:.3rem; justify-content:center }
+
+    /* ═══════════════════════════════════════
+       FILTER BAR
+    ═══════════════════════════════════════ */
+    .filter-bar {
+      display:flex; align-items:center; flex-wrap:wrap; gap:.5rem;
+      background:#f5f9ff; border:1px solid rgba(0,114,198,0.1);
+      border-radius:10px; padding:.65rem .9rem;
+      margin-bottom:1.1rem; width:100%;
+    }
+    .inp-wrap { position:relative }
+    .inp-ico  { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:.82rem; pointer-events:none }
+    .inp {
+      height:36px; border-radius:9px; border:1px solid var(--border);
+      background:#fff; color:var(--text-main);
+      font-family:'Plus Jakarta Sans',sans-serif; font-size:.82rem;
+      padding:0 .85rem 0 2.1rem; outline:none;
+      width:200px; max-width:100%;
+      transition:border-color .2s, box-shadow .2s;
+    }
+    .inp::placeholder { color:#b0bac7 }
+    .inp:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,114,198,0.1) }
+    .sel {
+      height:36px; padding:0 .75rem; border-radius:9px;
+      border:1px solid var(--border); background:#fff;
+      font-family:'Plus Jakarta Sans',sans-serif; font-size:.82rem;
+      color:var(--text-main); outline:none; cursor:pointer;
+      transition:border-color .2s;
+    }
+    .sel:focus { border-color:var(--blue) }
+    .filter-right { display:flex; align-items:center; gap:.5rem; margin-left:auto }
+    .pp-label { font-size:.78rem; color:var(--text-muted); white-space:nowrap }
+
+    /* ═══════════════════════════════════════
+       TABEL
+    ═══════════════════════════════════════ */
+    .tbl-wrap {
+      overflow-x:auto; overflow-y:visible;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,114,198,0.28) rgba(0,114,198,0.05);
+      width:100%;
+    }
+    .tbl-wrap::-webkit-scrollbar       { height:7px }
+    .tbl-wrap::-webkit-scrollbar-track { background:rgba(0,114,198,0.04) }
+    .tbl-wrap::-webkit-scrollbar-thumb { background:rgba(0,114,198,0.28); border-radius:4px }
+    .tbl-wrap::-webkit-scrollbar-thumb:hover { background:rgba(0,114,198,0.5) }
+
+    .tbl { width:100%; border-collapse:collapse; font-size:.8rem; min-width:780px }
+
+    .tbl thead th {
+      background:linear-gradient(135deg, var(--blue-deep), var(--blue));
+      color:#fff; font-size:.67rem; font-weight:700;
+      letter-spacing:.06em; text-transform:uppercase;
+      padding:.72rem .85rem;
+      border:1px solid rgba(255,255,255,0.1);
+      text-align:center; vertical-align:middle;
+      white-space:nowrap; position:sticky; top:0; z-index:2;
+    }
+    .tbl thead th.th-left { text-align:left }
+
+    .tbl tbody tr { border-bottom:1px solid rgba(0,0,0,0.055); transition:background .15s }
+    .tbl tbody tr:nth-child(even) { background:#fafcff }
+    .tbl tbody tr:last-child { border-bottom:none }
+    .tbl tbody tr:hover { background:#edf4ff }
+    .tbl tbody td {
+      padding:.72rem .85rem; border:1px solid rgba(0,0,0,0.05);
+      vertical-align:middle; text-align:center; color:var(--text-main);
+    }
+    .tbl tbody td.td-left { text-align:left }
+
+    /* kolom */
+    .c-no     { width:42px }
+    .c-thumb  { width:86px }
+    .c-judul  { min-width:210px }
+    .c-tema   { width:118px }
+    .c-penulis{ width:130px }
+    .c-tgl    { width:100px; white-space:nowrap }
+    .c-status { width:100px }
+    .c-aksi   { width:88px; white-space:nowrap }
+
+    /* thumbnail */
+    .tbl-thumb {
+      width:64px; height:46px; border-radius:8px;
+      object-fit:cover; display:block; margin:0 auto;
+      box-shadow:0 2px 8px rgba(0,0,0,0.12);
+      transition:transform .2s, box-shadow .2s;
+    }
+    .tbl-thumb:hover { transform:scale(1.08); box-shadow:0 5px 16px rgba(0,0,0,0.2) }
+
+    /* teks sel */
+    .td-no { font-size:.74rem; font-weight:600; color:var(--text-muted) }
+    .td-title {
+      font-weight:700; font-size:.82rem; color:var(--text-main);
+      margin-bottom:.1rem; line-height:1.35;
+      display:-webkit-box; -webkit-line-clamp:2;
+      -webkit-box-orient:vertical; overflow:hidden;
+    }
+    .td-excerpt {
+      font-size:.71rem; color:var(--text-muted); line-height:1.5;
+      display:-webkit-box; -webkit-line-clamp:2;
+      -webkit-box-orient:vertical; overflow:hidden;
+    }
+    .td-author      { font-size:.77rem; font-weight:600; color:var(--text-main) }
+    .td-author-role { font-size:.67rem; color:var(--text-muted) }
+
+    /* tema badge */
+    .tema {
+      display:inline-flex; align-items:center; gap:.22rem;
+      padding:.22rem .62rem; border-radius:100px;
+      font-size:.67rem; font-weight:700; white-space:nowrap;
+    }
+    .tema-ppid       { background:rgba(0,114,198,0.1);  color:var(--blue)  }
+    .tema-layanan    { background:rgba(16,185,100,0.1); color:#10b964 }
+    .tema-regulasi   { background:rgba(245,158,11,0.1); color:#f59e0b }
+    .tema-kegiatan   { background:rgba(139,92,246,0.1); color:#7c3aed }
+    .tema-pengumuman { background:rgba(20,184,166,0.1); color:#0d9488 }
+    .tema-lainnya    { background:rgba(100,116,139,0.1);color:#64748b }
+
+    /* status badge */
+    .stt {
+      display:inline-flex; align-items:center; gap:.25rem;
+      padding:.22rem .6rem; border-radius:100px;
+      font-size:.67rem; font-weight:700; white-space:nowrap;
+    }
+    .stt .dot { width:5px; height:5px; border-radius:50%; flex-shrink:0 }
+    .stt-publish { background:rgba(16,185,100,0.1);  color:#10b964 }
+    .stt-publish .dot { background:#10b964 }
+    .stt-draft   { background:rgba(100,116,139,0.1); color:#64748b }
+    .stt-draft .dot   { background:#64748b }
+    .stt-arsip   { background:rgba(245,158,11,0.1);  color:#c27c0e }
+    .stt-arsip .dot   { background:#f59e0b }
+
+    /* baris draft & arsip sedikit redup */
+    tr.is-draft  td { opacity:.8 }
+    tr.is-arsip  td { opacity:.65 }
+    tr.is-draft .td-title,
+    tr.is-arsip .td-title { color:var(--text-muted) }
+
+    /* ═══════════════════════════════════════
+       PAGINATION
+    ═══════════════════════════════════════ */
+    .pag-row {
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:.7rem; padding:.9rem 1.4rem .8rem;
+      border-top:1px solid var(--border);
+    }
+    .pag-info { font-size:.78rem; color:var(--text-muted) }
+    .pag-info strong { color:var(--text-main) }
+    .pag-ctrl { display:flex; align-items:center; gap:.3rem }
+    .pg {
+      min-width:32px; height:32px; border-radius:8px;
+      border:1px solid var(--border); background:#fff;
+      display:inline-flex; align-items:center; justify-content:center;
+      cursor:pointer; font-size:.8rem; font-weight:600;
+      color:var(--text-muted); padding:0 .5rem;
+      transition:background .18s, color .18s; text-decoration:none;
+    }
+    .pg:hover   { background:var(--blue-soft); color:var(--blue) }
+    .pg.active  { background:var(--blue); color:#fff; border-color:var(--blue); box-shadow:0 2px 8px rgba(0,114,198,0.3) }
+    .pg.disabled{ opacity:.38; pointer-events:none }
+
+    /* ═══════════════════════════════════════
+       MODAL HAPUS
+    ═══════════════════════════════════════ */
+    .del-ov {
+      position:fixed; inset:0;
+      background:rgba(0,15,40,0.55); backdrop-filter:blur(6px);
+      z-index:9100; display:flex; align-items:center; justify-content:center;
+      opacity:0; pointer-events:none; transition:opacity .3s;
+    }
+    .del-ov.show { opacity:1; pointer-events:all }
+    .del-box {
+      background:#fff; border-radius:18px;
+      padding:2rem 1.8rem 1.6rem; max-width:360px; width:90%;
+      text-align:center; box-shadow:0 24px 70px rgba(0,20,60,0.22);
+      transform:scale(.88) translateY(18px);
+      transition:transform .35s var(--ease);
+    }
+    .del-ov.show .del-box { transform:scale(1) translateY(0) }
+    .del-ring {
+      width:64px; height:64px; margin:0 auto .9rem; border-radius:50%;
+      background:linear-gradient(135deg,#fee2e2,#fecaca);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .del-ring i { font-size:1.6rem; color:#dc3545 }
+    .del-ttl    { font-size:1rem; font-weight:700; color:var(--text-main); margin-bottom:.35rem }
+    .del-desc   { font-size:.8rem; color:var(--text-muted); line-height:1.65; margin-bottom:1.3rem }
+    .del-btns   { display:flex; gap:.65rem }
+    .btn-cancel {
+      flex:1; padding:.62rem; border-radius:10px;
+      border:1px solid var(--border); background:#f8f9fb;
+      color:var(--text-muted); font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:.83rem; font-weight:600; cursor:pointer;
+    }
+    .btn-cancel:hover { background:#eef0f5 }
+    .btn-del-ok {
+      flex:1; padding:.62rem; border-radius:10px; border:none;
+      background:linear-gradient(135deg,#dc3545,#c0392b); color:#fff;
+      font-family:'Plus Jakarta Sans',sans-serif; font-size:.83rem;
+      font-weight:600; cursor:pointer; box-shadow:0 4px 14px rgba(220,53,69,0.3);
+    }
+
+    /* ═══════════════════════════════════════
+       SIDEBAR OVERLAY (mobile)
+    ═══════════════════════════════════════ */
+    .sb-ov {
+      position:fixed; inset:0; background:rgba(0,15,40,0.5);
+      z-index:999; display:none; opacity:0; transition:opacity .3s;
+    }
+    .sb-ov.show { display:block; opacity:1 }
+
+    /* ═══════════════════════════════════════
+       FAB
+    ═══════════════════════════════════════ */
+    .fab {
+      position:fixed; right:1.6rem; bottom:1.8rem;
+      width:44px; height:44px; border-radius:13px;
+      background:linear-gradient(135deg,var(--blue),var(--blue-light));
+      border:none; color:#fff; font-size:1.05rem;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      box-shadow:0 6px 22px rgba(0,114,198,0.4); z-index:800;
+      opacity:0; pointer-events:none;
+      transform:translateY(20px) scale(.85);
+      transition:opacity .35s var(--ease), transform .35s var(--ease);
+    }
+    .fab.vis  { opacity:1; pointer-events:all; transform:translateY(0) scale(1) }
+    .fab:hover{ transform:translateY(-3px) scale(1.06) !important; box-shadow:0 10px 30px rgba(0,114,198,0.55) }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
+    .footer {
+      background:#fff; border-top:1px solid var(--border);
+      padding:1rem 1.6rem;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:1rem; flex-wrap:wrap;
+    }
+    .foot-l { font-size:.75rem; color:var(--text-muted) }
+    .foot-l strong { color:var(--blue) }
+    .foot-r { display:flex; align-items:center; gap:.5rem }
+    .foot-a { font-size:.73rem; color:var(--text-muted); text-decoration:none; transition:color .18s }
+    .foot-a:hover { color:var(--blue) }
+    .foot-sep { color:var(--border) }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE — MEDIA QUERIES
+       Prinsip: semua elemen content selalu 100%
+       lebar device. HANYA .tbl-wrap yang scroll
+       horizontal.
+    ═══════════════════════════════════════ */
+
+    /* ── 1400px+ Large Desktop ── */
+    @media (min-width: 1400px) {
+      .content  { padding: 1.8rem 2.2rem }
+      .tbl      { font-size:.83rem }
+      .tbl thead th { font-size:.69rem; padding:.78rem 1rem }
+      .tbl tbody td { padding:.76rem 1rem }
+      .tbl-thumb{ width:70px; height:50px }
+    }
+
+    /* ── 1200–1399px Standard Desktop ── */
+    @media (min-width: 1200px) and (max-width: 1399px) {
+      .content { padding: 1.5rem 1.8rem }
+    }
+
+    /* ── 992–1199px Small Desktop ── */
+    @media (min-width: 992px) and (max-width: 1199px) {
+      .content  { padding: 1.2rem 1.4rem }
+      .tbl      { font-size:.76rem }
+      .tbl thead th { font-size:.62rem; padding:.62rem .75rem }
+      .tbl tbody td { padding:.62rem .75rem }
+      .tbl-thumb{ width:56px; height:42px }
+    }
+
+    /* ── max 991px — Sidebar overlay, main full width ── */
+    @media (max-width: 991px) {
+      .sidebar { transform:translateX(-100%); width:var(--sidebar-w) !important; transition:transform var(--ease) }
+      .sidebar.mobile-open { transform:translateX(0) }
+      .main { margin-left:0 !important; max-width:100vw !important; width:100% }
+      .topbar  { padding:0 1rem }
+      .content { padding:1rem }
+      .bb-right{ display:none }
+      /* stat: 2 kolom di tablet */
+      .stat-grid { grid-template-columns:repeat(2,1fr); gap:.75rem }
+    }
+
+    /* ── 768–991px Tablet Portrait ── */
+    @media (min-width: 768px) and (max-width: 991px) {
+      .bb { padding:1rem 1.2rem; border-radius:13px }
+      .bb-title { font-size:1.1rem }
+      .tbl { font-size:.76rem }
+      .tbl-thumb { width:54px; height:40px }
+      /* sembunyikan kolom penulis */
+      .c-penulis, .th-penulis { display:none }
+    }
+
+    /* ── 576–767px Mobile Large ── */
+    @media (min-width: 576px) and (max-width: 767px) {
+      .content  { padding:.85rem }
+      .bb { padding:.9rem 1rem; border-radius:12px; margin-bottom:1rem }
+      .bb-title { font-size:1rem }
+      .bb-desc  { font-size:.72rem }
+      .user-info{ display:none }
+      .topbar   { padding:0 .85rem }
+
+      /* stat 2 kolom */
+      .stat-grid { grid-template-columns:repeat(2,1fr); gap:.65rem; margin-bottom:1rem }
+      .st-val  { font-size:1.25rem }
+
+      .card-head { padding:.85rem 1rem }
+      .card-body { padding:.85rem 1rem }
+
+      /* filter: search baris sendiri */
+      .filter-bar   { padding:.5rem .7rem; gap:.4rem }
+      .inp-wrap     { flex:1 1 100% }
+      .inp          { width:100% }
+      .sel          { flex:1; min-width:110px }
+      .filter-right { margin-left:0; width:100%; justify-content:flex-end }
+
+      .tbl { font-size:.73rem }
+      .tbl thead th { font-size:.6rem; padding:.52rem .6rem }
+      .tbl tbody td { padding:.55rem .6rem }
+      .tbl-thumb    { width:50px; height:37px; border-radius:6px }
+      /* sembunyikan penulis & tanggal */
+      .c-penulis, .th-penulis { display:none }
+      .c-tgl,     .th-tgl     { display:none }
+
+      .pag-row { padding:.7rem 1rem }
+      .footer  { flex-direction:column; text-align:center; gap:.35rem }
+      .foot-r  { justify-content:center }
+    }
+
+    /* ── max 575px Mobile Small ── */
+    @media (max-width: 575px) {
+      .content  { padding:.6rem }
+
+      .bb {
+        padding:.75rem .9rem; border-radius:10px; margin-bottom:.85rem;
+        flex-direction:column; align-items:flex-start; gap:.3rem;
+      }
+      .bb-title { font-size:.92rem }
+      .bb-desc  { font-size:.7rem }
+      .bb-right { display:none }
+      .user-info{ display:none }
+      .topbar   { padding:0 .7rem; gap:.45rem }
+
+      /* stat 2×2 compact */
+      .stat-grid { grid-template-columns:repeat(2,1fr); gap:.5rem; margin-bottom:.9rem }
+      .stat-card { padding:.65rem .8rem; gap:.55rem }
+      .st-ico    { width:36px; height:36px; font-size:.9rem; border-radius:9px }
+      .st-val    { font-size:1.2rem }
+      .st-lbl    { font-size:.66rem }
+
+      /* card full-width compact */
+      .card { border-radius:10px }
+      .card-head {
+        padding:.75rem .9rem;
+        flex-direction:column; align-items:flex-start; gap:.45rem;
+      }
+      /* tombol tambah & export full width */
+      .card-head > div:last-child {
+        width:100%; display:flex; gap:.4rem;
+      }
+      .card-head > div:last-child .btn-primary,
+      .card-head > div:last-child .btn-outline {
+        flex:1; justify-content:center;
+        font-size:.78rem; padding:.46rem .5rem;
+      }
+      .card-body { padding:.75rem .9rem }
+
+      /* filter vertikal */
+      .filter-bar   { flex-direction:column; align-items:stretch; padding:.6rem .7rem; gap:.4rem; margin-bottom:.85rem }
+      .inp-wrap     { width:100% }
+      .inp          { width:100% }
+      .sel          { width:100% }
+      .filter-right { margin-left:0; width:100%; flex-wrap:wrap; gap:.4rem }
+      .filter-right .btn-outline { flex:1; justify-content:center }
+      .filter-right select { flex:1 }
+
+      /* tabel compact, beberapa kolom hilang */
+      .tbl          { font-size:.71rem; min-width:440px }
+      .tbl thead th { font-size:.58rem; padding:.44rem .42rem }
+      .tbl tbody td { padding:.5rem .42rem }
+      .tbl-thumb    { width:46px; height:34px; border-radius:6px }
+      .c-penulis, .th-penulis { display:none }
+      .c-tgl,     .th-tgl     { display:none }
+      .btn-ico { width:27px; height:27px; font-size:.76rem }
+
+      /* pag & footer */
+      .pag-row  { flex-direction:column; align-items:center; gap:.45rem; padding:.65rem .9rem }
+      .pag-ctrl { flex-wrap:wrap; justify-content:center }
+      .footer   { flex-direction:column; text-align:center; gap:.35rem; padding:.7rem 1rem }
+      .foot-r   { justify-content:center }
+    }
+
+    /* ── max 400px Extra Small ── */
+    @media (max-width: 400px) {
+      .content  { padding:.45rem }
+      .card-body{ padding:.6rem .65rem }
+      .filter-bar{ padding:.5rem .6rem }
+      .tbl      { min-width:380px; font-size:.68rem }
+      .tbl thead th { padding:.38rem .32rem }
+      .tbl tbody td { padding:.44rem .32rem }
+      /* sembunyikan tema di layar terkecil */
+      .c-tema, .th-tema { display:none }
+      .tbl-thumb { width:40px; height:30px; border-radius:5px }
+      .btn-ico   { width:25px; height:25px; font-size:.72rem }
+      .bb-title  { font-size:.87rem }
+      .st-val    { font-size:1.1rem }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar Overlay -->
+<div class="sb-ov" id="sbOv" onclick="closeMobile()"></div>
+
+<!-- ══ MODAL HAPUS ══ -->
+<div class="del-ov" id="delOv">
+  <div class="del-box">
+    <div class="del-ring"><i class="bi bi-trash3-fill"></i></div>
+    <h4 class="del-ttl">Hapus Berita?</h4>
+    <p class="del-desc">Berita <strong id="delName"></strong> akan dihapus permanen dan tidak dapat dikembalikan.</p>
+    <div class="del-btns">
+      <button class="btn-cancel" onclick="closeDel()">Batal</button>
+      <button class="btn-del-ok" onclick="closeDel()"><i class="bi bi-trash3 me-1"></i>Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ APP SHELL ════════ -->
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <a class="sb-brand" href="dashboard-ppid.html">
+      <div class="sb-icon"><i class="bi bi-shield-lock-fill"></i></div>
+      <div class="sb-text">
+        <div class="sb-title">PPID Pekalongan</div>
+        <div class="sb-sub">Kota Pekalongan · v2.0</div>
+      </div>
+    </a>
+    <nav class="sb-scroll">
+      <div class="sb-iw"><a href="dashboard-ppid.html" class="sb-link" data-tip="Dashboard"><i class="bi bi-grid-1x2-fill ico"></i><span class="lbl">Dashboard</span></a></div>
+      <div class="sb-sec">Master Data</div>
+      <div class="sb-iw"><a href="admin-pengelola-ppid.html" class="sb-link" data-tip="Admin Pengelola"><i class="bi bi-person-badge-fill ico"></i><span class="lbl">Admin Pengelola</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Pemohon"><i class="bi bi-people-fill ico"></i><span class="lbl">Pemohon</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Instansi"><i class="bi bi-building ico"></i><span class="lbl">Instansi / OPD</span></a></div>
+      <div class="sb-sec">Kelompok Informasi</div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIP"><i class="bi bi-folder2-open ico"></i><span class="lbl">Kelinfo DIP</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIB"><i class="bi bi-folder-fill ico"></i><span class="lbl">Kelinfo DIB</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIBS"><i class="bi bi-folder-symlink-fill ico"></i><span class="lbl">Kelinfo DIBS</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIU"><i class="bi bi-archive-fill ico"></i><span class="lbl">Kelinfo DIU</span></a></div>
+      <div class="sb-sec">Permohonan</div>
+      <div class="sb-iw"><a href="permohonan-masuk-ppid.html" class="sb-link" data-tip="Permohonan Masuk"><i class="bi bi-inbox-fill ico"></i><span class="lbl">Permohonan Masuk</span><span class="sb-badge">7</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Riwayat"><i class="bi bi-clock-history ico"></i><span class="lbl">Riwayat Permohonan</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Laporan"><i class="bi bi-bar-chart-fill ico"></i><span class="lbl">Laporan &amp; Statistik</span></a></div>
+      <div class="sb-sec">Konten Website</div>
+      <div class="sb-iw"><a href="berita-ppid.html" class="sb-link active" data-tip="Berita"><i class="bi bi-newspaper ico"></i><span class="lbl">Berita</span></a></div>
+      <div class="sb-iw"><a href="galeri-ppid.html" class="sb-link" data-tip="Galeri"><i class="bi bi-images ico"></i><span class="lbl">Galeri</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Infografis"><i class="bi bi-pie-chart-fill ico"></i><span class="lbl">Infografis</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Kelola Menu"><i class="bi bi-list-nested ico"></i><span class="lbl">Kelola Menu</span></a></div>
+      <div class="sb-sec">Pengaturan</div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Pengaturan"><i class="bi bi-gear-fill ico"></i><span class="lbl">Pengaturan Sistem</span></a></div>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-foot-inner">
+        <div class="sb-ficon"><i class="bi bi-info-circle"></i></div>
+        <div class="sb-ftext">
+          <div class="sb-fver">Versi 2.0.1 — Stabil</div>
+          <div class="sb-fcopy">&copy; 2025 PPID Kota Pekalongan</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button class="tog-btn" id="togBtn" onclick="toggleSB()"><i class="bi bi-arrow-bar-left"></i></button>
+      <div class="tb-space"></div>
+      <div class="tb-right">
+        <button class="tb-ibtn" title="Notifikasi"><i class="bi bi-bell"></i><span class="notif-dot"></span></button>
+        <button class="tb-ibtn" title="Layar Penuh" onclick="toggleFS()"><i class="bi bi-fullscreen" id="fsIco"></i></button>
+        <div class="user-menu">
+          <button class="user-trig" id="uTrig" onclick="toggleUM()" aria-expanded="false">
+            <div class="user-av">AS</div>
+            <div class="user-info">
+              <div class="uname">Admin Sistem</div>
+              <div class="urole">@admin.ppid</div>
+            </div>
+            <i class="bi bi-chevron-down user-caret"></i>
+          </button>
+          <div class="user-dd" id="uDD">
+            <a class="dd-item" href="#"><i class="bi bi-person-circle"></i>Profil Saya</a>
+            <a class="dd-item" href="#"><i class="bi bi-gear"></i>Pengaturan</a>
+            <div class="dd-div"></div>
+            <button class="dd-item danger"><i class="bi bi-box-arrow-right"></i>Keluar</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+      <!-- Breadcrumb Banner -->
+      <div class="bb">
+        <div class="bb-left">
+          <div class="bb-title">Manajemen Berita</div>
+          <div class="bb-desc">Kelola artikel dan berita terkait layanan informasi PPID Kota Pekalongan</div>
+        </div>
+        <div class="bb-right">
+          <div class="bc"><i class="bi bi-house-fill"></i> Home</div>
+          <span class="bc-sep">/</span>
+          <div class="bc">Konten Website</div>
+          <span class="bc-sep">/</span>
+          <div class="bc cur"><i class="bi bi-newspaper"></i> Berita</div>
+        </div>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="st-ico blue"><i class="bi bi-newspaper"></i></div>
+          <div><div class="st-val">12</div><div class="st-lbl">Total Berita</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="st-ico green"><i class="bi bi-check-circle-fill"></i></div>
+          <div><div class="st-val">8</div><div class="st-lbl">Dipublikasikan</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="st-ico amber"><i class="bi bi-pencil-square"></i></div>
+          <div><div class="st-val">3</div><div class="st-lbl">Draft</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="st-ico slate"><i class="bi bi-archive-fill"></i></div>
+          <div><div class="st-val">1</div><div class="st-lbl">Diarsipkan</div></div>
+        </div>
+      </div>
+
+      <!-- CARD TABEL -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-l">
+            <i class="bi bi-newspaper"></i>
+            <h6>Daftar Berita</h6>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn-outline"><i class="bi bi-download"></i> Export</button>
+            <a href="berita-create-ppid.html" class="btn-primary">
+              <i class="bi bi-plus-lg"></i> Tambah Berita
+            </a>
+          </div>
+        </div>
+
+        <div class="card-body">
+
+          <!-- Filter Bar -->
+          <div class="filter-bar">
+            <div class="inp-wrap">
+              <i class="bi bi-search inp-ico"></i>
+              <input type="text" class="inp" placeholder="Cari judul berita..." />
+            </div>
+            <select class="sel">
+              <option value="">Semua Tema</option>
+              <option>PPID</option>
+              <option>Layanan Publik</option>
+              <option>Regulasi</option>
+              <option>Kegiatan</option>
+              <option>Pengumuman</option>
+              <option>Lainnya</option>
+            </select>
+            <select class="sel">
+              <option value="">Semua Status</option>
+              <option>Dipublikasikan</option>
+              <option>Draft</option>
+              <option>Diarsipkan</option>
+            </select>
+            <select class="sel">
+              <option value="">Semua Tahun</option>
+              <option>2025</option>
+              <option>2024</option>
+              <option>2023</option>
+            </select>
+            <div class="filter-right">
+              <button class="btn-outline" style="color:#dc3545;border-color:rgba(220,53,69,0.2)">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+              </button>
+              <span class="pp-label">Tampilkan</span>
+              <select class="sel" style="min-width:68px">
+                <option>10</option><option>25</option><option>50</option>
+              </select>
+              <span class="pp-label">data</span>
+            </div>
+          </div>
+
+          <!-- TABEL — data statis langsung di HTML, tidak pakai JS -->
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th class="c-no">No</th>
+                  <th class="c-thumb">Thumbnail</th>
+                  <th class="c-judul th-left">Judul Berita</th>
+                  <th class="c-tema th-tema">Tema</th>
+                  <th class="c-penulis th-left th-penulis">Penulis</th>
+                  <th class="c-tgl th-tgl">Tanggal</th>
+                  <th class="c-status">Status</th>
+                  <th class="c-aksi">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <!-- 1 -->
+                <tr>
+                  <td class="td-no c-no">1</td>
+                  <td class="c-thumb"><img class="tbl-thumb" src="https://picsum.photos/seed/b1/200/130" alt="" /></td>
+                  <td class="c-judul td-left">
+                    <div class="td-title">PPID Kota Pekalongan Raih Predikat Informatif dalam Monev KIP 2024</div>
+                    <div class="td-excerpt">Komisi Informasi Provinsi Jawa Tengah menetapkan PPID Kota Pekalongan sebagai badan publik dengan predikat informatif dalam monitoring dan evaluasi tahun 2024.</div>
+                  </td>
+                  <td class="c-tema th-tema"><span class="tema tema-ppid"><i class="bi bi-shield-check"></i> PPID</span></td>
+                  <td class="c-penulis td-left th-penulis">
+                    <div class="td-author">Ahmad Fauzi</div>
+                    <div class="td-author-role">Admin PPID</div>
+                  </td>
+                  <td class="c-tgl th-tgl">20 Jan 2025</td>
+                  <td class="c-status"><span class="stt stt-publish"><span class="dot"></span> Publish</span></td>
+                  <td class="c-aksi">
+                    <div class="aksi-wrap">
+                      <a href="berita-detail-ppid.html" class="btn-ico" title="Detail"><i class="bi bi-eye"></i></a>
+                      <a href="berita-edit-ppid.html" class="btn-ico ico-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <button class="btn-ico ico-del" onclick="openDel('PPID Kota Pekalongan Raih Predikat Informatif...')"><i class="bi bi-trash3"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 2 -->
+                <tr>
+                  <td class="td-no c-no">2</td>
+                  <td class="c-thumb"><img class="tbl-thumb" src="https://picsum.photos/seed/b2/200/130" alt="" /></td>
+                  <td class="c-judul td-left">
+                    <div class="td-title">Prosedur Pengajuan Permohonan Informasi Publik Secara Online</div>
+                    <div class="td-excerpt">Masyarakat kini dapat mengajukan permohonan informasi publik secara daring melalui portal PPID tanpa harus datang langsung ke kantor layanan.</div>
+                  </td>
+                  <td class="c-tema th-tema"><span class="tema tema-layanan"><i class="bi bi-headset"></i> Layanan</span></td>
+                  <td class="c-penulis td-left th-penulis">
+                    <div class="td-author">Siti Rahayu</div>
+                    <div class="td-author-role">Editor</div>
+                  </td>
+                  <td class="c-tgl th-tgl">15 Jan 2025</td>
+                  <td class="c-status"><span class="stt stt-publish"><span class="dot"></span> Publish</span></td>
+                  <td class="c-aksi">
+                    <div class="aksi-wrap">
+                      <a href="berita-detail-ppid.html" class="btn-ico" title="Detail"><i class="bi bi-eye"></i></a>
+                      <a href="berita-edit-ppid.html" class="btn-ico ico-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <button class="btn-ico ico-del" onclick="openDel('Prosedur Pengajuan Permohonan Informasi...')"><i class="bi bi-trash3"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 3 -->
+                <tr>
+                  <td class="td-no c-no">3</td>
+                  <td class="c-thumb"><img class="tbl-thumb" src="https://picsum.photos/seed/b3/200/130" alt="" /></td>
+                  <td class="c-judul td-left">
+                    <div class="td-title">UU KIP No. 14 Tahun 2008: Hak Masyarakat Atas Informasi Publik</div>
+                    <div class="td-excerpt">Penjelasan lengkap hak warga negara dalam memperoleh informasi publik berdasarkan Undang-Undang Keterbukaan Informasi Publik Nomor 14 Tahun 2008.</div>
+                  </td>
+                  <td class="c-tema th-tema"><span class="tema tema-regulasi"><i class="bi bi-journal-text"></i> Regulasi</span></td>
+                  <td class="c-penulis td-left th-penulis">
+                    <div class="td-author">Budi Santoso</div>
+                    <div class="td-author-role">Admin PPID</div>
+                  </td>
+                  <td class="c-tgl th-tgl">10 Jan 2025</td>
+                  <td class="c-status"><span class="stt stt-publish"><span class="dot"></span> Publish</span></td>
+                  <td class="c-aksi">
+                    <div class="aksi-wrap">
+                      <a href="berita-detail-ppid.html" class="btn-ico" title="Detail"><i class="bi bi-eye"></i></a>
+                      <a href="berita-edit-ppid.html" class="btn-ico ico-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <button class="btn-ico ico-del" onclick="openDel('UU KIP No. 14 Tahun 2008...')"><i class="bi bi-trash3"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 4 -->
+                <tr>
+                  <td class="td-no c-no">4</td>
+                  <td class="c-thumb"><img class="tbl-thumb" src="https://picsum.photos/seed/b4/200/130" alt="" /></td>
+                  <td class="c-judul td-left">
+                    <div class="td-title">Pelatihan Kompetensi Petugas PPID Pembantu Se-Kota Pekalongan</div>
+                    <div class="td-excerpt">Dinas Komunikasi dan Informatika menyelenggarakan bimtek bagi seluruh petugas PPID pembantu OPD untuk meningkatkan kualitas pelayanan informasi publik.</div>
+                  </td>
+                  <td class="c-tema th-tema"><span class="tema tema-kegiatan"><i class="bi bi-calendar-event"></i> Kegiatan</span></td>
+                  <td class="c-penulis td-left th-penulis">
+                    <div class="td-author">Dewi Kusuma</div>
+                    <div class="td-author-role">Editor</div>
+                  </td>
+                  <td class="c-tgl th-tgl">05 Jan 2025</td>
+                  <td class="c-status"><span class="stt stt-publish"><span class="dot"></span> Publish</span></td>
+                  <td class="c-aksi">
+                    <div class="aksi-wrap">
+                      <a href="berita-detail-ppid.html" class="btn-ico" title="Detail"><i class="bi bi-eye"></i></a>
+                      <a href="berita-edit-ppid.html" class="btn-ico ico-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <button class="btn-ico ico-del" onclick="openDel('Pelatihan Kompetensi Petugas PPID...')"><i class="bi bi-trash3"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 5 -->
+                <tr>
+                  <td class="td-no c-no">5</td>
+                  <td class="c-thumb"><img class="tbl-thumb" src="https://picsum.photos/seed/b5/200/130" alt="" /></td>
+                  <td class="c-judul td-left">
+                    <div class="td-title">Jadwal Layanan PPID Selama Libur Nasional Tahun 2025</div>
+                    <div class="td-excerpt">Informasi resmi jadwal operasional dan layanan PPID Kota Pekalongan selama periode libur nasional dan hari besar sepanjang tahun 2025.</div>
+                  </td>
+                  <td class="c-tema th-tema"><span class="tema tema-pengumuman"><i class="bi bi-megaphone-fill"></i> Pengumuman</span></td>
+                  <td class="c-penulis td-left th-penulis">
+                    <div class="td-author">Ahmad Fauzi</div>
+                    <div class="td-author-role">Admin PPID</div>
+                  </td>
+                  <td class="c-tgl th-tgl">28 Des 2024</td>
+                  <td class="c-status"><span class="stt stt-publish"><span class="dot"></span> Publish</span></td>
+                  <td class="c-aksi">
+                    <div class="aksi-wrap">
+                      <a href="berita-detail-ppid.html" class="btn-ico" title="Detail"><i class="bi bi-eye"></i></a>
+                      <a href="berita-edit-ppid.html" class="btn-ico ico-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <button class="btn-ico ico-del" onclick="openDel('Jadwal Layanan PPID Libur Nasional 2025...')"><i class="bi bi-trash3"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 6 -->
+                <tr>
+                  <td class="td-no c-no">6</td>
+                  <td class="c-thumb"><img class="tbl-thumb" src="https://picsum.photos/seed/b6/200/130" alt="" /></td>
+                  <td class="c-judul td-left">
+                    <div class="td-title">Laporan Tahunan PPID 2024: Transparansi dan Akuntabilitas Publik</div>
+                    <div class="td-excerpt">Ringkasan laporan tahunan pelayanan informasi PPID Kota Pekalongan 2024, mencakup statistik permohonan, keputusan, dan capaian kinerja organisasi.</div>
+                  </td>
+                  <td class="c-tema th-tema"><span class="tema tema-ppid"><i class="bi bi-shield-check"></i> PPID</span></td>
+                  <td class="c-penulis td-left th-penulis">
+                    <div class="td-author">Budi Santoso</div>
+                    <div class="td-author-role">Admin PPID</div>
+                  </td>
+                  <td class="c-tgl th-tgl">20 Des 2024</td>
+                  <td class="c-status"><span class="stt stt-publish"><span class="dot"></span> Publish</span></td>
+                  <td class="c-aksi">
+                    <div class="aksi-wrap">
+                      <a href="berita-detail-ppid.html" class="btn-ico" title="Detail"><i class="bi bi-eye"></i></a>
+                      <a href="berita-edit-ppid.html" class="btn-ico ico-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <button class="btn-ico ico-del" onclick="openDel('Laporan Tahunan PPID 2024...')"><i class="bi bi-trash3"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 7 -->
+                <tr>
+                  <td class="td-no c-no">7</td>
+                  <td class="c-thumb"><img class="tbl-thumb" src="https://picsum.photos/seed/b7/200/130" alt="" /></td>
+                  <td class="c-judul td-left">
+                    <div class="td-title">Cara Mengajukan Keberatan atas Penolakan Informasi Publik</div>
+                    <div class="td-excerpt">Panduan bagi pemohon yang ingin mengajukan keberatan atas penolakan atau kelambatan pelayanan informasi oleh badan publik sesuai prosedur hukum.</div>
+                  </td>
+                  <td class="c-tema th-tema"><span class="tema tema-layanan"><i class="bi bi-headset"></i> Layanan</span></td>
+                  <td class="c-penulis td-left th-penulis">
+                    <div class="td-author">Siti Rahayu</div>
+                    <div class="td-author-role">Editor</div>
+                  </td>
+                  <td class="c-tgl th-tgl">10 Des 2024</td>
+                  <td class="c-status"><span class="stt stt-publish"><span class="dot"></span> Publish</span></td>
+                  <td class="c-aksi">
+                    <div class="aksi-wrap">
+                      <a href="berita-detail-ppid.html" class="btn-ico" title="Detail"><i class="bi bi-eye"></i></a>
+                      <a href="berita-edit-ppid.html" class="btn-ico ico-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <button class="btn-ico ico-del" onclick="openDel('Cara Mengajukan Keberatan Informasi...')"><i class="bi bi-trash3"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 8 -->
+                <tr>
+                  <td class="td-no c-no">8</td>
+                  <td class="c-thumb"><img class="tbl-thumb" src="https://picsum.photos/seed/b8/200/130" alt="" /></td>
+                  <td class="c-judul td-left">
+                    <div class="td-title">Mengenal Informasi yang Dikecualikan Berdasarkan Pasal 17 UU KIP</div>
+                    <div class="td-excerpt">Penjelasan kategori informasi yang dikecualikan dari keterbukaan dan alasan hukumnya yang melindungi kepentingan negara dan individu tertentu.</div>
+                  </td>
+                  <td class="c-tema th-tema"><span class="tema tema-regulasi"><i class="bi bi-journal-text"></i> Regulasi</span></td>
+                  <td class="c-penulis td-left th-penulis">
+                    <div class="td-author">Hendra W.</div>
+                    <div class="td-author-role">Kontributor</div>
+                  </td>
+                  <td class="c-tgl th-tgl">01 Des 2024</td>
+                  <td class="c-status"><span class="stt stt-publish"><span class="dot"></span> Publish</span></td>
+                  <td class="c-aksi">
+                    <div class="aksi-wrap">
+                      <a href="berita-detail-ppid.html" class="btn-ico" title="Detail"><i class="bi bi-eye"></i></a>
+                      <a href="berita-edit-ppid.html" class="btn-ico ico-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <button class="btn-ico ico-del" onclick="openDel('Mengenal Informasi yang Dikecualikan...')"><i class="bi bi-trash3"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 9 — DRAFT -->
+                <tr class="is-draft">
+                  <td class="td-no c-no">9</td>
+                  <td class="c-thumb"><img class="tbl-thumb" src="https://picsum.photos/seed/b9/200/130" alt="" style="filter:grayscale(.5)" /></td>
+                  <td class="c-judul td-left">
+                    <div class="td-title">Peluncuran Portal PPID Versi 3.0 dengan Fitur Pencarian Canggih</div>
+                    <div class="td-excerpt">Artikel rencana peluncuran portal PPID Kota Pekalongan versi 3.0 yang dilengkapi fitur pencarian canggih dan integrasi data real-time antar OPD.</div>
+                  </td>
+                  <td class="c-tema th-tema"><span class="tema tema-ppid"><i class="bi bi-shield-check"></i> PPID</span></td>
+                  <td class="c-penulis td-left th-penulis">
+                    <div class="td-author">Ahmad Fauzi</div>
+                    <div class="td-author-role">Admin PPID</div>
+                  </td>
+                  <td class="c-tgl th-tgl">25 Jan 2025</td>
+                  <td class="c-status"><span class="stt stt-draft"><span class="dot"></span> Draft</span></td>
+                  <td class="c-aksi">
+                    <div class="aksi-wrap">
+                      <a href="berita-detail-ppid.html" class="btn-ico" title="Detail"><i class="bi bi-eye"></i></a>
+                      <a href="berita-edit-ppid.html" class="btn-ico ico-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <button class="btn-ico ico-del" onclick="openDel('Peluncuran Portal PPID Versi 3.0...')"><i class="bi bi-trash3"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 10 — DRAFT -->
+                <tr class="is-draft">
+                  <td class="td-no c-no">10</td>
+                  <td class="c-thumb"><img class="tbl-thumb" src="https://picsum.photos/seed/b10/200/130" alt="" style="filter:grayscale(.5)" /></td>
+                  <td class="c-judul td-left">
+                    <div class="td-title">Panduan Lengkap Menggunakan Sistem e-PPID untuk Masyarakat</div>
+                    <div class="td-excerpt">Panduan penggunaan sistem informasi e-PPID untuk mempermudah masyarakat mengakses layanan permohonan informasi publik secara digital kapan saja.</div>
+                  </td>
+                  <td class="c-tema th-tema"><span class="tema tema-layanan"><i class="bi bi-headset"></i> Layanan</span></td>
+                  <td class="c-penulis td-left th-penulis">
+                    <div class="td-author">Dewi Kusuma</div>
+                    <div class="td-author-role">Editor</div>
+                  </td>
+                  <td class="c-tgl th-tgl">22 Jan 2025</td>
+                  <td class="c-status"><span class="stt stt-draft"><span class="dot"></span> Draft</span></td>
+                  <td class="c-aksi">
+                    <div class="aksi-wrap">
+                      <a href="berita-detail-ppid.html" class="btn-ico" title="Detail"><i class="bi bi-eye"></i></a>
+                      <a href="berita-edit-ppid.html" class="btn-ico ico-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <button class="btn-ico ico-del" onclick="openDel('Panduan Menggunakan Sistem e-PPID...')"><i class="bi bi-trash3"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 11 — DRAFT -->
+                <tr class="is-draft">
+                  <td class="td-no c-no">11</td>
+                  <td class="c-thumb"><img class="tbl-thumb" src="https://picsum.photos/seed/b11/200/130" alt="" style="filter:grayscale(.5)" /></td>
+                  <td class="c-judul td-left">
+                    <div class="td-title">Inovasi Keterbukaan Informasi di Era Digital: Studi Kasus Pekalongan</div>
+                    <div class="td-excerpt">Ulasan inovasi layanan publik berbasis digital yang diterapkan PPID Kota Pekalongan untuk meningkatkan keterbukaan dan kemudahan akses informasi bagi warga.</div>
+                  </td>
+                  <td class="c-tema th-tema"><span class="tema tema-kegiatan"><i class="bi bi-calendar-event"></i> Kegiatan</span></td>
+                  <td class="c-penulis td-left th-penulis">
+                    <div class="td-author">Budi Santoso</div>
+                    <div class="td-author-role">Admin PPID</div>
+                  </td>
+                  <td class="c-tgl th-tgl">18 Jan 2025</td>
+                  <td class="c-status"><span class="stt stt-draft"><span class="dot"></span> Draft</span></td>
+                  <td class="c-aksi">
+                    <div class="aksi-wrap">
+                      <a href="berita-detail-ppid.html" class="btn-ico" title="Detail"><i class="bi bi-eye"></i></a>
+                      <a href="berita-edit-ppid.html" class="btn-ico ico-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <button class="btn-ico ico-del" onclick="openDel('Inovasi Keterbukaan Informasi Era Digital...')"><i class="bi bi-trash3"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 12 — ARSIP -->
+                <tr class="is-arsip">
+                  <td class="td-no c-no">12</td>
+                  <td class="c-thumb"><img class="tbl-thumb" src="https://picsum.photos/seed/b12/200/130" alt="" style="filter:grayscale(.7)" /></td>
+                  <td class="c-judul td-left">
+                    <div class="td-title">Pengumuman Perubahan Jam Layanan PPID Tahun 2023</div>
+                    <div class="td-excerpt">Pemberitahuan perubahan jam operasional layanan PPID Kota Pekalongan yang berlaku mulai Januari 2023 sesuai kebijakan baru pemerintah daerah.</div>
+                  </td>
+                  <td class="c-tema th-tema"><span class="tema tema-pengumuman"><i class="bi bi-megaphone-fill"></i> Pengumuman</span></td>
+                  <td class="c-penulis td-left th-penulis">
+                    <div class="td-author">Siti Rahayu</div>
+                    <div class="td-author-role">Editor</div>
+                  </td>
+                  <td class="c-tgl th-tgl">02 Jan 2023</td>
+                  <td class="c-status"><span class="stt stt-arsip"><span class="dot"></span> Arsip</span></td>
+                  <td class="c-aksi">
+                    <div class="aksi-wrap">
+                      <a href="berita-detail-ppid.html" class="btn-ico" title="Detail"><i class="bi bi-eye"></i></a>
+                      <a href="berita-edit-ppid.html" class="btn-ico ico-edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                      <button class="btn-ico ico-del" onclick="openDel('Perubahan Jam Layanan PPID 2023...')"><i class="bi bi-trash3"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div><!-- end tbl-wrap -->
+
+          <!-- PAGINATION -->
+          <div class="pag-row">
+            <div class="pag-info">Menampilkan <strong>1–12</strong> dari <strong>12</strong> data</div>
+            <div class="pag-ctrl">
+              <a href="#" class="pg disabled"><i class="bi bi-chevron-left"></i></a>
+              <a href="#" class="pg active">1</a>
+              <a href="#" class="pg disabled"><i class="bi bi-chevron-right"></i></a>
+            </div>
+          </div>
+
+        </div><!-- end card-body -->
+      </div><!-- end card -->
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="foot-l">&copy; 2025 <strong>PPID Kota Pekalongan</strong> — Sistem Informasi Layanan Publik. All rights reserved.</div>
+      <div class="foot-r">
+        <a class="foot-a" href="#">Bantuan</a>
+        <span class="foot-sep">·</span>
+        <a class="foot-a" href="#">Kebijakan Privasi</a>
+        <span class="foot-sep">·</span>
+        <a class="foot-a" href="#">Kontak</a>
+      </div>
+    </footer>
+
+  </div><!-- end .main -->
+</div><!-- end .shell -->
+
+<button class="fab" id="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="bi bi-arrow-up"></i>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ── SIDEBAR ── */
+const sidebar = document.getElementById('sidebar');
+const mainEl  = document.getElementById('main');
+const togBtn  = document.getElementById('togBtn');
+const sbOv    = document.getElementById('sbOv');
+let collapsed = false;
+const isMob   = () => window.innerWidth <= 991;
+
+function toggleSB() {
+  if (isMob()) {
+    const open = sidebar.classList.toggle('mobile-open');
+    sbOv.classList.toggle('show', open);
+  } else {
+    collapsed = !collapsed;
+    sidebar.classList.toggle('collapsed', collapsed);
+    mainEl.classList.toggle('collapsed', collapsed);
+    togBtn.classList.toggle('flip', collapsed);
+  }
+}
+function closeMobile() {
+  sidebar.classList.remove('mobile-open');
+  sbOv.classList.remove('show');
+}
+window.addEventListener('resize', () => { if (!isMob()) closeMobile(); });
+
+/* ── USER DROPDOWN ── */
+const uTrig = document.getElementById('uTrig');
+const uDD   = document.getElementById('uDD');
+function toggleUM() {
+  const open = uDD.classList.toggle('open');
+  uTrig.setAttribute('aria-expanded', open);
+}
+document.addEventListener('click', e => {
+  if (!uTrig.contains(e.target) && !uDD.contains(e.target)) uDD.classList.remove('open');
+});
+
+/* ── FULLSCREEN ── */
+function toggleFS() {
+  const ico = document.getElementById('fsIco');
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+    ico.className = 'bi bi-fullscreen-exit';
+  } else {
+    document.exitFullscreen();
+    ico.className = 'bi bi-fullscreen';
+  }
+}
+
+/* ── FAB ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('fab').classList.toggle('vis', scrollY > 280);
+});
+
+/* ── MODAL HAPUS ── */
+function openDel(nama) {
+  document.getElementById('delName').textContent = '"' + nama + '"';
+  document.getElementById('delOv').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeDel() {
+  document.getElementById('delOv').classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.getElementById('delOv').addEventListener('click', e => {
+  if (e.target === document.getElementById('delOv')) closeDel();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDel(); });
+</script>
+</body>
+</html>
