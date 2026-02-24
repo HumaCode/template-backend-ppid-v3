@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tambah Berita — PPID Kota Pekalongan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <style>
+    :root{
+      --blue:#0072c6;--blue-dark:#005499;--blue-deep:#003d70;--blue-light:#1a8fe0;
+      --blue-soft:rgba(0,114,198,0.08);--sidebar-w:260px;--sidebar-col:68px;
+      --topbar-h:64px;--sidebar-bg:#001f42;--content-bg:#f0f4f9;
+      --card-bg:#ffffff;--text-main:#0f1c2e;--text-muted:#6b7a8d;
+      --border:rgba(0,0,0,0.07);--shadow:0 2px 16px rgba(0,50,100,0.08);
+      --ease:.28s cubic-bezier(.22,1,.36,1);--r:14px;--inp-h:42px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--content-bg);color:var(--text-main);min-height:100vh}
+
+    /* LAYOUT */
+    .shell{display:flex;min-height:100vh;width:100%;overflow-x:hidden}
+    .main{flex:1;margin-left:var(--sidebar-w);display:flex;flex-direction:column;min-height:100vh;min-width:0;max-width:calc(100vw - var(--sidebar-w));transition:margin-left var(--ease),max-width var(--ease)}
+    .main.collapsed{margin-left:var(--sidebar-col);max-width:calc(100vw - var(--sidebar-col))}
+
+    /* SIDEBAR */
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:1000;overflow:hidden;transition:width var(--ease);box-shadow:4px 0 24px rgba(0,18,50,0.18)}
+    .sidebar.collapsed{width:var(--sidebar-col)}
+    .sb-brand{display:flex;align-items:center;gap:.85rem;padding:1.3rem 1.1rem 1.2rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.07);min-height:var(--topbar-h);text-decoration:none;overflow:hidden;flex-shrink:0}
+    .sb-icon{width:38px;height:38px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,114,198,0.45);animation:iconPulse 3s ease-in-out infinite}
+    .sb-icon i{font-size:1.1rem;color:#fff}
+    @keyframes iconPulse{0%,100%{box-shadow:0 4px 14px rgba(0,114,198,0.45)}50%{box-shadow:0 6px 22px rgba(0,114,198,0.7)}}
+    .sb-text{overflow:hidden;white-space:nowrap}
+    .sb-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;line-height:1.15}
+    .sb-sub{font-size:.65rem;color:rgba(255,255,255,0.4);letter-spacing:.04em}
+    .sb-scroll{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;padding:.8rem 0}
+    .sb-scroll::-webkit-scrollbar{width:3px}
+    .sb-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+    .sb-sec{font-size:.6rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,0.28);padding:1rem 1.25rem .35rem;white-space:nowrap;overflow:hidden;transition:opacity var(--ease)}
+    .sidebar.collapsed .sb-sec{opacity:0}
+    .sb-iw{padding:.08rem .7rem}
+    .sb-link{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:10px;text-decoration:none;color:rgba(255,255,255,0.5);font-size:.84rem;font-weight:500;white-space:nowrap;overflow:hidden;transition:background var(--ease),color var(--ease);position:relative}
+    .sb-link .ico{font-size:1.05rem;flex-shrink:0;width:20px;text-align:center}
+    .sb-link .lbl{flex:1;overflow:hidden;text-overflow:ellipsis;transition:opacity var(--ease),max-width var(--ease)}
+    .sb-link:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.88)}
+    .sb-link.active{background:linear-gradient(90deg,rgba(0,114,198,0.35),rgba(0,114,198,0.1));color:#fff;box-shadow:inset 3px 0 0 var(--blue)}
+    .sb-link.active .ico{color:#7ecbff}
+    .sb-badge{background:var(--blue);color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .42rem;border-radius:100px;flex-shrink:0}
+    .sidebar.collapsed .lbl,.sidebar.collapsed .sb-badge{opacity:0;max-width:0;overflow:hidden}
+    .sidebar.collapsed .sb-link{justify-content:center;padding:.65rem}
+    .sidebar.collapsed .sb-iw{padding-left:.5rem;padding-right:.5rem}
+    .sidebar.collapsed .sb-link[data-tip]::after{content:attr(data-tip);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);background:#0d2340;color:#fff;font-size:.74rem;padding:.3rem .7rem;border-radius:7px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9999}
+    .sidebar.collapsed .sb-link[data-tip]:hover::after{opacity:1}
+    .sb-foot{padding:.9rem 1rem;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+    .sb-foot-inner{display:flex;align-items:center;gap:.7rem;overflow:hidden}
+    .sb-ficon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .sb-ficon i{font-size:.9rem;color:rgba(255,255,255,0.4)}
+    .sb-ftext{overflow:hidden;white-space:nowrap}
+    .sb-fver{font-size:.68rem;color:rgba(255,255,255,0.25)}
+    .sb-fcopy{font-size:.63rem;color:rgba(255,255,255,0.18)}
+    .sidebar.collapsed .sb-ftext{opacity:0;max-width:0}
+
+    /* TOPBAR */
+    .topbar{height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;position:sticky;top:0;z-index:900;box-shadow:0 1px 12px rgba(0,40,100,0.06);gap:1rem}
+    .tog-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:1.05rem;transition:background .2s,color .2s,transform .3s;flex-shrink:0}
+    .tog-btn:hover{background:var(--blue-soft);color:var(--blue)}
+    .tog-btn.flip{transform:rotate(180deg)}
+    .tb-space{flex:1}
+    .tb-right{display:flex;align-items:center;gap:.6rem}
+    .tb-ibtn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:1rem;transition:background .2s,color .2s;position:relative}
+    .tb-ibtn:hover{background:var(--blue-soft);color:var(--blue)}
+    .notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#e84242;border:1.5px solid #fff;animation:notifPulse 1.8s ease-in-out infinite}
+    @keyframes notifPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,66,66,.5)}50%{box-shadow:0 0 0 5px rgba(232,66,66,0)}}
+    .user-menu{position:relative}
+    .user-trig{display:flex;align-items:center;gap:.6rem;padding:.35rem .65rem .35rem .45rem;border-radius:10px;border:1px solid var(--border);background:transparent;cursor:pointer;transition:background .2s}
+    .user-trig:hover{background:var(--blue-soft)}
+    .user-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;font-weight:700;flex-shrink:0;box-shadow:0 2px 8px rgba(0,114,198,0.4)}
+    .user-info .uname{font-size:.8rem;font-weight:600;color:var(--text-main);line-height:1.2}
+    .user-info .urole{font-size:.68rem;color:var(--text-muted)}
+    .user-caret{font-size:.7rem;color:var(--text-muted);transition:transform .25s}
+    .user-trig[aria-expanded="true"] .user-caret{transform:rotate(180deg)}
+    .user-dd{position:absolute;right:0;top:calc(100% + 8px);min-width:190px;background:#fff;border:1px solid var(--border);border-radius:13px;box-shadow:0 10px 40px rgba(0,40,100,0.13);padding:.45rem;display:none;z-index:999;animation:dropIn .25s var(--ease)}
+    .user-dd.open{display:block}
+    @keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .dd-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;border-radius:8px;font-size:.82rem;color:var(--text-main);text-decoration:none;cursor:pointer;transition:background .18s;font-weight:500;border:none;background:none;width:100%;text-align:left}
+    .dd-item i{font-size:.95rem;color:var(--text-muted);width:18px}
+    .dd-item:hover{background:var(--blue-soft);color:var(--blue)}
+    .dd-item.danger:hover{background:rgba(220,50,50,0.06);color:#c0392b}
+    .dd-div{height:1px;background:var(--border);margin:.35rem 0}
+
+    /* CONTENT */
+    .content{flex:1;padding:1.6rem;position:relative;width:100%;overflow-x:hidden}
+    .content::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(0,100,200,0.04) 1px,transparent 0);background-size:28px 28px;pointer-events:none;z-index:0}
+
+    /* BB */
+    .bb{background:linear-gradient(120deg,var(--blue-deep) 0%,var(--blue) 55%,var(--blue-light) 100%);border-radius:16px;padding:1.3rem 1.6rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:relative;overflow:hidden;box-shadow:0 8px 28px rgba(0,114,198,0.28);z-index:1;width:100%}
+    .bb::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.06);top:-60px;right:80px}
+    .bb::after{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.06);bottom:-40px;right:20px}
+    .bb-left{position:relative;z-index:1}
+    .bb-title{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:#fff;margin-bottom:.18rem}
+    .bb-desc{font-size:.78rem;color:rgba(255,255,255,0.6);font-weight:300}
+    .bb-right{display:flex;align-items:center;gap:.35rem;position:relative;z-index:1;flex-wrap:wrap}
+    .bc{display:flex;align-items:center;gap:.3rem;font-size:.78rem;color:rgba(255,255,255,0.7);font-weight:500}
+    .bc.cur{color:#fff;font-weight:600}
+    .bc-sep{color:rgba(255,255,255,0.35)}
+
+    /* CARD */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .card{background:var(--card-bg);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);position:relative;z-index:1;animation:fadeUp .45s var(--ease) both;width:100%;overflow:visible;margin-bottom:1.2rem}
+    .card:nth-child(2){animation-delay:.07s}
+    .card:nth-child(3){animation-delay:.14s}
+    .card:nth-child(4){animation-delay:.2s}
+    .card-head{padding:1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.55rem;border-radius:var(--r) var(--r) 0 0}
+    .card-head i{color:var(--blue);font-size:1rem;flex-shrink:0}
+    .card-head h6{font-size:.92rem;font-weight:700;color:var(--text-main);margin:0}
+    .card-head .badge-opt{margin-left:auto;font-size:.67rem;font-weight:600;padding:.18rem .58rem;border-radius:100px;background:rgba(107,122,141,0.1);color:var(--text-muted)}
+    .card-body{padding:1.4rem;width:100%}
+
+    /* FORM GRID */
+    .form-grid{display:grid;grid-template-columns:1fr 340px;gap:1.2rem;align-items:start;width:100%}
+    .col-main{display:flex;flex-direction:column;gap:0;min-width:0}
+    .col-main .card{margin-bottom:1.2rem}
+    .col-aside{display:flex;flex-direction:column;gap:0;min-width:0}
+    .col-aside .card{margin-bottom:1.2rem}
+
+    /* FORM FIELDS */
+    .f-group{display:flex;flex-direction:column;gap:.38rem;margin-bottom:1.1rem}
+    .f-group:last-child{margin-bottom:0}
+    .f-label{font-size:.8rem;font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:.3rem}
+    .f-label .req{color:#dc3545;font-size:.75rem}
+    .f-label .tip{width:16px;height:16px;border-radius:50%;background:rgba(0,114,198,0.12);color:var(--blue);display:inline-flex;align-items:center;justify-content:center;font-size:.65rem;cursor:help}
+    .f-hint{font-size:.72rem;color:var(--text-muted);line-height:1.5}
+
+    .f-inp,.f-ta{width:100%;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;color:var(--text-main);outline:none;transition:border-color .2s,box-shadow .2s}
+    .f-inp{height:var(--inp-h);padding:0 1rem}
+    .f-inp.ico-l{padding-left:2.5rem}
+    .f-inp::placeholder,.f-ta::placeholder{color:#b0bac7}
+    .f-inp:focus,.f-ta:focus{border-color:var(--blue);box-shadow:0 0 0 3.5px rgba(0,114,198,0.12)}
+    .f-ta{padding:.85rem 1rem;resize:vertical;min-height:88px;line-height:1.65}
+
+    .inp-wr{position:relative}
+    .inp-ico{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.88rem;pointer-events:none}
+
+    /* char counter */
+    .char-row{display:flex;justify-content:flex-end;margin-top:.2rem}
+    .cc{font-size:.7rem;color:var(--text-muted)}
+    .cc.warn{color:#f59e0b}
+    .cc.over{color:#dc3545}
+    .f-div{height:1px;background:var(--border);margin:.75rem 0}
+
+    /* SELECT2 OVERRIDES */
+    .select2-container{width:100%!important}
+    .select2-container .select2-selection--single{height:var(--inp-h)!important;border:1.5px solid var(--border)!important;border-radius:10px!important;display:flex!important;align-items:center!important;background:#fff!important;transition:border-color .2s,box-shadow .2s;font-family:'Plus Jakarta Sans',sans-serif}
+    .select2-container--default .select2-selection--single .select2-selection__rendered{color:var(--text-main)!important;font-size:.85rem!important;line-height:var(--inp-h)!important;padding-left:1rem!important;padding-right:2.2rem!important}
+    .select2-container--default .select2-selection--single .select2-selection__placeholder{color:#b0bac7!important}
+    .select2-container--default .select2-selection--single .select2-selection__arrow{height:calc(var(--inp-h) - 2px)!important;right:.6rem!important}
+    .select2-container--default .select2-selection--single .select2-selection__arrow b{border-color:var(--text-muted) transparent transparent transparent!important}
+    .select2-container--default.select2-container--open .select2-selection--single{border-color:var(--blue)!important;box-shadow:0 0 0 3.5px rgba(0,114,198,0.12)!important;border-bottom-left-radius:0!important;border-bottom-right-radius:0!important}
+    .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b{border-color:transparent transparent var(--text-muted) transparent!important}
+    .select2-dropdown{border:1.5px solid rgba(0,114,198,0.25)!important;border-top:none!important;border-radius:0 0 10px 10px!important;box-shadow:0 10px 30px rgba(0,40,100,0.12)!important;font-family:'Plus Jakarta Sans',sans-serif}
+    .select2-container--default .select2-search--dropdown .select2-search__field{border:1px solid var(--border)!important;border-radius:7px!important;padding:.4rem .75rem!important;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem!important;outline:none!important}
+    .select2-container--default .select2-search--dropdown .select2-search__field:focus{border-color:var(--blue)!important}
+    .select2-results__option{font-size:.83rem!important;padding:.55rem 1rem!important;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text-main)!important}
+    .select2-container--default .select2-results__option--highlighted[aria-selected]{background:var(--blue-soft)!important;color:var(--blue)!important}
+    .select2-container--default .select2-results__option[aria-selected=true]{background:rgba(0,114,198,0.05)!important;color:var(--blue)!important;font-weight:600!important}
+    /* multi */
+    .select2-container--default .select2-selection--multiple{border:1.5px solid var(--border)!important;border-radius:10px!important;min-height:var(--inp-h)!important;padding:.28rem .5rem!important;background:#fff!important;transition:border-color .2s,box-shadow .2s}
+    .select2-container--default.select2-container--focus .select2-selection--multiple,.select2-container--default.select2-container--open .select2-selection--multiple{border-color:var(--blue)!important;box-shadow:0 0 0 3.5px rgba(0,114,198,0.12)!important}
+    .select2-container--default .select2-selection--multiple .select2-selection__choice{background:var(--blue-soft)!important;border:1px solid rgba(0,114,198,0.25)!important;border-radius:6px!important;color:var(--blue)!important;font-size:.75rem!important;font-weight:600!important;padding:.1rem .55rem!important;margin-top:.26rem!important}
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove{color:var(--blue)!important;margin-right:.3rem!important}
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover{color:#dc3545!important;background:transparent!important}
+    .select2-container--default .select2-selection--multiple .select2-search__field{font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem!important;margin-top:.28rem!important}
+    .opt-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:.45rem;flex-shrink:0}
+    .opt-row{display:flex;align-items:center}
+
+    /* TINYMCE */
+    .tmc-wrap{border:1.5px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+    .tmc-wrap.focused{border-color:var(--blue);box-shadow:0 0 0 3.5px rgba(0,114,198,0.12)}
+    .tox-tinymce{border:none!important;border-radius:0!important}
+    .tox .tox-toolbar__primary{background:#f8fafb!important;border-bottom:1px solid var(--border)!important}
+    .tox .tox-toolbar-overlord{background:#f8fafb!important}
+    .tox .tox-statusbar{border-top:1px solid var(--border)!important;background:#f8fafb!important}
+
+    /* IMAGE UPLOAD */
+    .upload-zone{border:2px dashed rgba(0,114,198,0.25);border-radius:12px;padding:1.6rem;display:flex;flex-direction:column;align-items:center;gap:.6rem;cursor:pointer;text-align:center;background:#fafcff;transition:border-color .2s,background .2s;position:relative;overflow:hidden}
+    .upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--blue-soft)}
+    .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .uz-ico{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--blue-soft),rgba(0,114,198,0.15));display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--blue)}
+    .uz-ttl{font-size:.85rem;font-weight:700;color:var(--text-main)}
+    .uz-sub{font-size:.74rem;color:var(--text-muted)}
+    .uz-bdg{font-size:.7rem;font-weight:600;padding:.18rem .6rem;border-radius:100px;background:rgba(0,114,198,0.1);color:var(--blue)}
+    .img-prev-wr{display:none;position:relative}
+    .img-prev-wr.show{display:block}
+    .img-prev{width:100%;height:178px;border-radius:10px;object-fit:cover;border:1.5px solid var(--border);display:block}
+    .img-prev-rm{position:absolute;top:.45rem;right:.45rem;width:28px;height:28px;border-radius:7px;background:rgba(0,0,0,0.55);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem;transition:background .18s}
+    .img-prev-rm:hover{background:rgba(220,53,69,0.85)}
+
+    /* STATUS TABS */
+    .st-tabs{display:flex;gap:.5rem;flex-wrap:wrap}
+    .st-tab{flex:1;min-width:86px;padding:.55rem .4rem;border-radius:9px;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.22rem;transition:border-color .2s,background .2s,box-shadow .2s;font-family:'Plus Jakarta Sans',sans-serif}
+    .st-tab i{font-size:1rem}
+    .st-tab span{font-size:.72rem;font-weight:700}
+    .st-tab:hover{border-color:rgba(0,114,198,0.35);background:var(--blue-soft)}
+    .st-tab.ap{border-color:#10b964;background:rgba(16,185,100,0.07);box-shadow:0 0 0 3px rgba(16,185,100,0.12)}
+    .st-tab.ap i{color:#10b964}
+    .st-tab.ad{border-color:#64748b;background:rgba(100,116,139,0.07);box-shadow:0 0 0 3px rgba(100,116,139,0.12)}
+    .st-tab.ad i{color:#64748b}
+    .st-tab.aa{border-color:#f59e0b;background:rgba(245,158,11,0.07);box-shadow:0 0 0 3px rgba(245,158,11,0.12)}
+    .st-tab.aa i{color:#f59e0b}
+
+    /* SLUG */
+    .slug-box{display:flex;align-items:center;gap:.5rem;background:#f5f9ff;border:1.5px solid rgba(0,114,198,0.12);border-radius:10px;padding:.55rem .85rem}
+    .slug-pre{font-size:.74rem;color:var(--text-muted);white-space:nowrap;flex-shrink:0}
+    .slug-val{font-size:.74rem;font-weight:600;color:var(--blue);word-break:break-all;flex:1}
+    .slug-cp{width:26px;height:26px;border-radius:6px;border:1px solid rgba(0,114,198,0.2);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.75rem;color:var(--blue);transition:background .18s;flex-shrink:0}
+    .slug-cp:hover{background:var(--blue-soft)}
+
+    /* SEO PREVIEW */
+    .seo-prev{background:#fff;border:1.5px solid rgba(0,114,198,0.1);border-radius:10px;padding:1rem;margin-top:.5rem}
+    .seo-site{font-size:.72rem;color:#10b964;margin-bottom:.15rem}
+    .seo-title{font-size:.85rem;font-weight:700;color:#1a0dab;line-height:1.35;margin-bottom:.12rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .seo-desc{font-size:.75rem;color:#545454;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+    /* INFO BOX */
+    .info-box{background:rgba(0,114,198,0.05);border:1px solid rgba(0,114,198,0.15);border-radius:10px;padding:.85rem 1rem;display:flex;gap:.7rem;align-items:flex-start}
+    .info-box i{color:var(--blue);font-size:1rem;flex-shrink:0;margin-top:.1rem}
+    .info-box p{font-size:.77rem;color:var(--text-muted);line-height:1.6;margin:0}
+
+    /* STICKY ACTION BAR */
+    .action-bar{background:#fff;border-top:1px solid var(--border);padding:.9rem 1.6rem;display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;box-shadow:0 -4px 24px rgba(0,40,100,0.08);position:sticky;bottom:0;left:0;right:0;z-index:800}
+    .abl{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+    .abr{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+
+    /* BUTTONS */
+    .btn-p{display:inline-flex;align-items:center;gap:.42rem;padding:.56rem 1.1rem;border-radius:9px;border:none;background:linear-gradient(135deg,var(--blue),var(--blue-light));color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(0,114,198,0.3);transition:transform .2s,box-shadow .2s;white-space:nowrap;text-decoration:none}
+    .btn-p:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(0,114,198,0.4);color:#fff}
+    .btn-g{display:inline-flex;align-items:center;gap:.42rem;padding:.56rem 1.1rem;border-radius:9px;border:none;background:linear-gradient(135deg,#10b964,#0ea05a);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(16,185,100,0.3);transition:transform .2s,box-shadow .2s;white-space:nowrap}
+    .btn-g:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(16,185,100,0.4)}
+    .btn-o{display:inline-flex;align-items:center;gap:.4rem;padding:.54rem .95rem;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:500;cursor:pointer;transition:background .2s,color .2s,border-color .2s;white-space:nowrap;text-decoration:none}
+    .btn-o:hover{background:var(--blue-soft);color:var(--blue);border-color:rgba(0,114,198,0.3)}
+    .btn-o.red:hover{background:rgba(220,53,69,0.06);color:#dc3545;border-color:rgba(220,53,69,0.3)}
+
+    /* CHECKBOX TOGGLE */
+    .chk-row{display:flex;align-items:center;gap:.65rem;cursor:pointer;padding:.35rem 0}
+    .chk-row input{width:17px;height:17px;margin:0;accent-color:var(--blue);flex-shrink:0;cursor:pointer}
+    .chk-row span{font-size:.82rem;font-weight:500;color:var(--text-main)}
+
+    /* SIDEBAR OVERLAY */
+    .sb-ov{position:fixed;inset:0;background:rgba(0,15,40,0.5);z-index:999;display:none;opacity:0;transition:opacity .3s}
+    .sb-ov.show{display:block;opacity:1}
+
+    /* FAB */
+    .fab{position:fixed;right:1.6rem;bottom:5.5rem;width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--blue-light));border:none;color:#fff;font-size:1.05rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(0,114,198,0.4);z-index:700;opacity:0;pointer-events:none;transform:translateY(20px) scale(.85);transition:opacity .35s var(--ease),transform .35s var(--ease)}
+    .fab.vis{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
+    .fab:hover{transform:translateY(-3px) scale(1.06)!important}
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media(min-width:1400px){.content{padding:1.8rem 2.2rem}.form-grid{grid-template-columns:1fr 370px}}
+    @media(min-width:1200px) and (max-width:1399px){.content{padding:1.5rem 1.8rem}.form-grid{grid-template-columns:1fr 330px}}
+    @media(min-width:992px) and (max-width:1199px){.content{padding:1.2rem 1.4rem}.form-grid{grid-template-columns:1fr 300px}}
+
+    @media(max-width:991px){
+      .sidebar{transform:translateX(-100%);width:var(--sidebar-w)!important;transition:transform var(--ease)}
+      .sidebar.mobile-open{transform:translateX(0)}
+      .main{margin-left:0!important;max-width:100vw!important;width:100%}
+      .topbar{padding:0 1rem}
+      .content{padding:1rem}
+      .bb-right{display:none}
+      .form-grid{grid-template-columns:1fr}
+      .col-aside{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+      .col-aside .card{margin-bottom:0}
+    }
+    @media(min-width:768px) and (max-width:991px){
+      .bb{padding:1rem 1.2rem;border-radius:13px}
+      .bb-title{font-size:1.1rem}
+    }
+    @media(min-width:576px) and (max-width:767px){
+      .content{padding:.85rem}
+      .bb{padding:.9rem 1rem;border-radius:12px;margin-bottom:1rem}
+      .bb-title{font-size:1rem}.bb-desc{font-size:.72rem}
+      .user-info{display:none}
+      .topbar{padding:0 .85rem}
+      .card-body{padding:1rem}
+      .col-aside{grid-template-columns:1fr}
+      .action-bar{flex-direction:column-reverse;gap:.55rem;padding:.75rem .85rem}
+      .abl,.abr{width:100%}
+      .abr{justify-content:flex-end}
+    }
+    @media(max-width:575px){
+      .content{padding:.6rem;padding-bottom:8.5rem}
+      .bb{padding:.75rem .9rem;border-radius:10px;margin-bottom:.85rem;flex-direction:column;align-items:flex-start;gap:.3rem}
+      .bb-title{font-size:.92rem}.bb-desc{font-size:.7rem}
+      .bb-right{display:none}
+      .user-info{display:none}
+      .topbar{padding:0 .7rem;gap:.45rem}
+      .card{border-radius:10px;margin-bottom:.85rem}
+      .card-body{padding:.9rem}
+      :root{--inp-h:44px}
+      .col-aside{grid-template-columns:1fr}
+      .st-tab{min-width:78px;padding:.5rem .3rem}
+      .st-tab i{font-size:.9rem}
+      .st-tab span{font-size:.66rem}
+      .action-bar{flex-direction:column-reverse;gap:.5rem;padding:.65rem .75rem;position:fixed;bottom:0;left:0;right:0}
+      .abl,.abr{width:100%}
+      .abr{justify-content:stretch}
+      .abr .btn-g,.abr .btn-p{flex:1;justify-content:center}
+      .abl{justify-content:center}
+      .slug-pre{display:none}
+      .fab{bottom:8rem}
+    }
+    @media(max-width:400px){
+      .content{padding:.45rem;padding-bottom:9rem}
+      .card-body{padding:.75rem}
+      .bb-title{font-size:.87rem}
+    }
+  </style>
+</head>
+<body>
+<div class="sb-ov" id="sbOv" onclick="closeMobile()"></div>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <a class="sb-brand" href="dashboard-ppid.html">
+      <div class="sb-icon"><i class="bi bi-shield-lock-fill"></i></div>
+      <div class="sb-text"><div class="sb-title">PPID Pekalongan</div><div class="sb-sub">Kota Pekalongan &middot; v2.0</div></div>
+    </a>
+    <nav class="sb-scroll">
+      <div class="sb-iw"><a href="dashboard-ppid.html" class="sb-link" data-tip="Dashboard"><i class="bi bi-grid-1x2-fill ico"></i><span class="lbl">Dashboard</span></a></div>
+      <div class="sb-sec">Master Data</div>
+      <div class="sb-iw"><a href="admin-pengelola-ppid.html" class="sb-link" data-tip="Admin Pengelola"><i class="bi bi-person-badge-fill ico"></i><span class="lbl">Admin Pengelola</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Pemohon"><i class="bi bi-people-fill ico"></i><span class="lbl">Pemohon</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Instansi"><i class="bi bi-building ico"></i><span class="lbl">Instansi / OPD</span></a></div>
+      <div class="sb-sec">Kelompok Informasi</div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIP"><i class="bi bi-folder2-open ico"></i><span class="lbl">Kelinfo DIP</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIB"><i class="bi bi-folder-fill ico"></i><span class="lbl">Kelinfo DIB</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIBS"><i class="bi bi-folder-symlink-fill ico"></i><span class="lbl">Kelinfo DIBS</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIU"><i class="bi bi-archive-fill ico"></i><span class="lbl">Kelinfo DIU</span></a></div>
+      <div class="sb-sec">Permohonan</div>
+      <div class="sb-iw"><a href="permohonan-masuk-ppid.html" class="sb-link" data-tip="Permohonan Masuk"><i class="bi bi-inbox-fill ico"></i><span class="lbl">Permohonan Masuk</span><span class="sb-badge">7</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Riwayat"><i class="bi bi-clock-history ico"></i><span class="lbl">Riwayat Permohonan</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Laporan"><i class="bi bi-bar-chart-fill ico"></i><span class="lbl">Laporan &amp; Statistik</span></a></div>
+      <div class="sb-sec">Konten Website</div>
+      <div class="sb-iw"><a href="berita-ppid.html" class="sb-link active" data-tip="Berita"><i class="bi bi-newspaper ico"></i><span class="lbl">Berita</span></a></div>
+      <div class="sb-iw"><a href="galeri-ppid.html" class="sb-link" data-tip="Galeri"><i class="bi bi-images ico"></i><span class="lbl">Galeri</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Infografis"><i class="bi bi-pie-chart-fill ico"></i><span class="lbl">Infografis</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Kelola Menu"><i class="bi bi-list-nested ico"></i><span class="lbl">Kelola Menu</span></a></div>
+      <div class="sb-sec">Pengaturan</div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Pengaturan"><i class="bi bi-gear-fill ico"></i><span class="lbl">Pengaturan Sistem</span></a></div>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-foot-inner">
+        <div class="sb-ficon"><i class="bi bi-info-circle"></i></div>
+        <div class="sb-ftext"><div class="sb-fver">Versi 2.0.1 &mdash; Stabil</div><div class="sb-fcopy">&copy; 2025 PPID Kota Pekalongan</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button class="tog-btn" id="togBtn" onclick="toggleSB()"><i class="bi bi-arrow-bar-left"></i></button>
+      <div class="tb-space"></div>
+      <div class="tb-right">
+        <button class="tb-ibtn"><i class="bi bi-bell"></i><span class="notif-dot"></span></button>
+        <button class="tb-ibtn" onclick="toggleFS()"><i class="bi bi-fullscreen" id="fsIco"></i></button>
+        <div class="user-menu">
+          <button class="user-trig" id="uTrig" onclick="toggleUM()" aria-expanded="false">
+            <div class="user-av">AS</div>
+            <div class="user-info"><div class="uname">Admin Sistem</div><div class="urole">@admin.ppid</div></div>
+            <i class="bi bi-chevron-down user-caret"></i>
+          </button>
+          <div class="user-dd" id="uDD">
+            <a class="dd-item" href="#"><i class="bi bi-person-circle"></i>Profil Saya</a>
+            <a class="dd-item" href="#"><i class="bi bi-gear"></i>Pengaturan</a>
+            <div class="dd-div"></div>
+            <button class="dd-item danger"><i class="bi bi-box-arrow-right"></i>Keluar</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+      <!-- BB -->
+      <div class="bb">
+        <div class="bb-left">
+          <div class="bb-title">Tambah Berita Baru</div>
+          <div class="bb-desc">Buat dan publikasikan artikel berita PPID Kota Pekalongan</div>
+        </div>
+        <div class="bb-right">
+          <div class="bc"><i class="bi bi-house-fill"></i> Home</div>
+          <span class="bc-sep">/</span>
+          <div class="bc"><a href="berita-ppid.html" style="color:inherit;text-decoration:none">Berita</a></div>
+          <span class="bc-sep">/</span>
+          <div class="bc cur"><i class="bi bi-plus-circle"></i> Tambah</div>
+        </div>
+      </div>
+
+      <!-- FORM GRID -->
+      <div class="form-grid">
+
+        <!-- KOLOM UTAMA -->
+        <div class="col-main">
+
+          <!-- Card Informasi Utama -->
+          <div class="card">
+            <div class="card-head"><i class="bi bi-file-earmark-text-fill"></i><h6>Informasi Utama</h6></div>
+            <div class="card-body">
+
+              <div class="f-group">
+                <label class="f-label">Judul Berita <span class="req">*</span> <span class="tip" title="Judul yang menarik meningkatkan klik pembaca">?</span></label>
+                <div class="inp-wr">
+                  <i class="bi bi-type-h1 inp-ico"></i>
+                  <input type="text" id="fJudul" class="f-inp ico-l" placeholder="Masukkan judul berita yang menarik..." maxlength="120" oninput="onJudul(this)" />
+                </div>
+                <div class="char-row"><span class="cc" id="ccJudul">0 / 120</span></div>
+              </div>
+
+              <div class="f-group">
+                <label class="f-label">Slug URL <span class="tip" title="URL berita, dibuat otomatis dari judul">?</span></label>
+                <div class="slug-box">
+                  <span class="slug-pre">ppid.pekalongan.go.id/berita/</span>
+                  <span class="slug-val" id="slugVal">&#8212;</span>
+                  <button type="button" class="slug-cp" onclick="copySlug()" title="Salin"><i class="bi bi-copy" id="slugIco"></i></button>
+                </div>
+                <p class="f-hint" style="margin-top:.25rem">Slug dibuat otomatis dari judul berita.</p>
+              </div>
+
+              <div class="f-group">
+                <label class="f-label">Ringkasan <span class="req">*</span> <span class="tip" title="Tampil di halaman daftar dan preview SEO. Maks 200 karakter.">?</span></label>
+                <textarea class="f-ta" id="fRingkas" rows="3" maxlength="200" placeholder="Tulis ringkasan singkat isi berita..." oninput="onRingkas(this)"></textarea>
+                <div class="char-row"><span class="cc" id="ccRingkas">0 / 200</span></div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Card Konten TinyMCE -->
+          <div class="card">
+            <div class="card-head"><i class="bi bi-body-text"></i><h6>Konten Berita</h6><span class="badge-opt">Wajib diisi</span></div>
+            <div class="card-body" style="padding:.85rem">
+              <div class="tmc-wrap" id="tmcWrap">
+                <textarea id="fKonten" name="fKonten"></textarea>
+              </div>
+              <p class="f-hint" style="margin-top:.5rem"><i class="bi bi-info-circle" style="color:var(--blue)"></i> Gunakan toolbar untuk format teks, gambar, tabel, dan elemen lainnya.</p>
+            </div>
+          </div>
+
+          <!-- Card SEO -->
+          <div class="card">
+            <div class="card-head"><i class="bi bi-search"></i><h6>SEO &amp; Meta</h6><span class="badge-opt">Opsional</span></div>
+            <div class="card-body">
+
+              <div class="f-group">
+                <label class="f-label">Meta Title <span class="tip" title="Judul di hasil pencarian Google. Ideal 50–60 karakter.">?</span></label>
+                <div class="inp-wr">
+                  <i class="bi bi-google inp-ico" style="font-size:.8rem"></i>
+                  <input type="text" id="fMetaTitle" class="f-inp ico-l" placeholder="Kosongkan untuk pakai judul utama..." maxlength="70" oninput="updateSeo()" />
+                </div>
+              </div>
+
+              <div class="f-group">
+                <label class="f-label">Meta Deskripsi</label>
+                <textarea class="f-ta" id="fMetaDesc" rows="3" maxlength="160" placeholder="Deskripsi untuk hasil pencarian, maks 160 karakter..." oninput="updateSeo()" style="min-height:72px"></textarea>
+              </div>
+
+              <div class="f-group">
+                <label class="f-label"><i class="bi bi-eye" style="color:var(--blue)"></i> Preview Pencarian</label>
+                <div class="seo-prev">
+                  <div class="seo-site">ppid.pekalongan.go.id &rsaquo; berita</div>
+                  <div class="seo-title" id="seoT">Judul berita akan tampil di sini...</div>
+                  <div class="seo-desc"  id="seoD">Deskripsi meta akan tampil di sini setelah Anda mengisi kolom di atas.</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div><!-- end col-main -->
+
+        <!-- KOLOM ASIDE -->
+        <div class="col-aside">
+
+          <!-- Card Publikasi -->
+          <div class="card">
+            <div class="card-head"><i class="bi bi-send-fill"></i><h6>Publikasi</h6></div>
+            <div class="card-body">
+
+              <div class="f-group">
+                <label class="f-label">Status <span class="req">*</span></label>
+                <div class="st-tabs">
+                  <button type="button" class="st-tab ap" data-s="publish" onclick="setSt('publish',this)"><i class="bi bi-check-circle-fill"></i><span>Publish</span></button>
+                  <button type="button" class="st-tab"    data-s="draft"   onclick="setSt('draft',this)"><i class="bi bi-pencil-square"></i><span>Draft</span></button>
+                  <button type="button" class="st-tab"    data-s="arsip"   onclick="setSt('arsip',this)"><i class="bi bi-archive-fill"></i><span>Arsip</span></button>
+                </div>
+                <input type="hidden" id="fStatus" value="publish" />
+              </div>
+
+              <div class="f-div"></div>
+
+              <div class="f-group">
+                <label class="f-label"><i class="bi bi-calendar3" style="color:var(--blue)"></i> Tanggal Tayang <span class="req">*</span></label>
+                <div class="inp-wr">
+                  <i class="bi bi-calendar3 inp-ico"></i>
+                  <input type="date" id="fTgl" class="f-inp ico-l" />
+                </div>
+              </div>
+
+              <div class="f-group">
+                <label class="f-label"><i class="bi bi-person-fill" style="color:var(--blue)"></i> Penulis <span class="req">*</span></label>
+                <select id="fPenulis">
+                  <option value="">Pilih penulis...</option>
+                  <option value="1">Ahmad Fauzi &mdash; Admin PPID</option>
+                  <option value="2">Siti Rahayu &mdash; Editor</option>
+                  <option value="3">Budi Santoso &mdash; Admin PPID</option>
+                  <option value="4">Dewi Kusuma &mdash; Editor</option>
+                  <option value="5">Hendra Wijaya &mdash; Kontributor</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Card Klasifikasi -->
+          <div class="card">
+            <div class="card-head"><i class="bi bi-tags-fill"></i><h6>Klasifikasi</h6></div>
+            <div class="card-body">
+
+              <div class="f-group">
+                <label class="f-label">Tema <span class="req">*</span></label>
+                <select id="fTema">
+                  <option value="">Pilih tema berita...</option>
+                  <option value="ppid"        data-color="#0072c6">PPID</option>
+                  <option value="layanan"     data-color="#10b964">Layanan Publik</option>
+                  <option value="regulasi"    data-color="#f59e0b">Regulasi</option>
+                  <option value="kegiatan"    data-color="#7c3aed">Kegiatan</option>
+                  <option value="pengumuman"  data-color="#0d9488">Pengumuman</option>
+                  <option value="lainnya"     data-color="#64748b">Lainnya</option>
+                </select>
+              </div>
+
+              <div class="f-group">
+                <label class="f-label">Tag / Kata Kunci <span class="tip" title="Ketik tag baru lalu tekan Enter untuk menambah">?</span></label>
+                <select id="fTag" multiple="multiple">
+                  <option value="ppid">PPID</option>
+                  <option value="kip">Keterbukaan Informasi</option>
+                  <option value="layanan-publik">Layanan Publik</option>
+                  <option value="permohonan">Permohonan Informasi</option>
+                  <option value="regulasi">Regulasi</option>
+                  <option value="badan-publik">Badan Publik</option>
+                  <option value="transparansi">Transparansi</option>
+                  <option value="komisi-informasi">Komisi Informasi</option>
+                </select>
+                <p class="f-hint">Ketik tag baru, tekan Enter untuk menambah.</p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Card Thumbnail -->
+          <div class="card">
+            <div class="card-head"><i class="bi bi-image-fill"></i><h6>Thumbnail</h6><span class="badge-opt">Opsional</span></div>
+            <div class="card-body">
+
+              <div class="img-prev-wr" id="prevWr">
+                <img class="img-prev" id="prevImg" src="" alt="Preview" />
+                <button type="button" class="img-prev-rm" onclick="removeImg()"><i class="bi bi-x-lg"></i></button>
+              </div>
+
+              <div class="upload-zone" id="upZone">
+                <input type="file" id="fThumb" accept="image/jpeg,image/png,image/webp" onchange="previewImg(this)" />
+                <div class="uz-ico"><i class="bi bi-cloud-upload"></i></div>
+                <div class="uz-ttl">Klik atau seret gambar ke sini</div>
+                <div class="uz-sub">Format JPG, PNG, atau WebP</div>
+                <div class="uz-bdg">Maks. 2 MB &middot; Rasio 16:9 direkomendasikan</div>
+              </div>
+
+              <div class="info-box" style="margin-top:.75rem">
+                <i class="bi bi-lightbulb-fill"></i>
+                <p>Gunakan gambar landscape minimal <strong>1200 &times; 630 px</strong> untuk hasil optimal.</p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Card Pengaturan Lanjutan -->
+          <div class="card">
+            <div class="card-head"><i class="bi bi-sliders2"></i><h6>Pengaturan Lanjutan</h6><span class="badge-opt">Opsional</span></div>
+            <div class="card-body">
+
+              <div class="f-group">
+                <label class="f-label">Instansi / OPD Terkait</label>
+                <select id="fInstansi">
+                  <option value="">Pilih instansi...</option>
+                  <option value="1">Dinas Kominfo</option>
+                  <option value="2">Bagian Humas Setda</option>
+                  <option value="3">Dinas Pendidikan</option>
+                  <option value="4">Dinas Kesehatan</option>
+                  <option value="5">Bappeda</option>
+                  <option value="99">Semua OPD</option>
+                </select>
+              </div>
+
+              <div class="f-group">
+                <label class="f-label">Opsi Tampilan</label>
+                <label class="chk-row"><input type="checkbox" id="chkBeranda" checked /><span>Tampilkan di Beranda</span></label>
+                <label class="chk-row"><input type="checkbox" id="chkUnggulan" /><span>Tandai sebagai Berita Unggulan</span></label>
+                <label class="chk-row"><input type="checkbox" id="chkKomentar" checked /><span>Aktifkan Komentar</span></label>
+              </div>
+
+            </div>
+          </div>
+
+        </div><!-- end col-aside -->
+      </div><!-- end form-grid -->
+
+    </main>
+
+    <!-- STICKY ACTION BAR -->
+    <div class="action-bar">
+      <div class="abl">
+        <a href="berita-ppid.html" class="btn-o"><i class="bi bi-arrow-left"></i> Kembali</a>
+        <button type="button" class="btn-o red" onclick="resetForm()"><i class="bi bi-trash3"></i> Reset</button>
+      </div>
+      <div class="abr">
+        <button type="button" class="btn-o" onclick="saveDraft()"><i class="bi bi-floppy"></i> Draft</button>
+        <button type="button" class="btn-p" onclick="doPreview()"><i class="bi bi-eye"></i> Preview</button>
+        <button type="button" class="btn-g" onclick="doPublish()"><i class="bi bi-send-fill"></i> Publikasikan</button>
+      </div>
+    </div>
+
+  </div><!-- end .main -->
+</div><!-- end .shell -->
+
+<button class="fab" id="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="bi bi-arrow-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
+
+<script>
+/* ── SIDEBAR ── */
+const sidebar=document.getElementById('sidebar'),mainEl=document.getElementById('main'),togBtn=document.getElementById('togBtn'),sbOv=document.getElementById('sbOv');
+let collapsed=false;
+const isMob=()=>window.innerWidth<=991;
+function toggleSB(){if(isMob()){const o=sidebar.classList.toggle('mobile-open');sbOv.classList.toggle('show',o);}else{collapsed=!collapsed;sidebar.classList.toggle('collapsed',collapsed);mainEl.classList.toggle('collapsed',collapsed);togBtn.classList.toggle('flip',collapsed);}}
+function closeMobile(){sidebar.classList.remove('mobile-open');sbOv.classList.remove('show');}
+window.addEventListener('resize',()=>{if(!isMob())closeMobile();});
+
+/* ── TOPBAR ── */
+const uTrig=document.getElementById('uTrig'),uDD=document.getElementById('uDD');
+function toggleUM(){const o=uDD.classList.toggle('open');uTrig.setAttribute('aria-expanded',o);}
+document.addEventListener('click',e=>{if(!uTrig.contains(e.target)&&!uDD.contains(e.target))uDD.classList.remove('open');});
+function toggleFS(){const ico=document.getElementById('fsIco');if(!document.fullscreenElement){document.documentElement.requestFullscreen();ico.className='bi bi-fullscreen-exit';}else{document.exitFullscreen();ico.className='bi bi-fullscreen';}}
+window.addEventListener('scroll',()=>document.getElementById('fab').classList.toggle('vis',scrollY>300));
+
+/* ── SELECT2 ── */
+function fmtTema(opt){
+  if(!opt.id)return $('<span style="color:#b0bac7">'+opt.text+'</span>');
+  const clr={ppid:'#0072c6',layanan:'#10b964',regulasi:'#f59e0b',kegiatan:'#7c3aed',pengumuman:'#0d9488',lainnya:'#64748b'};
+  const c=clr[opt.id]||'#64748b';
+  return $('<span class="opt-row"><span class="opt-dot" style="background:'+c+'"></span>'+opt.text+'</span>');
+}
+$(document).ready(function(){
+  $('#fPenulis').select2({placeholder:'Pilih penulis...',allowClear:true,width:'100%'});
+  $('#fTema').select2({placeholder:'Pilih tema berita...',allowClear:true,width:'100%',templateResult:fmtTema,templateSelection:fmtTema});
+  $('#fTag').select2({placeholder:'Pilih atau ketik tag baru...',allowClear:true,width:'100%',tags:true,tokenSeparators:[',']});
+  $('#fInstansi').select2({placeholder:'Pilih instansi...',allowClear:true,width:'100%'});
+});
+
+/* ── TINYMCE ── */
+tinymce.init({
+  selector:'#fKonten',height:480,menubar:true,branding:false,promotion:false,
+  plugins:['advlist','autolink','lists','link','image','charmap','preview','anchor','searchreplace','visualblocks','code','fullscreen','insertdatetime','media','table','wordcount','emoticons'],
+  toolbar:'undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | removeformat code fullscreen',
+  toolbar_mode:'sliding',
+  content_style:"body{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;line-height:1.75;color:#0f1c2e;padding:1rem;margin:0}h1,h2,h3,h4{font-family:'Playfair Display',serif;color:#003d70}p{margin-bottom:.85rem}a{color:#0072c6}",
+  setup(ed){
+    const w=document.getElementById('tmcWrap');
+    ed.on('focus',()=>w.classList.add('focused'));
+    ed.on('blur',()=>w.classList.remove('focused'));
+  }
+});
+
+/* ── JUDUL → SLUG ── */
+function toSlug(s){return s.toLowerCase().replace(/[àáâãäå]/g,'a').replace(/[èéêë]/g,'e').replace(/[ìíîï]/g,'i').replace(/[òóôõö]/g,'o').replace(/[ùúûü]/g,'u').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-').replace(/-+/g,'-').substring(0,80);}
+function onJudul(el){
+  const n=el.value.length,c=document.getElementById('ccJudul');
+  c.textContent=n+' / 120';c.className='cc'+(n>110?' warn':'')+(n>=120?' over':'');
+  document.getElementById('slugVal').textContent=toSlug(el.value)||'\u2014';
+  updateSeo();
+}
+function onRingkas(el){
+  const n=el.value.length,c=document.getElementById('ccRingkas');
+  c.textContent=n+' / 200';c.className='cc'+(n>180?' warn':'')+(n>=200?' over':'');
+  updateSeo();
+}
+function copySlug(){
+  const v=document.getElementById('slugVal').textContent;
+  if(v==='\u2014')return;
+  navigator.clipboard.writeText('ppid.pekalongan.go.id/berita/'+v).then(()=>{
+    const i=document.getElementById('slugIco');i.className='bi bi-check-lg';
+    setTimeout(()=>i.className='bi bi-copy',1500);
+  });
+}
+
+/* ── SEO PREVIEW ── */
+function updateSeo(){
+  const j=document.getElementById('fJudul').value,r=document.getElementById('fRingkas').value;
+  const mt=document.getElementById('fMetaTitle').value,md=document.getElementById('fMetaDesc').value;
+  document.getElementById('seoT').textContent=(mt||j)||'Judul berita akan tampil di sini...';
+  document.getElementById('seoD').textContent=(md||r)||'Deskripsi meta akan tampil di sini.';
+}
+
+/* ── STATUS TABS ── */
+function setSt(val,btn){
+  document.querySelectorAll('.st-tab').forEach(t=>{t.className='st-tab';});
+  const cls={publish:'ap',draft:'ad',arsip:'aa'}[val]||'ap';
+  btn.classList.add(cls);
+  document.getElementById('fStatus').value=val;
+}
+
+/* ── IMAGE UPLOAD ── */
+function previewImg(input){
+  if(!input.files||!input.files[0])return;
+  const f=input.files[0];
+  if(f.size>2*1024*1024){alert('Ukuran file melebihi 2 MB.');input.value='';return;}
+  const r=new FileReader();
+  r.onload=e=>{document.getElementById('prevImg').src=e.target.result;document.getElementById('prevWr').classList.add('show');document.getElementById('upZone').style.display='none';};
+  r.readAsDataURL(f);
+}
+function removeImg(){
+  document.getElementById('fThumb').value='';document.getElementById('prevImg').src='';
+  document.getElementById('prevWr').classList.remove('show');document.getElementById('upZone').style.display='';
+}
+const upZone=document.getElementById('upZone');
+upZone.addEventListener('dragover',e=>{e.preventDefault();upZone.classList.add('drag');});
+upZone.addEventListener('dragleave',()=>upZone.classList.remove('drag'));
+upZone.addEventListener('drop',e=>{e.preventDefault();upZone.classList.remove('drag');const dt=e.dataTransfer;if(dt.files.length){const fi=document.getElementById('fThumb');const dtObj=new DataTransfer();dtObj.items.add(dt.files[0]);fi.files=dtObj.files;previewImg(fi);}});
+
+/* ── VALIDATE ── */
+function validate(){
+  const j=document.getElementById('fJudul').value.trim();
+  const rg=document.getElementById('fRingkas').value.trim();
+  const tema=$('#fTema').val();const penulis=$('#fPenulis').val();
+  const konten=tinymce.get('fKonten')?.getContent().replace(/<[^>]+>/g,'').trim();
+  if(!j){alert('Judul berita wajib diisi.');document.getElementById('fJudul').focus();return false;}
+  if(!rg){alert('Ringkasan berita wajib diisi.');document.getElementById('fRingkas').focus();return false;}
+  if(!tema){alert('Tema berita wajib dipilih.');return false;}
+  if(!penulis){alert('Penulis wajib dipilih.');return false;}
+  if(!konten||konten.length<5){alert('Konten berita wajib diisi.');return false;}
+  return true;
+}
+function doPublish(){
+  if(!validate())return;
+  const s=document.getElementById('fStatus').value;
+  const lbl={publish:'dipublikasikan',draft:'disimpan sebagai draft',arsip:'diarsipkan'}[s]||'disimpan';
+  if(confirm('Berita akan '+lbl+'. Lanjutkan?')){alert('\u2705 Berita berhasil '+lbl+'!\n\n(Demo \u2014 tidak ada backend yang terhubung)');window.location.href='berita-ppid.html';}
+}
+function saveDraft(){
+  const j=document.getElementById('fJudul').value.trim()||'(tanpa judul)';
+  document.getElementById('fStatus').value='draft';
+  document.querySelectorAll('.st-tab').forEach(t=>t.className='st-tab');
+  document.querySelector('[data-s="draft"]').classList.add('ad');
+  alert('\uD83D\uDCDD Draft "'+j+'" berhasil disimpan!\n\n(Demo \u2014 tidak ada backend yang terhubung)');
+}
+function doPreview(){
+  const j=document.getElementById('fJudul').value.trim()||'Preview Berita';
+  alert('\uD83D\uDC41 Preview: "'+j+'"\n\n(Demo \u2014 halaman preview belum tersedia)');
+}
+function resetForm(){
+  if(!confirm('Reset semua isian? Data yang belum disimpan akan hilang.'))return;
+  document.getElementById('fJudul').value='';document.getElementById('fRingkas').value='';
+  document.getElementById('fMetaTitle').value='';document.getElementById('fMetaDesc').value='';
+  document.getElementById('slugVal').textContent='\u2014';
+  document.getElementById('ccJudul').textContent='0 / 120';document.getElementById('ccRingkas').textContent='0 / 200';
+  tinymce.get('fKonten')?.setContent('');
+  $('#fPenulis').val(null).trigger('change');$('#fTema').val(null).trigger('change');
+  $('#fTag').val(null).trigger('change');$('#fInstansi').val(null).trigger('change');
+  removeImg();
+  document.querySelectorAll('.st-tab').forEach(t=>t.className='st-tab');
+  document.querySelector('[data-s="publish"]').classList.add('ap');
+  document.getElementById('fStatus').value='publish';
+  updateSeo();
+}
+/* default tanggal hari ini */
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('fTgl').value=new Date().toISOString().split('T')[0];
+});
+</script>
+</body>
+</html>
