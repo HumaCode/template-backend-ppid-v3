@@ -1,0 +1,2420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>UI Components — PPID Kota Pekalongan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+  <style>
+
+    /* ═══════════════════════════════════════════
+       ROOT VARIABLES
+       ═══════════════════════════════════════════ */
+    :root {
+      --blue       : #0072c6;
+      --blue-dark  : #005499;
+      --blue-deep  : #003d70;
+      --blue-light : #1a8fe0;
+      --blue-soft  : rgba(0,114,198,0.08);
+
+      --green      : #10b964;
+      --green-soft : rgba(16,185,100,0.10);
+      --amber      : #f59e0b;
+      --amber-soft : rgba(245,158,11,0.10);
+      --red        : #dc3545;
+      --red-soft   : rgba(220,53,69,0.08);
+      --purple     : #7c3aed;
+      --purple-soft: rgba(124,58,237,0.09);
+      --teal       : #0d9488;
+      --teal-soft  : rgba(13,148,136,0.09);
+      --slate      : #64748b;
+      --slate-soft : rgba(100,116,139,0.10);
+
+      --bg         : #f0f4f9;
+      --card-bg    : #ffffff;
+      --text-main  : #0f1c2e;
+      --text-muted : #6b7a8d;
+      --border     : rgba(0,0,0,0.07);
+      --shadow     : 0 2px 16px rgba(0,50,100,0.08);
+      --shadow-lg  : 0 8px 40px rgba(0,30,80,0.14);
+      --ease       : .28s cubic-bezier(.22,1,.36,1);
+      --r          : 12px;
+      --inp-h      : 42px;
+    }
+
+    /* ═══════════════════════════════════════════
+       BASE RESET & BODY
+       ═══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    /* ═══════════════════════════════════════════
+       LAYOUT WRAPPER
+       ═══════════════════════════════════════════ */
+    .page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* ─── Page Header ─── */
+    .page-header {
+      background: linear-gradient(120deg, var(--blue-deep) 0%, var(--blue) 55%, var(--blue-light) 100%);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 36px rgba(0,114,198,0.3);
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      top: -90px; right: 60px;
+    }
+    .page-header::after {
+      content: '';
+      position: absolute;
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      bottom: -50px; right: 20px;
+    }
+    .ph-eyebrow {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: .4rem;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      position: relative;
+      z-index: 1;
+    }
+    .ph-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: .5rem;
+      position: relative;
+      z-index: 1;
+    }
+    .ph-sub {
+      font-size: .84rem;
+      color: rgba(255,255,255,0.6);
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+      line-height: 1.65;
+    }
+
+    /* ─── Section Heading ─── */
+    .sec-heading {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin-bottom: 1.2rem;
+      padding-bottom: .65rem;
+      border-bottom: 2px solid var(--border);
+      scroll-margin-top: 80px;
+    }
+    .sec-heading .sec-num {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--blue), var(--blue-light));
+      color: #fff;
+      font-size: .72rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .sec-heading h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0;
+      flex: 1;
+    }
+    .sec-heading .sec-tag {
+      font-size: .67rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: rgba(0,0,0,0.04);
+      padding: .18rem .55rem;
+      border-radius: 6px;
+    }
+
+    /* ─── Component Card Container ─── */
+    .comp-card {
+      background: var(--card-bg);
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .comp-card-head {
+      padding: .85rem 1.3rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      background: linear-gradient(to right, rgba(0,114,198,0.03), transparent);
+    }
+    .comp-card-head i { color: var(--blue); font-size: .95rem; }
+    .comp-card-head h5 {
+      font-size: .87rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0;
+    }
+    .comp-card-head .cc-note {
+      margin-left: auto;
+      font-size: .7rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .comp-body {
+      padding: 1.4rem 1.5rem;
+    }
+    .comp-body.dark {
+      background: #0f1c2e;
+    }
+
+    /* ─── Component Comment Label ─── */
+    .comp-comment {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: .6rem;
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+    }
+    .comp-comment::before {
+      content: '//';
+      color: var(--blue);
+      font-family: monospace;
+      font-size: .8rem;
+    }
+
+    /* ─── Demo Row ─── */
+    .demo-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      align-items: flex-start;
+      margin-bottom: 1.1rem;
+    }
+    .demo-row:last-child { margin-bottom: 0; }
+
+    /* ─── Code snippet ─── */
+    .code-block {
+      background: #0f1c2e;
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: .75rem;
+      color: #a8d8ff;
+      margin-top: .85rem;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+    .code-block .kw  { color: #7ecbff; }
+    .code-block .cl  { color: #ffd580; }
+    .code-block .str { color: #98fb98; }
+    .code-block .cm  { color: #6b7a8d; font-style: italic; }
+
+    /* ─── Divider ─── */
+    .fdiv { height: 1px; background: var(--border); margin: 1.2rem 0; }
+
+    /* quick TOC */
+    .toc {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1rem 1.2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem .6rem;
+    }
+    .toc-lbl { font-size: .72rem; font-weight: 700; color: var(--text-muted); letter-spacing: .06em; text-transform: uppercase; width: 100%; margin-bottom: .2rem; }
+    .toc a {
+      font-size: .77rem;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+      padding: .22rem .65rem;
+      border-radius: 100px;
+      background: var(--blue-soft);
+      border: 1px solid rgba(0,114,198,0.15);
+      transition: background .18s, color .18s;
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+    }
+    .toc a:hover { background: rgba(0,114,198,0.15); color: var(--blue-dark); }
+
+
+    /* ═══════════════════════════════════════════
+       SECTION 1 — BUTTONS
+       ═══════════════════════════════════════════ */
+
+    /* - - - - - Primary Button - - - - - */
+    .btn-p {
+      display: inline-flex;
+      align-items: center;
+      gap: .42rem;
+      padding: .54rem 1.05rem;
+      border-radius: 9px;
+      border: none;
+      background: linear-gradient(135deg, var(--blue), var(--blue-light));
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .83rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,114,198,0.3);
+      transition: transform .2s, box-shadow .2s;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .btn-p:hover { transform: translateY(-2px); box-shadow: 0 7px 22px rgba(0,114,198,0.42); color: #fff; }
+    .btn-p:active { transform: translateY(0); }
+
+    /* - - - - - Outline Button - - - - - */
+    .btn-o {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .52rem .95rem;
+      border-radius: 9px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text-muted);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .83rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .18s, color .18s, border-color .18s;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .btn-o:hover { background: var(--blue-soft); color: var(--blue); border-color: rgba(0,114,198,0.3); }
+
+    /* - - - - - Semantic Color Buttons - - - - - */
+    .btn-g {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .54rem 1.05rem; border-radius: 9px; border: none;
+      background: linear-gradient(135deg, var(--green), #0ea05a);
+      color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .83rem; font-weight: 600; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(16,185,100,0.28);
+      transition: transform .2s, box-shadow .2s; white-space: nowrap;
+    }
+    .btn-g:hover { transform: translateY(-2px); box-shadow: 0 7px 22px rgba(16,185,100,0.4); }
+
+    .btn-r {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .54rem 1.05rem; border-radius: 9px; border: none;
+      background: linear-gradient(135deg, var(--red), #c0392b);
+      color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .83rem; font-weight: 600; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(220,53,69,0.28);
+      transition: transform .2s, box-shadow .2s; white-space: nowrap;
+    }
+    .btn-r:hover { transform: translateY(-2px); box-shadow: 0 7px 22px rgba(220,53,69,0.4); }
+
+    .btn-a {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .54rem 1.05rem; border-radius: 9px; border: none;
+      background: linear-gradient(135deg, var(--amber), #d97706);
+      color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .83rem; font-weight: 600; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(245,158,11,0.28);
+      transition: transform .2s, box-shadow .2s; white-space: nowrap;
+    }
+    .btn-a:hover { transform: translateY(-2px); box-shadow: 0 7px 22px rgba(245,158,11,0.4); }
+
+    .btn-v {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .54rem 1.05rem; border-radius: 9px; border: none;
+      background: linear-gradient(135deg, var(--purple), #6d28d9);
+      color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .83rem; font-weight: 600; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(124,58,237,0.28);
+      transition: transform .2s, box-shadow .2s; white-space: nowrap;
+    }
+    .btn-v:hover { transform: translateY(-2px); box-shadow: 0 7px 22px rgba(124,58,237,0.4); }
+
+    /* - - - - - Ghost / Tinted Buttons - - - - - */
+    .btn-ghost-blue   { display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:9px;border:1.5px solid rgba(0,114,198,0.3);background:var(--blue-soft);color:var(--blue);font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer;transition:background .18s,border-color .18s; white-space:nowrap; }
+    .btn-ghost-green  { display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:9px;border:1.5px solid rgba(16,185,100,0.3);background:var(--green-soft);color:var(--green);font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer;transition:background .18s; white-space:nowrap; }
+    .btn-ghost-red    { display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:9px;border:1.5px solid rgba(220,53,69,0.3);background:var(--red-soft);color:var(--red);font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer;transition:background .18s; white-space:nowrap; }
+    .btn-ghost-amber  { display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:9px;border:1.5px solid rgba(245,158,11,0.3);background:var(--amber-soft);color:#d97706;font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer;transition:background .18s; white-space:nowrap; }
+    .btn-ghost-purple { display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:9px;border:1.5px solid rgba(124,58,237,0.3);background:var(--purple-soft);color:var(--purple);font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer;transition:background .18s; white-space:nowrap; }
+
+    /* - - - - - Button Sizes - - - - - */
+    .btn-xs  { font-size: .7rem !important; padding: .3rem .65rem !important; border-radius: 7px !important; }
+    .btn-sm  { font-size: .77rem !important; padding: .42rem .85rem !important; border-radius: 8px !important; }
+    .btn-md  { font-size: .83rem !important; padding: .54rem 1.05rem !important; }
+    .btn-lg  { font-size: .92rem !important; padding: .7rem 1.35rem !important; border-radius: 11px !important; }
+    .btn-xl  { font-size: 1rem !important; padding: .85rem 1.7rem !important; border-radius: 12px !important; }
+
+    /* - - - - - Icon-only Button - - - - - */
+    .btn-ico {
+      width: 38px; height: 38px;
+      border-radius: 9px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: background .18s, color .18s, border-color .18s;
+      flex-shrink: 0;
+    }
+    .btn-ico:hover { background: var(--blue-soft); color: var(--blue); border-color: rgba(0,114,198,0.3); }
+    .btn-ico.ico-sm { width: 30px; height: 30px; font-size: .8rem; border-radius: 7px; }
+    .btn-ico.ico-lg { width: 46px; height: 46px; font-size: 1.15rem; border-radius: 11px; }
+
+    /* - - - - - Loading Button State - - - - - */
+    .btn-loading { position: relative; pointer-events: none; }
+    .btn-loading::after {
+      content: '';
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .65s linear infinite;
+      position: absolute;
+      right: .75rem; top: 50%; transform: translateY(-50%);
+    }
+    .btn-loading span { margin-right: 1rem; }
+    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+    /* - - - - - Disabled State - - - - - */
+    .btn-disabled, [disabled] { opacity: .45 !important; cursor: not-allowed !important; pointer-events: none; }
+
+
+    /* ═══════════════════════════════════════════
+       SECTION 2 — BADGES & TAGS
+       ═══════════════════════════════════════════ */
+
+    /* - - - - - Status Badges - - - - - */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .24rem;
+      padding: .22rem .65rem;
+      border-radius: 100px;
+      font-size: .7rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge .bdot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .badge-blue   { background:var(--blue-soft);   color:var(--blue);   }  .badge-blue .bdot   { background:var(--blue);   }
+    .badge-green  { background:var(--green-soft);  color:var(--green);  }  .badge-green .bdot  { background:var(--green);  }
+    .badge-red    { background:var(--red-soft);    color:var(--red);    }  .badge-red .bdot    { background:var(--red);    }
+    .badge-amber  { background:var(--amber-soft);  color:#d97706;       }  .badge-amber .bdot  { background:var(--amber);  }
+    .badge-purple { background:var(--purple-soft); color:var(--purple); }  .badge-purple .bdot { background:var(--purple); }
+    .badge-teal   { background:var(--teal-soft);   color:var(--teal);   }  .badge-teal .bdot   { background:var(--teal);   }
+    .badge-slate  { background:var(--slate-soft);  color:var(--slate);  }  .badge-slate .bdot  { background:var(--slate);  }
+
+    /* solid variant */
+    .badge-solid-blue   { background:var(--blue);   color:#fff; }
+    .badge-solid-green  { background:var(--green);  color:#fff; }
+    .badge-solid-red    { background:var(--red);    color:#fff; }
+    .badge-solid-amber  { background:var(--amber);  color:#fff; }
+    .badge-solid-purple { background:var(--purple); color:#fff; }
+    .badge-solid-slate  { background:var(--slate);  color:#fff; }
+
+    /* counter badge */
+    .badge-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px; height: 20px;
+      border-radius: 100px;
+      background: var(--blue);
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 800;
+      padding: 0 5px;
+    }
+    .badge-count.red  { background: var(--red); }
+    .badge-count.green{ background: var(--green); }
+
+    /* - - - - - Tag Pill - - - - - */
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .22rem;
+      padding: .26rem .7rem;
+      border-radius: 100px;
+      font-size: .72rem;
+      font-weight: 600;
+      background: var(--blue-soft);
+      color: var(--blue);
+      border: 1px solid rgba(0,114,198,0.18);
+      cursor: default;
+      transition: background .18s;
+    }
+    .tag-pill:hover { background: rgba(0,114,198,0.14); }
+    .tag-pill i { font-size: .65rem; }
+    .tag-pill .tag-rm {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: rgba(0,114,198,0.15);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .55rem;
+      cursor: pointer;
+      transition: background .18s;
+      flex-shrink: 0;
+    }
+    .tag-pill .tag-rm:hover { background: var(--red-soft); color: var(--red); }
+
+    /* tema badges */
+    .tema-ppid       { background:rgba(0,114,198,0.12);  color:var(--blue);   }
+    .tema-layanan    { background:rgba(16,185,100,0.12); color:var(--green);  }
+    .tema-regulasi   { background:rgba(245,158,11,0.12); color:#d97706;       }
+    .tema-kegiatan   { background:rgba(124,58,237,0.12); color:var(--purple); }
+    .tema-pengumuman { background:rgba(13,148,136,0.12); color:var(--teal);   }
+    .tema-lainnya    { background:rgba(100,116,139,0.12);color:var(--slate);  }
+
+
+    /* ═══════════════════════════════════════════
+       SECTION 3 — ALERT BOX (inline)
+       ═══════════════════════════════════════════ */
+
+    /* - - - - - Alert Box Base - - - - - */
+    .alert-box {
+      display: flex;
+      gap: .75rem;
+      align-items: flex-start;
+      border-radius: 10px;
+      padding: .9rem 1rem;
+      margin-bottom: .75rem;
+      animation: fadeUp .35s var(--ease) both;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .alert-box:last-child { margin-bottom: 0; }
+    .alert-box .ab-ico { font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+    .alert-box .ab-content { flex: 1; min-width: 0; }
+    .alert-box .ab-title { font-size: .84rem; font-weight: 700; margin-bottom: .2rem; }
+    .alert-box .ab-desc  { font-size: .78rem; line-height: 1.6; margin: 0; }
+    .alert-box .ab-close {
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem;
+      color: inherit;
+      opacity: .55;
+      transition: opacity .18s, background .18s;
+      flex-shrink: 0;
+    }
+    .alert-box .ab-close:hover { opacity: 1; background: rgba(0,0,0,0.06); }
+
+    /* - - - - - Alert Color Variants - - - - - */
+    .ab-info    { background:rgba(0,114,198,0.07);  border:1px solid rgba(0,114,198,0.18);  color:var(--blue-dark); }
+    .ab-success { background:rgba(16,185,100,0.07); border:1px solid rgba(16,185,100,0.22); color:#0a7a42; }
+    .ab-warning { background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); color:#92600a; }
+    .ab-error   { background:rgba(220,53,69,0.07);  border:1px solid rgba(220,53,69,0.22);  color:#9b1c2a; }
+    .ab-neutral { background:rgba(100,116,139,0.07);border:1px solid rgba(100,116,139,0.2); color:#3d4e60; }
+
+    /* - - - - - Alert with Left Border Accent - - - - - */
+    .ab-accent { border-left: 4px solid !important; border-radius: 0 10px 10px 0; }
+    .ab-accent.ab-info    { border-left-color: var(--blue)   !important; }
+    .ab-accent.ab-success { border-left-color: var(--green)  !important; }
+    .ab-accent.ab-warning { border-left-color: var(--amber)  !important; }
+    .ab-accent.ab-error   { border-left-color: var(--red)    !important; }
+
+
+    /* ═══════════════════════════════════════════
+       SECTION 4 — TOAST NOTIFICATIONS
+       ═══════════════════════════════════════════ */
+
+    /* - - - - - Toast Container - - - - - */
+    #toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: .55rem;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    /* - - - - - Toast Base - - - - - */
+    .toast-item {
+      display: flex;
+      align-items: flex-start;
+      gap: .7rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: .85rem 1rem;
+      min-width: 280px;
+      max-width: 360px;
+      box-shadow: var(--shadow-lg);
+      pointer-events: all;
+      opacity: 0;
+      transform: translateX(20px) scale(.96);
+      transition: opacity .32s var(--ease), transform .32s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+    .toast-item.show {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    .toast-item.hide {
+      opacity: 0;
+      transform: translateX(20px) scale(.92);
+    }
+    /* progress bar at bottom */
+    .toast-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 3px;
+      border-radius: 0 0 12px 12px;
+      animation: toastProgress 3s linear forwards;
+    }
+    @keyframes toastProgress { from { width: 100%; } to { width: 0; } }
+    .toast-item.t-info    ::after, .toast-item.t-info    { border-left: 4px solid var(--blue);   } .toast-item.t-info::after    { background: var(--blue);   }
+    .toast-item.t-success { border-left: 4px solid var(--green);  } .toast-item.t-success::after { background: var(--green);  }
+    .toast-item.t-warning { border-left: 4px solid var(--amber);  } .toast-item.t-warning::after { background: var(--amber);  }
+    .toast-item.t-error   { border-left: 4px solid var(--red);    } .toast-item.t-error::after   { background: var(--red);    }
+
+    .toast-ico {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .95rem;
+      flex-shrink: 0;
+    }
+    .t-info    .toast-ico { background:var(--blue-soft);  color:var(--blue);  }
+    .t-success .toast-ico { background:var(--green-soft); color:var(--green); }
+    .t-warning .toast-ico { background:var(--amber-soft); color:#d97706;      }
+    .t-error   .toast-ico { background:var(--red-soft);   color:var(--red);   }
+
+    .toast-body { flex: 1; min-width: 0; }
+    .toast-title { font-size: .82rem; font-weight: 700; color: var(--text-main); margin-bottom: .1rem; }
+    .toast-msg   { font-size: .75rem; color: var(--text-muted); line-height: 1.5; }
+    .toast-close {
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .72rem;
+      color: var(--text-muted);
+      transition: background .18s;
+      flex-shrink: 0;
+    }
+    .toast-close:hover { background: rgba(0,0,0,0.05); }
+
+    /* - - - - - Toast Dark Variant - - - - - */
+    .toast-item.dark {
+      background: #0f1c2e;
+      border-color: rgba(255,255,255,0.08);
+    }
+    .toast-item.dark .toast-title { color: #fff; }
+    .toast-item.dark .toast-msg   { color: rgba(255,255,255,0.55); }
+    .toast-item.dark .toast-close { color: rgba(255,255,255,0.4); }
+
+
+    /* ═══════════════════════════════════════════
+       SECTION 5 — DIALOG / MODAL
+       ═══════════════════════════════════════════ */
+
+    /* - - - - - Modal Overlay - - - - - */
+    .modal-ov {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,15,40,0.55);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+    .modal-ov.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* - - - - - Modal Box - - - - - */
+    .modal-box {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 30px 80px rgba(0,20,60,0.25);
+      width: 100%;
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+      transform: scale(.88) translateY(20px);
+      transition: transform .38s var(--ease);
+      scrollbar-width: thin;
+    }
+    .modal-ov.show .modal-box { transform: scale(1) translateY(0); }
+
+    /* - - - - - Modal Sizes - - - - - */
+    .modal-sm { max-width: 360px; }
+    .modal-md { max-width: 500px; }
+    .modal-lg { max-width: 720px; }
+    .modal-xl { max-width: 920px; }
+
+    /* - - - - - Modal Header - - - - - */
+    .modal-head {
+      padding: 1.4rem 1.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+    }
+    .modal-head-ico {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .mhi-blue   { background:var(--blue-soft);  color:var(--blue);  }
+    .mhi-green  { background:var(--green-soft); color:var(--green); }
+    .mhi-red    { background:var(--red-soft);   color:var(--red);   }
+    .mhi-amber  { background:var(--amber-soft); color:#d97706;      }
+    .modal-head h4 { font-size: .97rem; font-weight: 700; color: var(--text-main); margin: 0; flex: 1; }
+    .modal-head p  { font-size: .74rem; color: var(--text-muted); margin: .1rem 0 0; }
+    .modal-close {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: .88rem;
+      transition: background .18s, color .18s;
+      flex-shrink: 0;
+    }
+    .modal-close:hover { background: var(--red-soft); color: var(--red); border-color: rgba(220,53,69,0.25); }
+
+    /* - - - - - Modal Body - - - - - */
+    .modal-body { padding: 1.3rem 1.6rem; }
+
+    /* - - - - - Modal Footer - - - - - */
+    .modal-foot {
+      padding: 1rem 1.6rem 1.3rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: .55rem;
+      flex-wrap: wrap;
+    }
+
+    /* - - - - - Confirmation Dialog (centered icon) - - - - - */
+    .confirm-dialog { text-align: center; padding: 2rem 1.8rem 1.6rem; }
+    .confirm-ring {
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      margin: 0 auto 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+    .cr-red    { background: linear-gradient(135deg,#fee2e2,#fecaca); color: var(--red);    }
+    .cr-amber  { background: linear-gradient(135deg,#fef3c7,#fde68a); color: #d97706;       }
+    .cr-blue   { background: linear-gradient(135deg,#dbeafe,#bfdbfe); color: var(--blue);   }
+    .cr-green  { background: linear-gradient(135deg,#d1fae5,#a7f3d0); color: var(--green);  }
+    .confirm-ttl  { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: .4rem; }
+    .confirm-desc { font-size: .81rem; color: var(--text-muted); line-height: 1.68; margin-bottom: 1.5rem; }
+    .confirm-btns { display: flex; gap: .6rem; }
+    .mbtn-cancel {
+      flex: 1; padding: .64rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #f8f9fb;
+      color: var(--text-muted);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .84rem; font-weight: 600;
+      cursor: pointer;
+      transition: background .18s;
+    }
+    .mbtn-cancel:hover { background: #edf0f5; }
+    .mbtn-ok {
+      flex: 1; padding: .64rem;
+      border-radius: 10px;
+      border: none;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .84rem; font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .mbtn-ok.red    { background: linear-gradient(135deg,var(--red),#c0392b);    box-shadow:0 4px 14px rgba(220,53,69,0.3); }
+    .mbtn-ok.blue   { background: linear-gradient(135deg,var(--blue),var(--blue-light)); box-shadow:0 4px 14px rgba(0,114,198,0.3); }
+    .mbtn-ok.green  { background: linear-gradient(135deg,var(--green),#0ea05a);  box-shadow:0 4px 14px rgba(16,185,100,0.3); }
+    .mbtn-ok.amber  { background: linear-gradient(135deg,var(--amber),#d97706);  box-shadow:0 4px 14px rgba(245,158,11,0.3); }
+    .mbtn-ok:hover  { transform: translateY(-1px); }
+
+
+    /* ═══════════════════════════════════════════
+       SECTION 6 — FORM INPUTS
+       ═══════════════════════════════════════════ */
+
+    /* - - - - - Base Input Styles - - - - - */
+    .fi, .fta, .fsel {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      background: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .84rem;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .fi  { height: var(--inp-h); padding: 0 .9rem; }
+    .fi.ico-l { padding-left: 2.5rem; }
+    .fi.ico-r { padding-right: 2.5rem; }
+    .fi::placeholder, .fta::placeholder { color: #b0bac7; }
+    .fi:focus, .fta:focus, .fsel:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3.5px rgba(0,114,198,0.11);
+    }
+    .fta  { padding: .8rem .9rem; resize: vertical; min-height: 80px; line-height: 1.65; }
+    .fsel { height: var(--inp-h); padding: 0 .9rem; cursor: pointer; }
+
+    /* - - - - - Input Wrapper (icons) - - - - - */
+    .fiw { position: relative; }
+    .fii-l { position:absolute; left:.85rem;  top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:.87rem; pointer-events:none; }
+    .fii-r { position:absolute; right:.85rem; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:.87rem; cursor:pointer; }
+    .fii-r:hover { color: var(--blue); }
+
+    /* - - - - - Input States - - - - - */
+    .fi-success { border-color: var(--green) !important; }
+    .fi-success:focus { box-shadow: 0 0 0 3.5px rgba(16,185,100,0.12) !important; }
+    .fi-error   { border-color: var(--red)   !important; }
+    .fi-error:focus   { box-shadow: 0 0 0 3.5px rgba(220,53,69,0.12)  !important; }
+    .fi-warning { border-color: var(--amber) !important; }
+    .fi-warning:focus { box-shadow: 0 0 0 3.5px rgba(245,158,11,0.12) !important; }
+
+    .fi-hint { font-size: .71rem; margin-top: .3rem; line-height: 1.5; }
+    .fi-hint.success { color: var(--green); }
+    .fi-hint.error   { color: var(--red);   }
+    .fi-hint.muted   { color: var(--text-muted); }
+
+    /* - - - - - Input Label - - - - - */
+    .fl {
+      font-size: .79rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: .3rem;
+      margin-bottom: .35rem;
+    }
+    .fl .req { color: var(--red); font-size: .72rem; }
+    .fl .tip {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--blue-soft);
+      color: var(--blue);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .6rem;
+      cursor: help;
+    }
+
+    /* - - - - - Form Group - - - - - */
+    .fg { margin-bottom: .95rem; }
+    .fg:last-child { margin-bottom: 0; }
+    .fg-row  { display: grid; grid-template-columns: 1fr 1fr;    gap: .85rem; margin-bottom: .95rem; }
+    .fg-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .85rem; margin-bottom: .95rem; }
+
+    /* - - - - - Input with Button (Search bar) - - - - - */
+    .inp-grp {
+      display: flex;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      overflow: hidden;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .inp-grp:focus-within {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3.5px rgba(0,114,198,0.11);
+    }
+    .inp-grp .fi {
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      flex: 1;
+    }
+    .inp-grp .ig-btn {
+      padding: 0 1rem;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: .84rem;
+      font-weight: 600;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      transition: background .18s;
+      white-space: nowrap;
+    }
+    .inp-grp .ig-btn:hover { background: var(--blue-dark); }
+    .inp-grp .ig-pre {
+      padding: 0 .85rem;
+      background: #f5f7fb;
+      border-right: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      font-size: .8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* - - - - - Toggle Switch - - - - - */
+    .tog { position:relative; display:inline-block; width:42px; height:24px; flex-shrink:0; }
+    .tog input { opacity:0; width:0; height:0; }
+    .tog-slider { position:absolute; inset:0; background:#d1d9e6; border-radius:100px; cursor:pointer; transition:background .25s; }
+    .tog-slider::before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .25s; box-shadow:0 1px 4px rgba(0,0,0,0.18); }
+    .tog input:checked + .tog-slider { background: var(--blue); }
+    .tog input:checked + .tog-slider::before { transform: translateX(18px); }
+    .tog input:focus + .tog-slider { box-shadow: 0 0 0 3px rgba(0,114,198,0.15); }
+    /* toggle sizes */
+    .tog-sm { width:34px; height:20px; }
+    .tog-sm .tog-slider::before { width:14px; height:14px; }
+    .tog-lg { width:52px; height:28px; }
+    .tog-lg .tog-slider::before { width:22px; height:22px; }
+    .tog-lg input:checked + .tog-slider::before { transform: translateX(24px); }
+
+    /* - - - - - Checkbox & Radio styled - - - - - */
+    .ck-wrap {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      cursor: pointer;
+      font-size: .83rem;
+      font-weight: 500;
+      color: var(--text-main);
+      user-select: none;
+    }
+    .ck-wrap input[type=checkbox],
+    .ck-wrap input[type=radio] { display:none; }
+    .ck-box {
+      width: 18px; height: 18px;
+      border: 2px solid var(--border);
+      border-radius: 5px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color .18s, background .18s;
+      font-size: .72rem;
+      color: transparent;
+    }
+    .ck-wrap input:checked + .ck-box {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+    .ck-radio { border-radius: 50% !important; }
+    .ck-radio::after { content:''; width:7px; height:7px; border-radius:50%; background:transparent; }
+    .ck-wrap input:checked + .ck-radio { background: var(--blue); border-color: var(--blue); }
+    .ck-wrap input:checked + .ck-radio::after { background: #fff; }
+
+    /* - - - - - Range Slider - - - - - */
+    input[type=range].frange {
+      width: 100%;
+      -webkit-appearance: none;
+      height: 5px;
+      border-radius: 100px;
+      background: #dde3ec;
+      outline: none;
+      cursor: pointer;
+      accent-color: var(--blue);
+    }
+    input[type=range].frange::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 2px 8px rgba(0,114,198,0.35);
+      cursor: pointer;
+    }
+
+    /* - - - - - Password Strength Meter - - - - - */
+    .pw-strength { height: 5px; border-radius: 100px; background: #e9edf3; margin-top: .4rem; overflow: hidden; }
+    .pw-fill { height: 100%; border-radius: 100px; transition: width .4s var(--ease), background .4s; width: 0; }
+
+
+    /* ═══════════════════════════════════════════
+       SECTION 7 — PROGRESS & LOADING
+       ═══════════════════════════════════════════ */
+
+    /* - - - - - Progress Bar - - - - - */
+    .prog-wrap { margin-bottom: .9rem; }
+    .prog-wrap:last-child { margin-bottom: 0; }
+    .prog-meta { display:flex; justify-content:space-between; font-size:.75rem; color:var(--text-muted); margin-bottom:.35rem; }
+    .prog-meta strong { color: var(--text-main); }
+    .prog-track { height: 8px; border-radius: 100px; background: #e2e8f2; overflow: hidden; }
+    .prog-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--blue), var(--blue-light));
+      transition: width .7s var(--ease);
+    }
+    .prog-fill.green  { background: linear-gradient(90deg, var(--green),  #0ea05a); }
+    .prog-fill.red    { background: linear-gradient(90deg, var(--red),    #c0392b); }
+    .prog-fill.amber  { background: linear-gradient(90deg, var(--amber),  #d97706); }
+    .prog-fill.purple { background: linear-gradient(90deg, var(--purple), #6d28d9); }
+    /* striped animated */
+    .prog-fill.striped {
+      background-image: linear-gradient(
+        45deg,
+        rgba(255,255,255,0.18) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255,255,255,0.18) 50%,
+        rgba(255,255,255,0.18) 75%,
+        transparent 75%,
+        transparent
+      );
+      background-size: 16px 16px;
+      animation: stripes .8s linear infinite;
+    }
+    @keyframes stripes { from { background-position: 16px 0; } to { background-position: 0 0; } }
+
+    /* - - - - - Circular Spinner - - - - - */
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid rgba(0,114,198,0.15);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spinAnim .75s linear infinite;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .spinner.sm { width:20px; height:20px; border-width:2px; }
+    .spinner.lg { width:48px; height:48px; border-width:4px; }
+    .spinner.green  { border-color:rgba(16,185,100,0.15); border-top-color:var(--green); }
+    .spinner.red    { border-color:rgba(220,53,69,0.15);  border-top-color:var(--red);   }
+    .spinner.amber  { border-color:rgba(245,158,11,0.15); border-top-color:var(--amber); }
+    .spinner.white  { border-color:rgba(255,255,255,0.3); border-top-color:#fff; }
+    @keyframes spinAnim { to { transform: rotate(360deg); } }
+
+    /* - - - - - Skeleton Loader - - - - - */
+    .skel {
+      background: linear-gradient(90deg, #e8edf5 25%, #f3f6fb 50%, #e8edf5 75%);
+      background-size: 200% 100%;
+      border-radius: 6px;
+      animation: skelShimmer 1.4s infinite;
+      display: block;
+    }
+    @keyframes skelShimmer { to { background-position: -200% 0; } }
+    .skel-text  { height: 14px; margin-bottom: 8px; border-radius: 4px; }
+    .skel-title { height: 22px; margin-bottom: 10px; border-radius: 6px; }
+    .skel-img   { border-radius: var(--r); }
+    .skel-av    { border-radius: 50% !important; }
+
+
+    /* ═══════════════════════════════════════════
+       SECTION 8 — CARDS
+       ═══════════════════════════════════════════ */
+
+    /* - - - - - Base Card - - - - - */
+    .card-base {
+      background: #fff;
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform .22s, box-shadow .22s;
+    }
+    .card-base:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .card-base .cb-img { width: 100%; height: 160px; object-fit: cover; display: block; }
+    .card-base .cb-body { padding: 1.1rem 1.2rem; }
+    .card-base .cb-tag  { display: inline-flex; align-items: center; gap:.2rem; font-size:.68rem; font-weight:700; margin-bottom:.5rem; }
+    .card-base .cb-title{ font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--text-main); margin-bottom:.4rem; line-height:1.3; }
+    .card-base .cb-desc { font-size:.78rem; color:var(--text-muted); line-height:1.6; margin-bottom:.85rem; }
+    .card-base .cb-meta { display:flex; align-items:center; gap:.65rem; font-size:.71rem; color:var(--text-muted); border-top:1px solid var(--border); padding-top:.75rem; margin-top:auto; }
+    .card-base .cb-meta i { color:var(--blue); }
+
+    /* - - - - - Stat Card - - - - - */
+    .stat-card {
+      background: #fff;
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1.1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+      transition: transform .22s;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-card .sc-ico {
+      width: 44px; height: 44px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      margin-bottom: .4rem;
+    }
+    .stat-card .sc-val { font-size: 1.55rem; font-weight: 800; color: var(--text-main); line-height: 1; }
+    .stat-card .sc-lbl { font-size: .75rem; color: var(--text-muted); font-weight: 500; }
+    .stat-card .sc-chg { font-size: .72rem; font-weight: 700; display: flex; align-items: center; gap: .18rem; }
+    .sc-up   { color: var(--green); }
+    .sc-down { color: var(--red); }
+
+
+    /* ═══════════════════════════════════════════
+       SECTION 9 — TINYMCE EDITOR
+       ═══════════════════════════════════════════ */
+
+    /* - - - - - TinyMCE Wrapper - - - - - */
+    .tinymce-wrap {
+      border: 1.5px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .tinymce-wrap.focused {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3.5px rgba(0,114,198,0.11);
+    }
+    /* override tox toolbar bg */
+    .tox-tinymce { border: none !important; border-radius: 0 !important; }
+    .tox .tox-toolbar,
+    .tox .tox-toolbar__primary,
+    .tox .tox-statusbar { background: #f8fafb !important; }
+    .tox .tox-toolbar__primary { border-bottom: 1px solid var(--border) !important; }
+    .tox .tox-statusbar { border-top: 1px solid var(--border) !important; }
+    .tox .tox-tbtn:hover { background: var(--blue-soft) !important; color: var(--blue) !important; }
+    .tox .tox-tbtn--enabled { background: var(--blue-soft) !important; color: var(--blue) !important; }
+
+
+    /* ═══════════════════════════════════════════
+       SECTION 10 — MISC UTILITIES
+       ═══════════════════════════════════════════ */
+
+    /* - - - - - Divider - - - - - */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1rem 0;
+      position: relative;
+    }
+    .divider.labeled {
+      display: flex;
+      align-items: center;
+      height: auto;
+      background: none;
+      gap: .75rem;
+    }
+    .divider.labeled::before,
+    .divider.labeled::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider.labeled span {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* - - - - - Tooltip - - - - - */
+    [data-tooltip] {
+      position: relative;
+      cursor: help;
+    }
+    [data-tooltip]::before {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 7px);
+      left: 50%;
+      transform: translateX(-50%) scale(.9);
+      background: #0f1c2e;
+      color: #fff;
+      font-size: .71rem;
+      font-weight: 500;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: .38rem .7rem;
+      border-radius: 7px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s, transform .2s;
+      z-index: 999;
+    }
+    [data-tooltip]::after {
+      content: '';
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #0f1c2e;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+    [data-tooltip]:hover::before { opacity: 1; transform: translateX(-50%) scale(1); }
+    [data-tooltip]:hover::after  { opacity: 1; }
+
+    /* - - - - - Avatar - - - - - */
+    .av {
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue), var(--blue-light));
+      flex-shrink: 0;
+    }
+    .av-xs  { width:26px;  height:26px;  font-size:.6rem;  }
+    .av-sm  { width:34px;  height:34px;  font-size:.78rem; }
+    .av-md  { width:44px;  height:44px;  font-size:.95rem; }
+    .av-lg  { width:60px;  height:60px;  font-size:1.2rem; }
+    .av-xl  { width:80px;  height:80px;  font-size:1.6rem; }
+    .av-grp { display:flex; }
+    .av-grp .av { border:2px solid #fff; margin-left:-10px; }
+    .av-grp .av:first-child { margin-left: 0; }
+
+    /* - - - - - Empty State - - - - - */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      gap: .6rem;
+    }
+    .es-ico {
+      width: 64px; height: 64px;
+      border-radius: 18px;
+      background: var(--blue-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      color: var(--blue);
+      margin-bottom: .4rem;
+    }
+    .es-title { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--text-main); }
+    .es-desc  { font-size:.79rem; color:var(--text-muted); line-height:1.65; max-width:280px; }
+
+    /* ─── responsive helpers ─── */
+    @media(max-width:767px){
+      .page-wrap { padding: 1rem .85rem 4rem; }
+      .ph-title  { font-size: 1.45rem; }
+      .fg-row, .fg-row3 { grid-template-columns: 1fr; }
+      #toast-container { right:.75rem; bottom:.75rem; }
+      .toast-item { min-width: calc(100vw - 2.5rem); max-width: calc(100vw - 1.5rem); }
+    }
+    @media(max-width:480px){
+      .ph-title { font-size: 1.2rem; }
+      .demo-row { gap: .5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     TOAST CONTAINER (fixed)
+     ════════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<!-- ════════════════════════════════════════
+     MODAL: Standard Info
+     ════════════════════════════════════════ -->
+<!-- - - - - - modal-info - - - - - -->
+<div class="modal-ov" id="modal-info">
+  <div class="modal-box modal-md">
+    <div class="modal-head">
+      <div class="modal-head-ico mhi-blue"><i class="bi bi-info-circle-fill"></i></div>
+      <div>
+        <h4>Informasi Permohonan</h4>
+        <p>Detail status dan progres permohonan informasi publik</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-info')"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert-box ab-info" style="margin-bottom:1rem">
+        <i class="bi bi-info-circle-fill ab-ico"></i>
+        <div class="ab-content"><div class="ab-title">Permohonan sedang diproses</div><p class="ab-desc">Tim PPID sedang meninjau dokumen Anda. Estimasi selesai dalam 3 hari kerja.</p></div>
+      </div>
+      <div class="fg"><label class="fl">Nomor Permohonan</label><input type="text" class="fi" value="#PMH-2025-0142" readonly style="background:#f8f9fb;color:var(--text-muted)"/></div>
+      <div class="fg-row">
+        <div class="fg"><label class="fl">Tanggal Masuk</label><input type="text" class="fi" value="20 Jan 2025" readonly style="background:#f8f9fb;color:var(--text-muted)"/></div>
+        <div class="fg"><label class="fl">Batas Respons</label><input type="text" class="fi" value="03 Feb 2025" readonly style="background:#f8f9fb;color:var(--text-muted)"/></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-o" onclick="closeModal('modal-info')">Tutup</button>
+      <button class="btn-p"><i class="bi bi-send"></i> Hubungi Admin</button>
+    </div>
+  </div>
+</div>
+
+<!-- - - - - - modal-form - - - - - -->
+<!-- Modal: Form Input -->
+<div class="modal-ov" id="modal-form">
+  <div class="modal-box modal-lg">
+    <div class="modal-head">
+      <div class="modal-head-ico mhi-blue"><i class="bi bi-pencil-fill"></i></div>
+      <div>
+        <h4>Edit Data Berita</h4>
+        <p>Ubah informasi berita yang sudah dipublikasikan</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-form')"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="fg-row">
+        <div class="fg"><label class="fl">Judul Berita <span class="req">*</span></label><input type="text" class="fi" value="PPID Raih Predikat Informatif KIP 2024"/></div>
+        <div class="fg"><label class="fl">Tema</label><select class="fsel"><option>PPID</option><option>Layanan Publik</option><option>Regulasi</option></select></div>
+      </div>
+      <div class="fg"><label class="fl">Ringkasan <span class="req">*</span></label><textarea class="fta" rows="3">Komisi Informasi Provinsi Jawa Tengah menetapkan PPID Kota Pekalongan sebagai badan publik dengan predikat Informatif.</textarea></div>
+      <div class="fg-row">
+        <div class="fg"><label class="fl">Status</label><select class="fsel"><option>Publish</option><option>Draft</option><option>Arsip</option></select></div>
+        <div class="fg"><label class="fl">Penulis</label><select class="fsel"><option>Ahmad Fauzi</option><option>Siti Rahayu</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-o" onclick="closeModal('modal-form')"><i class="bi bi-x"></i> Batal</button>
+      <button class="btn-a"><i class="bi bi-eye"></i> Preview</button>
+      <button class="btn-p"><i class="bi bi-floppy-fill"></i> Simpan Perubahan</button>
+    </div>
+  </div>
+</div>
+
+<!-- - - - - - modal-confirm-delete - - - - - -->
+<!-- Confirmation Dialog: Hapus -->
+<div class="modal-ov" id="modal-confirm-delete">
+  <div class="modal-box modal-sm">
+    <div class="confirm-dialog">
+      <div class="confirm-ring cr-red"><i class="bi bi-trash3-fill"></i></div>
+      <div class="confirm-ttl">Hapus Berita Ini?</div>
+      <p class="confirm-desc">Berita <strong>PPID Raih Predikat Informatif KIP 2024</strong> akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.</p>
+      <div class="confirm-btns">
+        <button class="mbtn-cancel" onclick="closeModal('modal-confirm-delete')">Batal</button>
+        <button class="mbtn-ok red" onclick="closeModal('modal-confirm-delete');showToast('error','Berita Dihapus','Berita berhasil dihapus permanen dari sistem.')"><i class="bi bi-trash3"></i> Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- - - - - - modal-confirm-publish - - - - - -->
+<!-- Confirmation Dialog: Publish -->
+<div class="modal-ov" id="modal-confirm-publish">
+  <div class="modal-box modal-sm">
+    <div class="confirm-dialog">
+      <div class="confirm-ring cr-green"><i class="bi bi-send-fill"></i></div>
+      <div class="confirm-ttl">Publikasikan Berita?</div>
+      <p class="confirm-desc">Berita akan langsung tayang di portal publik dan dapat diakses oleh seluruh masyarakat.</p>
+      <div class="confirm-btns">
+        <button class="mbtn-cancel" onclick="closeModal('modal-confirm-publish')">Batal</button>
+        <button class="mbtn-ok green" onclick="closeModal('modal-confirm-publish');showToast('success','Berhasil Dipublikasikan','Berita kini dapat diakses publik di portal PPID.')"><i class="bi bi-send"></i> Publikasikan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- - - - - - modal-confirm-warn - - - - - -->
+<!-- Confirmation Dialog: Warning -->
+<div class="modal-ov" id="modal-confirm-warn">
+  <div class="modal-box modal-sm">
+    <div class="confirm-dialog">
+      <div class="confirm-ring cr-amber"><i class="bi bi-exclamation-triangle-fill"></i></div>
+      <div class="confirm-ttl">Reset Pengaturan?</div>
+      <p class="confirm-desc">Semua konfigurasi sistem akan dikembalikan ke nilai default. Data pengguna tidak terpengaruh.</p>
+      <div class="confirm-btns">
+        <button class="mbtn-cancel" onclick="closeModal('modal-confirm-warn')">Batal</button>
+        <button class="mbtn-ok amber" onclick="closeModal('modal-confirm-warn');showToast('warning','Pengaturan Direset','Semua pengaturan kembali ke nilai default.')"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- - - - - - modal-image - - - - - -->
+<!-- Image Preview Modal -->
+<div class="modal-ov" id="modal-image" onclick="closeModal('modal-image')">
+  <div class="modal-box modal-xl" style="background:transparent;box-shadow:none;border-radius:0" onclick="event.stopPropagation()">
+    <div style="position:relative;border-radius:16px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.5)">
+      <img src="https://picsum.photos/seed/ppid/900/500" alt="Preview" style="width:100%;display:block;border-radius:16px"/>
+      <button onclick="closeModal('modal-image')" style="position:absolute;top:1rem;right:1rem;width:36px;height:36px;border-radius:10px;border:none;background:rgba(0,0,0,0.55);color:#fff;font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer"><i class="bi bi-x-lg"></i></button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════
+     PAGE CONTENT
+     ════════════════════════════════ -->
+<div class="page-wrap">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="ph-eyebrow"><i class="bi bi-puzzle-fill"></i> Design System · PPID Kota Pekalongan</div>
+    <div class="ph-title">UI Components Library</div>
+    <div class="ph-sub">Koleksi lengkap komponen antarmuka — button, badge, alert, toast, dialog, form input, progress, card, skeleton, editor, dan utilitas lain. Semua konsisten dengan tema PPID.</div>
+  </div>
+
+  <!-- Quick TOC -->
+  <div class="toc">
+    <div class="toc-lbl">Daftar Komponen</div>
+    <a href="#sec-buttons"><i class="bi bi-hand-index"></i> Buttons</a>
+    <a href="#sec-badges"><i class="bi bi-tag"></i> Badges & Tags</a>
+    <a href="#sec-alerts"><i class="bi bi-bell"></i> Alert Box</a>
+    <a href="#sec-toast"><i class="bi bi-chat-right-text"></i> Toast</a>
+    <a href="#sec-dialogs"><i class="bi bi-window"></i> Dialog & Modal</a>
+    <a href="#sec-inputs"><i class="bi bi-input-cursor-text"></i> Form Inputs</a>
+    <a href="#sec-progress"><i class="bi bi-bar-chart"></i> Progress & Loading</a>
+    <a href="#sec-cards"><i class="bi bi-card-text"></i> Cards</a>
+    <a href="#sec-editor"><i class="bi bi-pen"></i> Rich Text Editor</a>
+    <a href="#sec-misc"><i class="bi bi-grid"></i> Utilities</a>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       SECTION 1 — BUTTONS
+       ══════════════════════════════════ -->
+  <div class="sec-heading" id="sec-buttons">
+    <div class="sec-num">1</div>
+    <h2>Buttons</h2>
+    <span class="sec-tag">btn-p · btn-o · btn-g · btn-r · btn-a</span>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-palette"></i><h5>Solid Buttons</h5><span class="cc-note">gradient + shadow on hover</span></div>
+    <div class="comp-body">
+      <!-- // - - - - - solid / gradient buttons - - - - - -->
+      <div class="comp-comment">solid / gradient buttons</div>
+      <div class="demo-row">
+        <button class="btn-p"><i class="bi bi-shield-check"></i> Primary</button>
+        <button class="btn-g"><i class="bi bi-check-circle"></i> Success</button>
+        <button class="btn-r"><i class="bi bi-trash3"></i> Danger</button>
+        <button class="btn-a"><i class="bi bi-exclamation-triangle"></i> Warning</button>
+        <button class="btn-v"><i class="bi bi-star"></i> Purple</button>
+      </div>
+
+      <!-- // - - - - - outline buttons - - - - - -->
+      <div class="comp-comment">outline buttons</div>
+      <div class="demo-row">
+        <button class="btn-o"><i class="bi bi-arrow-left"></i> Kembali</button>
+        <button class="btn-o" style="color:var(--blue);border-color:rgba(0,114,198,0.3)"><i class="bi bi-pencil"></i> Edit</button>
+        <button class="btn-o" style="color:var(--green);border-color:rgba(16,185,100,0.3)"><i class="bi bi-download"></i> Unduh</button>
+        <button class="btn-o" style="color:var(--red);border-color:rgba(220,53,69,0.28)"><i class="bi bi-x-circle"></i> Batal</button>
+        <button class="btn-o" style="color:#d97706;border-color:rgba(245,158,11,0.3)"><i class="bi bi-archive"></i> Arsip</button>
+      </div>
+
+      <!-- // - - - - - ghost / tinted buttons - - - - - -->
+      <div class="comp-comment">ghost / tinted buttons</div>
+      <div class="demo-row">
+        <button class="btn-ghost-blue"><i class="bi bi-info-circle"></i> Info</button>
+        <button class="btn-ghost-green"><i class="bi bi-check2"></i> Setujui</button>
+        <button class="btn-ghost-red"><i class="bi bi-ban"></i> Tolak</button>
+        <button class="btn-ghost-amber"><i class="bi bi-clock"></i> Tunda</button>
+        <button class="btn-ghost-purple"><i class="bi bi-star-fill"></i> Unggulan</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-arrows-expand-vertical"></i><h5>Button Sizes</h5></div>
+    <div class="comp-body">
+      <!-- // - - - - - button sizes (xs to xl) - - - - - -->
+      <div class="comp-comment">button sizes — xs / sm / md / lg / xl</div>
+      <div class="demo-row" style="align-items:center">
+        <button class="btn-p btn-xs"><i class="bi bi-plus"></i> XSmall</button>
+        <button class="btn-p btn-sm"><i class="bi bi-plus"></i> Small</button>
+        <button class="btn-p btn-md"><i class="bi bi-plus"></i> Medium</button>
+        <button class="btn-p btn-lg"><i class="bi bi-plus"></i> Large</button>
+        <button class="btn-p btn-xl"><i class="bi bi-plus"></i> XLarge</button>
+      </div>
+
+      <!-- // - - - - - icon-only buttons - - - - - -->
+      <div class="comp-comment">icon-only buttons</div>
+      <div class="demo-row" style="align-items:center">
+        <button class="btn-ico ico-sm" data-tooltip="Edit"><i class="bi bi-pencil"></i></button>
+        <button class="btn-ico"        data-tooltip="Salin tautan"><i class="bi bi-link-45deg"></i></button>
+        <button class="btn-ico ico-lg" data-tooltip="Unduh"><i class="bi bi-download"></i></button>
+        <button class="btn-ico" style="background:var(--blue-soft);border-color:rgba(0,114,198,0.3);color:var(--blue)"><i class="bi bi-eye"></i></button>
+        <button class="btn-ico" style="background:var(--red-soft);border-color:rgba(220,53,69,0.25);color:var(--red)"><i class="bi bi-trash3"></i></button>
+      </div>
+
+      <!-- // - - - - - loading and disabled states - - - - - -->
+      <div class="comp-comment">loading & disabled states</div>
+      <div class="demo-row">
+        <button class="btn-p btn-loading"><span>Menyimpan...</span></button>
+        <button class="btn-g btn-loading"><span>Mengunggah...</span></button>
+        <button class="btn-p btn-disabled">Disabled</button>
+        <button class="btn-o btn-disabled">Disabled Outline</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       SECTION 2 — BADGES & TAGS
+       ══════════════════════════════════ -->
+  <div class="sec-heading" id="sec-badges">
+    <div class="sec-num">2</div>
+    <h2>Badges & Tags</h2>
+    <span class="sec-tag">badge · tag-pill · tema</span>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-tag-fill"></i><h5>Status Badges</h5></div>
+    <div class="comp-body">
+      <!-- // - - - - - soft badges with dot indicator - - - - - -->
+      <div class="comp-comment">soft badges — with dot indicator</div>
+      <div class="demo-row" style="align-items:center">
+        <span class="badge badge-blue"><span class="bdot"></span>Dipublikasikan</span>
+        <span class="badge badge-green"><span class="bdot"></span>Selesai</span>
+        <span class="badge badge-red"><span class="bdot"></span>Ditolak</span>
+        <span class="badge badge-amber"><span class="bdot"></span>Menunggu</span>
+        <span class="badge badge-purple"><span class="bdot"></span>Unggulan</span>
+        <span class="badge badge-teal"><span class="bdot"></span>Aktif</span>
+        <span class="badge badge-slate"><span class="bdot"></span>Draft</span>
+      </div>
+
+      <!-- // - - - - - solid badge variants - - - - - -->
+      <div class="comp-comment">solid badge variants</div>
+      <div class="demo-row" style="align-items:center">
+        <span class="badge badge-solid-blue"><i class="bi bi-shield-check"></i> PPID</span>
+        <span class="badge badge-solid-green">Informatif</span>
+        <span class="badge badge-solid-red">Kadaluarsa</span>
+        <span class="badge badge-solid-amber">Prioritas</span>
+        <span class="badge badge-solid-purple">Kegiatan</span>
+        <span class="badge badge-solid-slate">Arsip</span>
+      </div>
+
+      <!-- // - - - - - counter / notification badges - - - - - -->
+      <div class="comp-comment">counter & notification badges</div>
+      <div class="demo-row" style="align-items:center">
+        <div style="position:relative;display:inline-flex">
+          <button class="btn-ico"><i class="bi bi-bell"></i></button>
+          <span class="badge-count red" style="position:absolute;top:-5px;right:-6px">3</span>
+        </div>
+        <div style="position:relative;display:inline-flex">
+          <button class="btn-ico"><i class="bi bi-inbox"></i></button>
+          <span class="badge-count" style="position:absolute;top:-5px;right:-6px">12</span>
+        </div>
+        <span class="badge-count">5</span>
+        <span class="badge-count red">99+</span>
+        <span class="badge-count green">✓</span>
+      </div>
+
+      <!-- // - - - - - tema badges (sesuai halaman berita) - - - - - -->
+      <div class="comp-comment">tema badges — sesuai halaman berita</div>
+      <div class="demo-row" style="align-items:center">
+        <span class="badge tema-ppid"><i class="bi bi-shield-check"></i> PPID</span>
+        <span class="badge tema-layanan"><i class="bi bi-headset"></i> Layanan Publik</span>
+        <span class="badge tema-regulasi"><i class="bi bi-journal-text"></i> Regulasi</span>
+        <span class="badge tema-kegiatan"><i class="bi bi-calendar-event"></i> Kegiatan</span>
+        <span class="badge tema-pengumuman"><i class="bi bi-megaphone-fill"></i> Pengumuman</span>
+        <span class="badge tema-lainnya"><i class="bi bi-three-dots"></i> Lainnya</span>
+      </div>
+
+      <!-- // - - - - - tag pills (removable) - - - - - -->
+      <div class="comp-comment">tag pills — removable</div>
+      <div class="demo-row" style="align-items:center">
+        <span class="tag-pill"><i class="bi bi-hash"></i>PPID<span class="tag-rm"><i class="bi bi-x"></i></span></span>
+        <span class="tag-pill"><i class="bi bi-hash"></i>Keterbukaan Informasi<span class="tag-rm"><i class="bi bi-x"></i></span></span>
+        <span class="tag-pill"><i class="bi bi-hash"></i>Monev KIP<span class="tag-rm"><i class="bi bi-x"></i></span></span>
+        <span class="tag-pill"><i class="bi bi-hash"></i>Transparansi<span class="tag-rm"><i class="bi bi-x"></i></span></span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       SECTION 3 — ALERT BOX
+       ══════════════════════════════════ -->
+  <div class="sec-heading" id="sec-alerts">
+    <div class="sec-num">3</div>
+    <h2>Alert Box</h2>
+    <span class="sec-tag">ab-info · ab-success · ab-warning · ab-error</span>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-exclamation-circle-fill"></i><h5>Inline Alert Variants</h5></div>
+    <div class="comp-body">
+      <!-- // - - - - - simple alert box (icon + text) - - - - - -->
+      <div class="comp-comment">simple alert box — icon + message</div>
+      <div class="alert-box ab-info">
+        <i class="bi bi-info-circle-fill ab-ico"></i>
+        <p class="ab-desc">Permohonan Anda sedang dalam proses peninjauan oleh tim PPID. Estimasi selesai 3 hari kerja.</p>
+      </div>
+      <div class="alert-box ab-success">
+        <i class="bi bi-check-circle-fill ab-ico"></i>
+        <p class="ab-desc">Data berhasil disimpan! Perubahan sudah aktif dan dapat dilihat di portal publik.</p>
+      </div>
+      <div class="alert-box ab-warning">
+        <i class="bi bi-exclamation-triangle-fill ab-ico"></i>
+        <p class="ab-desc">Sesi Anda akan berakhir dalam 10 menit. Simpan pekerjaan Anda agar tidak hilang.</p>
+      </div>
+      <div class="alert-box ab-error">
+        <i class="bi bi-x-circle-fill ab-ico"></i>
+        <p class="ab-desc">Gagal mengirim data. Periksa koneksi internet dan coba lagi beberapa saat.</p>
+      </div>
+      <div class="alert-box ab-neutral">
+        <i class="bi bi-chat-left-text-fill ab-ico"></i>
+        <p class="ab-desc">Tidak ada permohonan baru dalam 7 hari terakhir. Sistem berjalan normal.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-layout-text-sidebar"></i><h5>Alert with Title + Close + Accent</h5></div>
+    <div class="comp-body">
+      <!-- // - - - - - alert with title, description, and close button - - - - - -->
+      <div class="comp-comment">alert with title + description + close button</div>
+      <div class="alert-box ab-info" id="alert-closeable">
+        <i class="bi bi-info-circle-fill ab-ico"></i>
+        <div class="ab-content">
+          <div class="ab-title">Pembaruan Sistem Dijadwalkan</div>
+          <p class="ab-desc">Sistem akan mengalami pemeliharaan pada Minggu, 26 Jan 2025 pukul 00.00–02.00 WIB. Layanan tidak dapat diakses sementara waktu.</p>
+        </div>
+        <button class="ab-close" onclick="this.closest('.alert-box').remove()"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="alert-box ab-success">
+        <i class="bi bi-check-circle-fill ab-ico"></i>
+        <div class="ab-content">
+          <div class="ab-title">Backup Berhasil Dibuat</div>
+          <p class="ab-desc">Backup database telah selesai: <strong>backup-2025-01-20.zip</strong> (128 MB). Disimpan selama 30 hari.</p>
+        </div>
+        <button class="ab-close" onclick="this.closest('.alert-box').remove()"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="alert-box ab-error">
+        <i class="bi bi-x-circle-fill ab-ico"></i>
+        <div class="ab-content">
+          <div class="ab-title">Koneksi SMTP Gagal</div>
+          <p class="ab-desc">Server email tidak merespons. Periksa konfigurasi SMTP atau hubungi administrator jaringan.</p>
+        </div>
+        <button class="ab-close" onclick="this.closest('.alert-box').remove()"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <!-- // - - - - - alert with left border accent - - - - - -->
+      <div class="fdiv"></div>
+      <div class="comp-comment">alert — left border accent variant</div>
+      <div class="alert-box ab-info ab-accent">
+        <i class="bi bi-shield-lock-fill ab-ico"></i>
+        <div class="ab-content"><div class="ab-title">Autentikasi Dua Faktor Disarankan</div><p class="ab-desc">Aktifkan 2FA untuk meningkatkan keamanan akun Anda dari akses tidak sah.</p></div>
+      </div>
+      <div class="alert-box ab-warning ab-accent">
+        <i class="bi bi-clock-history ab-ico"></i>
+        <div class="ab-content"><div class="ab-title">3 Permohonan Mendekati Tenggat</div><p class="ab-desc">Segera respon sebelum batas waktu berakhir untuk menghindari sengketa informasi.</p></div>
+      </div>
+      <div class="alert-box ab-success ab-accent">
+        <i class="bi bi-trophy-fill ab-ico"></i>
+        <div class="ab-content"><div class="ab-title">Predikat Informatif Diraih!</div><p class="ab-desc">PPID Kota Pekalongan berhasil mempertahankan predikat Informatif untuk tahun ketiga berturut-turut.</p></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       SECTION 4 — TOAST
+       ══════════════════════════════════ -->
+  <div class="sec-heading" id="sec-toast">
+    <div class="sec-num">4</div>
+    <h2>Toast Notifications</h2>
+    <span class="sec-tag">t-info · t-success · t-warning · t-error</span>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-chat-right-text-fill"></i><h5>Toast Demo</h5><span class="cc-note">muncul kanan bawah · auto dismiss 3s · progress bar</span></div>
+    <div class="comp-body">
+      <!-- // - - - - - toast trigger buttons - - - - - -->
+      <div class="comp-comment">klik tombol untuk menampilkan toast</div>
+      <div class="demo-row">
+        <button class="btn-p" onclick="showToast('info','Informasi','Permohonan #PMH-2025-0142 sedang diproses oleh tim PPID.')">
+          <i class="bi bi-info-circle"></i> Toast Info
+        </button>
+        <button class="btn-g" onclick="showToast('success','Berhasil Disimpan','Data berita telah berhasil dipublikasikan ke portal.')">
+          <i class="bi bi-check-circle"></i> Toast Sukses
+        </button>
+        <button class="btn-a" onclick="showToast('warning','Perhatian','Sesi Anda akan berakhir dalam 5 menit. Harap simpan pekerjaan.')">
+          <i class="bi bi-exclamation-triangle"></i> Toast Peringatan
+        </button>
+        <button class="btn-r" onclick="showToast('error','Gagal','Koneksi ke server terputus. Coba beberapa saat lagi.')">
+          <i class="bi bi-x-circle"></i> Toast Error
+        </button>
+        <button class="btn-o" onclick="showToastSimple('Tautan berhasil disalin ke clipboard.')">
+          <i class="bi bi-clipboard"></i> Simple Toast
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       SECTION 5 — DIALOG & MODAL
+       ══════════════════════════════════ -->
+  <div class="sec-heading" id="sec-dialogs">
+    <div class="sec-num">5</div>
+    <h2>Dialog & Modal</h2>
+    <span class="sec-tag">modal-sm · modal-md · modal-lg · confirm-dialog</span>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-window-stack"></i><h5>Modal Variants</h5><span class="cc-note">backdrop blur · scale animation · ESC to close</span></div>
+    <div class="comp-body">
+      <!-- // - - - - - modal trigger buttons - - - - - -->
+      <div class="comp-comment">modal — info, form, image preview</div>
+      <div class="demo-row">
+        <button class="btn-p" onclick="openModal('modal-info')"><i class="bi bi-info-circle"></i> Modal Info (MD)</button>
+        <button class="btn-g" onclick="openModal('modal-form')"><i class="bi bi-pencil-square"></i> Modal Form (LG)</button>
+        <button class="btn-o" onclick="openModal('modal-image')"><i class="bi bi-image"></i> Modal Gambar (XL)</button>
+      </div>
+
+      <!-- // - - - - - confirmation dialog buttons - - - - - -->
+      <div class="comp-comment">confirmation dialogs — delete · publish · warning</div>
+      <div class="demo-row">
+        <button class="btn-r" onclick="openModal('modal-confirm-delete')"><i class="bi bi-trash3"></i> Konfirmasi Hapus</button>
+        <button class="btn-g" onclick="openModal('modal-confirm-publish')"><i class="bi bi-send"></i> Konfirmasi Publish</button>
+        <button class="btn-a" onclick="openModal('modal-confirm-warn')"><i class="bi bi-exclamation-triangle"></i> Konfirmasi Peringatan</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       SECTION 6 — FORM INPUTS
+       ══════════════════════════════════ -->
+  <div class="sec-heading" id="sec-inputs">
+    <div class="sec-num">6</div>
+    <h2>Form Inputs</h2>
+    <span class="sec-tag">fi · fta · fsel · tog · ck-wrap</span>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-input-cursor-text"></i><h5>Text Inputs</h5></div>
+    <div class="comp-body">
+      <!-- // - - - - - basic text inputs - - - - - -->
+      <div class="comp-comment">basic text inputs — normal, icon-left, icon-right</div>
+      <div class="fg-row">
+        <div class="fg">
+          <label class="fl">Judul Berita <span class="req">*</span></label>
+          <input type="text" class="fi" placeholder="Masukkan judul berita..." />
+        </div>
+        <div class="fg">
+          <label class="fl">Username <span class="tip" title="Hanya huruf kecil dan angka">?</span></label>
+          <div class="fiw">
+            <i class="bi bi-at fii-l"></i>
+            <input type="text" class="fi ico-l" placeholder="admin.ppid" />
+          </div>
+        </div>
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label class="fl">Email</label>
+          <div class="fiw">
+            <i class="bi bi-envelope fii-l"></i>
+            <input type="email" class="fi ico-l" placeholder="nama@pekalongan.go.id" />
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Cari Berita</label>
+          <div class="inp-grp">
+            <input type="text" class="fi" placeholder="Kata kunci..." />
+            <button class="ig-btn"><i class="bi bi-search"></i> Cari</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- // - - - - - input state variants - - - - - -->
+      <div class="comp-comment">input states — normal · success · error · warning</div>
+      <div class="fg-row">
+        <div class="fg">
+          <label class="fl">Normal</label>
+          <input type="text" class="fi" value="Ahmad Fauzi" />
+        </div>
+        <div class="fg">
+          <label class="fl">Valid (success)</label>
+          <div class="fiw">
+            <input type="text" class="fi fi-success" value="admin.fauzi" />
+            <i class="bi bi-check-circle-fill fii-r" style="color:var(--green)"></i>
+          </div>
+          <p class="fi-hint success"><i class="bi bi-check-circle"></i> Username tersedia</p>
+        </div>
+        <div class="fg">
+          <label class="fl">Error</label>
+          <div class="fiw">
+            <input type="text" class="fi fi-error" value="admin ppid!" />
+            <i class="bi bi-x-circle-fill fii-r" style="color:var(--red)"></i>
+          </div>
+          <p class="fi-hint error"><i class="bi bi-x-circle"></i> Karakter tidak valid</p>
+        </div>
+      </div>
+
+      <!-- // - - - - - input group with prefix - - - - - -->
+      <div class="comp-comment">input group — prefix / suffix</div>
+      <div class="fg-row">
+        <div class="fg">
+          <label class="fl">URL Slug</label>
+          <div class="inp-grp">
+            <span class="ig-pre">ppid.pekalongan.go.id/</span>
+            <input type="text" class="fi" value="ppid-raih-predikat" />
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Nominal (Rp)</label>
+          <div class="inp-grp">
+            <span class="ig-pre">Rp</span>
+            <input type="number" class="fi" value="5000000" />
+          </div>
+        </div>
+      </div>
+
+      <!-- // - - - - - textarea - - - - - -->
+      <div class="comp-comment">textarea</div>
+      <div class="fg">
+        <label class="fl">Ringkasan Berita</label>
+        <textarea class="fta" rows="3" placeholder="Tulis ringkasan singkat berita..."></textarea>
+        <p class="fi-hint muted">Maksimal 200 karakter. Tampil di daftar berita dan SEO description.</p>
+      </div>
+
+      <!-- // - - - - - select dropdown - - - - - -->
+      <div class="comp-comment">select dropdown</div>
+      <div class="fg-row">
+        <div class="fg">
+          <label class="fl">Tema Berita</label>
+          <select class="fsel">
+            <option value="">-- Pilih Tema --</option>
+            <option>PPID</option>
+            <option>Layanan Publik</option>
+            <option>Regulasi</option>
+            <option>Kegiatan</option>
+            <option>Pengumuman</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Status</label>
+          <select class="fsel">
+            <option>Publish</option>
+            <option>Draft</option>
+            <option>Arsip</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-toggles"></i><h5>Toggle, Checkbox & Radio</h5></div>
+    <div class="comp-body">
+      <!-- // - - - - - toggle switch (3 sizes) - - - - - -->
+      <div class="comp-comment">toggle switch — sm · default · lg</div>
+      <div class="demo-row" style="align-items:center;gap:1.5rem">
+        <div style="display:flex;align-items:center;gap:.6rem">
+          <label class="tog tog-sm"><input type="checkbox" checked /><span class="tog-slider"></span></label>
+          <span style="font-size:.78rem;color:var(--text-muted)">Small</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.6rem">
+          <label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label>
+          <span style="font-size:.78rem;color:var(--text-muted)">Default</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.6rem">
+          <label class="tog tog-lg"><input type="checkbox" /><span class="tog-slider"></span></label>
+          <span style="font-size:.78rem;color:var(--text-muted)">Large (off)</span>
+        </div>
+      </div>
+
+      <div class="fdiv"></div>
+
+      <!-- // - - - - - custom checkbox - - - - - -->
+      <div class="comp-comment">custom checkbox</div>
+      <div class="demo-row" style="flex-direction:column;gap:.5rem">
+        <label class="ck-wrap">
+          <input type="checkbox" checked />
+          <span class="ck-box"><i class="bi bi-check2"></i></span>
+          Tampilkan di Beranda
+        </label>
+        <label class="ck-wrap">
+          <input type="checkbox" />
+          <span class="ck-box"><i class="bi bi-check2"></i></span>
+          Tandai sebagai Berita Unggulan
+        </label>
+        <label class="ck-wrap">
+          <input type="checkbox" checked />
+          <span class="ck-box"><i class="bi bi-check2"></i></span>
+          Aktifkan Komentar
+        </label>
+      </div>
+
+      <div class="fdiv"></div>
+
+      <!-- // - - - - - custom radio button - - - - - -->
+      <div class="comp-comment">custom radio button</div>
+      <div class="demo-row" style="flex-direction:column;gap:.5rem">
+        <label class="ck-wrap">
+          <input type="radio" name="status_demo" checked />
+          <span class="ck-box ck-radio"></span>
+          Publish — Langsung tayang
+        </label>
+        <label class="ck-wrap">
+          <input type="radio" name="status_demo" />
+          <span class="ck-box ck-radio"></span>
+          Draft — Simpan tanpa tayang
+        </label>
+        <label class="ck-wrap">
+          <input type="radio" name="status_demo" />
+          <span class="ck-box ck-radio"></span>
+          Arsip — Tarik dari publikasi
+        </label>
+      </div>
+
+      <div class="fdiv"></div>
+
+      <!-- // - - - - - range slider - - - - - -->
+      <div class="comp-comment">range slider</div>
+      <div class="fg">
+        <label class="fl">Jumlah Hasil per Halaman: <strong id="rangeVal">25</strong></label>
+        <input type="range" class="frange" min="5" max="100" value="25" oninput="document.getElementById('rangeVal').textContent=this.value" />
+      </div>
+
+      <div class="fdiv"></div>
+
+      <!-- // - - - - - password with strength meter - - - - - -->
+      <div class="comp-comment">password input + strength meter</div>
+      <div class="fg">
+        <label class="fl">Password Baru <span class="req">*</span></label>
+        <div class="fiw">
+          <i class="bi bi-lock-fill fii-l"></i>
+          <input type="password" class="fi ico-l" id="pwDemoInp" placeholder="Masukkan password baru..." style="padding-right:2.5rem" oninput="demoStrength(this.value)" />
+          <i class="bi bi-eye fii-r" id="pwDemoEye" onclick="togglePwDemo()"></i>
+        </div>
+        <div class="pw-strength"><div class="pw-fill" id="pwDemoFill"></div></div>
+        <p class="fi-hint muted" id="pwDemoLbl"></p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       SECTION 7 — PROGRESS & LOADING
+       ══════════════════════════════════ -->
+  <div class="sec-heading" id="sec-progress">
+    <div class="sec-num">7</div>
+    <h2>Progress & Loading</h2>
+    <span class="sec-tag">prog-fill · spinner · skel</span>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-bar-chart-fill"></i><h5>Progress Bars</h5></div>
+    <div class="comp-body">
+      <!-- // - - - - - progress bar variants - - - - - -->
+      <div class="comp-comment">progress bars — basic, colored, striped animated</div>
+      <div class="prog-wrap">
+        <div class="prog-meta"><span>Total Penyimpanan</span><span><strong>3.8 GB</strong> / 20 GB</span></div>
+        <div class="prog-track"><div class="prog-fill" style="width:19%"></div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-meta"><span>Target Respon Permohonan</span><span><strong>78%</strong></span></div>
+        <div class="prog-track"><div class="prog-fill green" style="width:78%"></div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-meta"><span>Penggunaan Database</span><span><strong>840 MB</strong> / 1 GB</span></div>
+        <div class="prog-track"><div class="prog-fill amber" style="width:84%"></div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-meta"><span>Kapasitas Kritis</span><span><strong>92%</strong></span></div>
+        <div class="prog-track"><div class="prog-fill red" style="width:92%"></div></div>
+      </div>
+      <!-- striped animated -->
+      <div class="prog-wrap">
+        <div class="prog-meta"><span>Sedang Mengunggah...</span><span><strong>65%</strong></span></div>
+        <div class="prog-track" style="height:10px"><div class="prog-fill striped" style="width:65%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-arrow-repeat"></i><h5>Spinners & Skeleton</h5></div>
+    <div class="comp-body">
+      <!-- // - - - - - spinner variants (size and color) - - - - - -->
+      <div class="comp-comment">spinners — size: sm · default · lg | color: blue · green · red · amber</div>
+      <div class="demo-row" style="align-items:center">
+        <span class="spinner sm"></span>
+        <span class="spinner"></span>
+        <span class="spinner lg"></span>
+        <span class="spinner green"></span>
+        <span class="spinner red"></span>
+        <span class="spinner amber"></span>
+        <div style="background:#0f1c2e;padding:.6rem 1rem;border-radius:9px;display:flex;align-items:center;gap:.6rem">
+          <span class="spinner white sm"></span>
+          <span style="font-size:.78rem;color:rgba(255,255,255,0.7)">Memuat data...</span>
+        </div>
+      </div>
+
+      <div class="fdiv"></div>
+
+      <!-- // - - - - - skeleton loader - - - - - -->
+      <div class="comp-comment">skeleton loader — content placeholder saat loading</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <!-- skeleton card 1 -->
+        <div style="padding:1rem;border:1px solid var(--border);border-radius:var(--r)">
+          <span class="skel skel-img" style="height:120px;margin-bottom:.85rem;display:block"></span>
+          <span class="skel skel-title" style="width:75%"></span>
+          <span class="skel skel-text"></span>
+          <span class="skel skel-text" style="width:60%"></span>
+        </div>
+        <!-- skeleton card 2: list -->
+        <div style="padding:1rem;border:1px solid var(--border);border-radius:var(--r)">
+          <div style="display:flex;gap:.75rem;margin-bottom:.9rem;align-items:center">
+            <span class="skel skel-av" style="width:40px;height:40px;flex-shrink:0"></span>
+            <div style="flex:1">
+              <span class="skel skel-text" style="width:70%;margin-bottom:.4rem"></span>
+              <span class="skel skel-text" style="width:45%"></span>
+            </div>
+          </div>
+          <div style="display:flex;gap:.75rem;margin-bottom:.9rem;align-items:center">
+            <span class="skel skel-av" style="width:40px;height:40px;flex-shrink:0"></span>
+            <div style="flex:1">
+              <span class="skel skel-text" style="width:80%;margin-bottom:.4rem"></span>
+              <span class="skel skel-text" style="width:50%"></span>
+            </div>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:center">
+            <span class="skel skel-av" style="width:40px;height:40px;flex-shrink:0"></span>
+            <div style="flex:1">
+              <span class="skel skel-text" style="width:55%;margin-bottom:.4rem"></span>
+              <span class="skel skel-text" style="width:35%"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       SECTION 8 — CARDS
+       ══════════════════════════════════ -->
+  <div class="sec-heading" id="sec-cards">
+    <div class="sec-num">8</div>
+    <h2>Cards</h2>
+    <span class="sec-tag">card-base · stat-card</span>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-card-text"></i><h5>Content Cards</h5></div>
+    <div class="comp-body">
+      <!-- // - - - - - content card (berita) - - - - - -->
+      <div class="comp-comment">content card — berita / artikel</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem">
+        <div class="card-base" style="display:flex;flex-direction:column">
+          <img class="cb-img" src="https://picsum.photos/seed/c1ppid/400/200" alt="" />
+          <div class="cb-body" style="display:flex;flex-direction:column;flex:1">
+            <span class="badge badge-blue cb-tag"><span class="bdot"></span>PPID</span>
+            <div class="cb-title">PPID Raih Predikat Informatif KIP 2024</div>
+            <p class="cb-desc">Komisi Informasi Jawa Tengah menetapkan PPID Kota Pekalongan sebagai badan publik terbaik.</p>
+            <div class="cb-meta">
+              <span><i class="bi bi-calendar3"></i> 20 Jan 2025</span>
+              <span><i class="bi bi-eye"></i> 1.248</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-base" style="display:flex;flex-direction:column">
+          <img class="cb-img" src="https://picsum.photos/seed/c2law/400/200" alt="" />
+          <div class="cb-body" style="display:flex;flex-direction:column;flex:1">
+            <span class="badge badge-amber cb-tag"><span class="bdot"></span>Regulasi</span>
+            <div class="cb-title">UU KIP No. 14 Tahun 2008: Hak Masyarakat Atas Informasi</div>
+            <p class="cb-desc">Memahami hak-hak warga negara dalam mengakses informasi publik sesuai undang-undang.</p>
+            <div class="cb-meta">
+              <span><i class="bi bi-calendar3"></i> 10 Jan 2025</span>
+              <span><i class="bi bi-eye"></i> 892</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-base" style="display:flex;flex-direction:column">
+          <img class="cb-img" src="https://picsum.photos/seed/c3evt/400/200" alt="" />
+          <div class="cb-body" style="display:flex;flex-direction:column;flex:1">
+            <span class="badge badge-purple cb-tag"><span class="bdot"></span>Kegiatan</span>
+            <div class="cb-title">Pelatihan Kompetensi Petugas PPID Pembantu 2025</div>
+            <p class="cb-desc">Program bimtek intensif untuk meningkatkan kapasitas pengelola informasi di seluruh OPD.</p>
+            <div class="cb-meta">
+              <span><i class="bi bi-calendar3"></i> 05 Jan 2025</span>
+              <span><i class="bi bi-eye"></i> 615</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fdiv"></div>
+
+      <!-- // - - - - - stat cards (dashboard) - - - - - -->
+      <div class="comp-comment">stat cards — dashboard metrics</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.85rem">
+        <div class="stat-card">
+          <div class="sc-ico" style="background:var(--blue-soft);color:var(--blue)"><i class="bi bi-newspaper"></i></div>
+          <div class="sc-val">247</div>
+          <div class="sc-lbl">Total Berita</div>
+          <div class="sc-chg sc-up"><i class="bi bi-arrow-up-short"></i> +12 bulan ini</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-ico" style="background:var(--green-soft);color:var(--green)"><i class="bi bi-inbox-fill"></i></div>
+          <div class="sc-val">1.840</div>
+          <div class="sc-lbl">Permohonan</div>
+          <div class="sc-chg sc-up"><i class="bi bi-arrow-up-short"></i> +8.2%</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-ico" style="background:var(--amber-soft);color:#d97706"><i class="bi bi-clock-history"></i></div>
+          <div class="sc-val">7</div>
+          <div class="sc-lbl">Pending</div>
+          <div class="sc-chg sc-down"><i class="bi bi-arrow-down-short"></i> -3 kemarin</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-ico" style="background:var(--purple-soft);color:var(--purple)"><i class="bi bi-eye-fill"></i></div>
+          <div class="sc-val">48K</div>
+          <div class="sc-lbl">Tayangan</div>
+          <div class="sc-chg sc-up"><i class="bi bi-arrow-up-short"></i> +22%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       SECTION 9 — RICH TEXT EDITOR
+       ══════════════════════════════════ -->
+  <div class="sec-heading" id="sec-editor">
+    <div class="sec-num">9</div>
+    <h2>Rich Text Editor (TinyMCE)</h2>
+    <span class="sec-tag">TinyMCE 6 · custom theme · focus state</span>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-pen-fill"></i><h5>TinyMCE Editor — Konten Berita</h5><span class="cc-note">sliding toolbar · Plus Jakarta Sans · Playfair Display heading</span></div>
+    <div class="comp-body">
+      <!-- // - - - - - tinymce rich text editor - - - - - -->
+      <div class="comp-comment">tinymce rich text editor dengan tema PPID</div>
+      <div class="fg">
+        <label class="fl">Konten Berita <span class="req">*</span></label>
+        <!-- wrapper untuk focus border -->
+        <div class="tinymce-wrap" id="tinyWrap">
+          <textarea id="tinyEditor">
+<p>Selamat datang di editor konten PPID Kota Pekalongan. Editor ini menggunakan <strong>TinyMCE 6</strong> dengan konfigurasi dan tema yang disesuaikan dengan sistem PPID.</p>
+
+<h2>Fitur Utama</h2>
+<p>Editor mendukung berbagai format penulisan termasuk:</p>
+<ul>
+  <li>Teks tebal, miring, dan garis bawah</li>
+  <li>Judul (H1 hingga H6) dengan font <em>Playfair Display</em></li>
+  <li>Daftar terurut dan tidak terurut</li>
+  <li>Blok kutipan (<em>blockquote</em>) bergaya PPID</li>
+  <li>Tabel data dengan styling konsisten</li>
+  <li>Sisipan gambar dan media</li>
+  <li>Tautan internal dan eksternal</li>
+</ul>
+
+<blockquote>Keterbukaan informasi publik adalah fondasi dari pemerintahan yang demokratis dan akuntabel kepada rakyat.</blockquote>
+
+<h3>Cara Penggunaan</h3>
+<p>Gunakan toolbar di atas untuk memformat teks, menyisipkan gambar, atau menambahkan tautan. Konten akan otomatis tersimpan sebagai draft setiap 2 menit.</p>
+          </textarea>
+        </div>
+        <p class="fi-hint muted">Gunakan toolbar untuk memformat konten. Shortcut: <code style="background:#f0f4f9;padding:.1rem .35rem;border-radius:4px;font-size:.75rem">Ctrl+B</code> tebal, <code style="background:#f0f4f9;padding:.1rem .35rem;border-radius:4px;font-size:.75rem">Ctrl+I</code> miring.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       SECTION 10 — UTILITIES
+       ══════════════════════════════════ -->
+  <div class="sec-heading" id="sec-misc">
+    <div class="sec-num">10</div>
+    <h2>Utilities</h2>
+    <span class="sec-tag">divider · tooltip · avatar · empty-state</span>
+  </div>
+
+  <div class="comp-card">
+    <div class="comp-card-head"><i class="bi bi-grid-3x3-gap-fill"></i><h5>Miscellaneous Components</h5></div>
+    <div class="comp-body">
+
+      <!-- // - - - - - divider variants - - - - - -->
+      <div class="comp-comment">divider — plain & labeled</div>
+      <div class="divider"></div>
+      <div class="divider labeled"><span>atau lanjutkan dengan</span></div>
+      <div class="divider labeled" style="margin-top:.3rem"><span><i class="bi bi-calendar3" style="color:var(--blue)"></i> Januari 2025</span></div>
+
+      <div style="margin-top:1.2rem"></div>
+
+      <!-- // - - - - - tooltip - - - - - -->
+      <div class="comp-comment">tooltip — hover untuk melihat</div>
+      <div class="demo-row">
+        <button class="btn-p" data-tooltip="Publikasikan ke portal PPID">Simpan & Publish</button>
+        <button class="btn-o" data-tooltip="Simpan sebagai draft, belum tayang">Simpan Draft</button>
+        <span class="badge badge-blue" data-tooltip="Terakhir login: Hari ini 08:14 WIB" style="cursor:help"><span class="bdot"></span>Online</span>
+        <button class="btn-ico" data-tooltip="Salin tautan ke clipboard"><i class="bi bi-link-45deg"></i></button>
+      </div>
+
+      <div class="fdiv"></div>
+
+      <!-- // - - - - - avatar variants - - - - - -->
+      <div class="comp-comment">avatar — sizes, group stack</div>
+      <div class="demo-row" style="align-items:center">
+        <span class="av av-xs">AF</span>
+        <span class="av av-sm">SR</span>
+        <span class="av av-md">BS</span>
+        <span class="av av-lg">DK</span>
+        <span class="av av-xl">HW</span>
+        <!-- group -->
+        <div class="av-grp" style="margin-left:.5rem">
+          <span class="av av-sm" style="background:linear-gradient(135deg,#10b964,#0ea05a)">AF</span>
+          <span class="av av-sm" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">SR</span>
+          <span class="av av-sm" style="background:linear-gradient(135deg,#f59e0b,#d97706)">BS</span>
+          <span class="av av-sm" style="background:linear-gradient(135deg,var(--blue),var(--blue-light))">+5</span>
+        </div>
+      </div>
+
+      <div class="fdiv"></div>
+
+      <!-- // - - - - - empty state - - - - - -->
+      <div class="comp-comment">empty state — tampil ketika data kosong</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div style="border:1px dashed rgba(0,114,198,0.2);border-radius:var(--r)">
+          <div class="empty-state">
+            <div class="es-ico"><i class="bi bi-inbox"></i></div>
+            <div class="es-title">Belum Ada Permohonan</div>
+            <p class="es-desc">Tidak ada permohonan informasi yang masuk dalam periode ini.</p>
+            <button class="btn-o" style="margin-top:.3rem"><i class="bi bi-arrow-clockwise"></i> Muat Ulang</button>
+          </div>
+        </div>
+        <div style="border:1px dashed rgba(0,114,198,0.2);border-radius:var(--r)">
+          <div class="empty-state">
+            <div class="es-ico" style="background:var(--amber-soft);color:#d97706"><i class="bi bi-search"></i></div>
+            <div class="es-title">Hasil Tidak Ditemukan</div>
+            <p class="es-desc">Tidak ada berita yang cocok dengan kata kunci pencarian Anda.</p>
+            <button class="btn-p" style="margin-top:.3rem"><i class="bi bi-plus"></i> Tambah Berita</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer note -->
+  <div style="text-align:center;padding:1.5rem 0;font-size:.75rem;color:var(--text-muted)">
+    <i class="bi bi-shield-lock-fill" style="color:var(--blue)"></i>
+    PPID Kota Pekalongan &mdash; UI Components Library &copy; 2025
+  </div>
+
+</div><!-- end page-wrap -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ══════════════════════════
+   MODAL CONTROL
+   ══════════════════════════ */
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+  document.body.style.overflow = '';
+}
+// close on backdrop click
+document.querySelectorAll('.modal-ov').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+});
+// close on ESC
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape')
+    document.querySelectorAll('.modal-ov.show').forEach(m => closeModal(m.id));
+});
+
+/* ══════════════════════════
+   TOAST SYSTEM
+   ══════════════════════════ */
+const toastIcons = {
+  info:    'bi-info-circle-fill',
+  success: 'bi-check-circle-fill',
+  warning: 'bi-exclamation-triangle-fill',
+  error:   'bi-x-circle-fill'
+};
+
+function showToast(type, title, msg) {
+  const c = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast-item t-${type}`;
+  el.innerHTML = `
+    <div class="toast-ico"><i class="bi ${toastIcons[type]}"></i></div>
+    <div class="toast-body">
+      <div class="toast-title">${title}</div>
+      <div class="toast-msg">${msg}</div>
+    </div>
+    <button class="toast-close" onclick="dismissToast(this.closest('.toast-item'))"><i class="bi bi-x-lg"></i></button>
+  `;
+  c.appendChild(el);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => el.classList.add('show'));
+  });
+  setTimeout(() => dismissToast(el), 3200);
+}
+
+function showToastSimple(msg) {
+  const c = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.style.cssText = 'background:#0f1c2e;color:#fff;padding:.65rem 1.1rem;border-radius:10px;font-size:.8rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,0.28);pointer-events:all;opacity:0;transform:translateX(16px);transition:opacity .3s,transform .3s;';
+  el.textContent = msg;
+  c.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    el.style.opacity = '1'; el.style.transform = 'translateX(0)';
+  }));
+  setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(16px)'; setTimeout(()=>el.remove(),400); }, 2600);
+}
+
+function dismissToast(el) {
+  if (!el || !el.isConnected) return;
+  el.classList.add('hide');
+  setTimeout(() => el.remove(), 380);
+}
+
+/* ══════════════════════════
+   PASSWORD STRENGTH DEMO
+   ══════════════════════════ */
+function demoStrength(pw) {
+  const fill = document.getElementById('pwDemoFill');
+  const lbl  = document.getElementById('pwDemoLbl');
+  if (!pw) { fill.style.width='0'; lbl.textContent=''; return; }
+  let s = 0;
+  if (pw.length >= 8)         s++;
+  if (pw.length >= 12)        s++;
+  if (/[A-Z]/.test(pw))      s++;
+  if (/[0-9]/.test(pw))      s++;
+  if (/[^A-Za-z0-9]/.test(pw)) s++;
+  const lvl = [
+    {w:'20%',c:'#dc3545',t:'Sangat Lemah'},
+    {w:'40%',c:'#f59e0b',t:'Lemah'},
+    {w:'60%',c:'#d97706',t:'Sedang'},
+    {w:'80%',c:'#10b964',t:'Kuat'},
+    {w:'100%',c:'#059669',t:'Sangat Kuat'},
+  ][Math.max(0, Math.min(s-1, 4))];
+  fill.style.width = lvl.w;
+  fill.style.background = lvl.c;
+  lbl.style.color = lvl.c;
+  lbl.innerHTML = `<i class="bi bi-shield-${s>=4?'fill-check':'exclamation'}"></i> ${lvl.t}`;
+}
+
+function togglePwDemo() {
+  const inp = document.getElementById('pwDemoInp');
+  const ico = document.getElementById('pwDemoEye');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  ico.className = `bi bi-${show ? 'eye-slash' : 'eye'} fii-r`;
+}
+
+/* ══════════════════════════
+   TINYMCE INIT
+   ══════════════════════════ */
+tinymce.init({
+  selector: '#tinyEditor',
+  height: 420,
+  menubar: true,
+  branding: false,
+  promotion: false,
+  plugins: [
+    'advlist','autolink','lists','link','image','charmap','preview','anchor',
+    'searchreplace','visualblocks','code','fullscreen','insertdatetime','media',
+    'table','wordcount','emoticons'
+  ],
+  toolbar: 'undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | ' +
+           'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | ' +
+           'link image media table | emoticons charmap | code fullscreen',
+  toolbar_mode: 'sliding',
+  content_style: `
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+    body { font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; color:#0f1c2e; line-height:1.8; padding:1rem 1.5rem; }
+    h1,h2,h3,h4 { font-family:'Playfair Display',serif; color:#003d70; }
+    blockquote { border-left:4px solid #0072c6; padding:.8rem 1rem; margin:1.2rem 0; background:rgba(0,114,198,0.06); border-radius:0 8px 8px 0; font-style:italic; }
+    a { color:#0072c6; }
+    table { border-collapse:collapse; width:100%; }
+    table th { background:#003d70; color:#fff; padding:.5rem .75rem; text-align:left; font-size:.82rem; }
+    table td { padding:.5rem .75rem; border-bottom:1px solid rgba(0,0,0,0.07); }
+    table tr:nth-child(even) { background:#f7faff; }
+  `,
+  setup(editor) {
+    const wrap = document.getElementById('tinyWrap');
+    editor.on('focus', () => wrap && wrap.classList.add('focused'));
+    editor.on('blur',  () => wrap && wrap.classList.remove('focused'));
+  }
+});
+</script>
+</body>
+</html>

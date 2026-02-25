@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Akses Role — PPID Kota Pekalongan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+  <style>
+    /* ═══════ ROOT ═══════ */
+    :root{
+      --blue:#0072c6;--blue-dark:#005499;--blue-deep:#003d70;--blue-light:#1a8fe0;
+      --blue-soft:rgba(0,114,198,0.08);--sidebar-w:260px;--sidebar-col:68px;
+      --topbar-h:64px;--sidebar-bg:#001f42;--content-bg:#f0f4f9;
+      --card-bg:#fff;--text-main:#0f1c2e;--text-muted:#6b7a8d;
+      --border:rgba(0,0,0,0.07);--shadow:0 2px 16px rgba(0,50,100,0.08);
+      --ease:.28s cubic-bezier(.22,1,.36,1);--r:14px;--inp-h:42px;
+      --green:#10b964;--amber:#f59e0b;--red:#dc3545;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--content-bg);color:var(--text-main);min-height:100vh}
+
+    /* ═══════ SHELL ═══════ */
+    .shell{display:flex;min-height:100vh;width:100%;overflow-x:hidden}
+    .main{flex:1;margin-left:var(--sidebar-w);display:flex;flex-direction:column;min-height:100vh;min-width:0;max-width:calc(100vw - var(--sidebar-w));transition:margin-left var(--ease),max-width var(--ease)}
+    .main.collapsed{margin-left:var(--sidebar-col);max-width:calc(100vw - var(--sidebar-col))}
+
+    /* ═══════ SIDEBAR ═══════ */
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:1000;overflow:hidden;transition:width var(--ease);box-shadow:4px 0 24px rgba(0,18,50,0.18)}
+    .sidebar.collapsed{width:var(--sidebar-col)}
+    .sb-brand{display:flex;align-items:center;gap:.85rem;padding:1.3rem 1.1rem 1.2rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.07);min-height:var(--topbar-h);text-decoration:none;overflow:hidden;flex-shrink:0}
+    .sb-icon{width:38px;height:38px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,114,198,0.45);animation:iconPulse 3s ease-in-out infinite}
+    .sb-icon i{font-size:1.1rem;color:#fff}
+    @keyframes iconPulse{0%,100%{box-shadow:0 4px 14px rgba(0,114,198,0.45)}50%{box-shadow:0 6px 22px rgba(0,114,198,0.7)}}
+    .sb-text{overflow:hidden;white-space:nowrap}
+    .sb-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;line-height:1.15}
+    .sb-sub{font-size:.65rem;color:rgba(255,255,255,0.4);letter-spacing:.04em}
+    .sb-scroll{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;padding:.8rem 0}
+    .sb-scroll::-webkit-scrollbar{width:3px}
+    .sb-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+    .sb-sec{font-size:.6rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,0.28);padding:1rem 1.25rem .35rem;white-space:nowrap;overflow:hidden;transition:opacity var(--ease)}
+    .sidebar.collapsed .sb-sec{opacity:0}
+    .sb-iw{padding:.08rem .7rem}
+    .sb-link{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:10px;text-decoration:none;color:rgba(255,255,255,0.5);font-size:.84rem;font-weight:500;white-space:nowrap;overflow:hidden;transition:background var(--ease),color var(--ease);position:relative}
+    .sb-link .ico{font-size:1.05rem;flex-shrink:0;width:20px;text-align:center}
+    .sb-link .lbl{flex:1;overflow:hidden;text-overflow:ellipsis;transition:opacity var(--ease),max-width var(--ease)}
+    .sb-link:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.88)}
+    .sb-link.active{background:linear-gradient(90deg,rgba(0,114,198,0.35),rgba(0,114,198,0.1));color:#fff;box-shadow:inset 3px 0 0 var(--blue)}
+    .sb-link.active .ico{color:#7ecbff}
+    .sb-badge{background:var(--blue);color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .42rem;border-radius:100px;flex-shrink:0}
+    .sidebar.collapsed .lbl,.sidebar.collapsed .sb-badge{opacity:0;max-width:0;overflow:hidden}
+    .sidebar.collapsed .sb-link{justify-content:center;padding:.65rem}
+    .sidebar.collapsed .sb-iw{padding-left:.5rem;padding-right:.5rem}
+    .sidebar.collapsed .sb-link[data-tip]::after{content:attr(data-tip);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);background:#0d2340;color:#fff;font-size:.74rem;padding:.3rem .7rem;border-radius:7px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9999}
+    .sidebar.collapsed .sb-link[data-tip]:hover::after{opacity:1}
+    .sb-foot{padding:.9rem 1rem;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+    .sb-foot-inner{display:flex;align-items:center;gap:.7rem;overflow:hidden}
+    .sb-ficon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .sb-ficon i{font-size:.9rem;color:rgba(255,255,255,0.4)}
+    .sb-ftext{overflow:hidden;white-space:nowrap}
+    .sb-fver{font-size:.68rem;color:rgba(255,255,255,0.25)}
+    .sb-fcopy{font-size:.63rem;color:rgba(255,255,255,0.18)}
+    .sidebar.collapsed .sb-ftext{opacity:0;max-width:0}
+
+    /* ═══════ TOPBAR ═══════ */
+    .topbar{height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;position:sticky;top:0;z-index:900;box-shadow:0 1px 12px rgba(0,40,100,0.06);gap:1rem}
+    .tog-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:1.05rem;transition:background .2s,color .2s,transform .3s;flex-shrink:0}
+    .tog-btn:hover{background:var(--blue-soft);color:var(--blue)}
+    .tog-btn.flip{transform:rotate(180deg)}
+    .tb-space{flex:1}
+    .tb-right{display:flex;align-items:center;gap:.6rem}
+    .tb-ibtn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:1rem;transition:background .2s,color .2s;position:relative}
+    .tb-ibtn:hover{background:var(--blue-soft);color:var(--blue)}
+    .notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#e84242;border:1.5px solid #fff;animation:notifPulse 1.8s ease-in-out infinite}
+    @keyframes notifPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,66,66,.5)}50%{box-shadow:0 0 0 5px rgba(232,66,66,0)}}
+    .user-menu{position:relative}
+    .user-trig{display:flex;align-items:center;gap:.6rem;padding:.35rem .65rem .35rem .45rem;border-radius:10px;border:1px solid var(--border);background:transparent;cursor:pointer;transition:background .2s}
+    .user-trig:hover{background:var(--blue-soft)}
+    .user-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;font-weight:700;flex-shrink:0;box-shadow:0 2px 8px rgba(0,114,198,0.4)}
+    .user-info .uname{font-size:.8rem;font-weight:600;color:var(--text-main);line-height:1.2}
+    .user-info .urole{font-size:.68rem;color:var(--text-muted)}
+    .user-caret{font-size:.7rem;color:var(--text-muted);transition:transform .25s}
+    .user-trig[aria-expanded="true"] .user-caret{transform:rotate(180deg)}
+    .user-dd{position:absolute;right:0;top:calc(100% + 8px);min-width:190px;background:#fff;border:1px solid var(--border);border-radius:13px;box-shadow:0 10px 40px rgba(0,40,100,0.13);padding:.45rem;display:none;z-index:999;animation:dropIn .25s var(--ease)}
+    .user-dd.open{display:block}
+    @keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .dd-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;border-radius:8px;font-size:.82rem;color:var(--text-main);text-decoration:none;cursor:pointer;transition:background .18s;font-weight:500;border:none;background:none;width:100%;text-align:left}
+    .dd-item i{font-size:.95rem;color:var(--text-muted);width:18px}
+    .dd-item:hover{background:var(--blue-soft);color:var(--blue)}
+    .dd-item.danger:hover{background:rgba(220,50,50,0.06);color:#c0392b}
+    .dd-div{height:1px;background:var(--border);margin:.35rem 0}
+
+    /* ═══════ CONTENT ═══════ */
+    .content{flex:1;padding:1.6rem;position:relative;width:100%;overflow-x:hidden}
+    .content::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(0,100,200,0.04) 1px,transparent 0);background-size:28px 28px;pointer-events:none;z-index:0}
+
+    /* ═══════ BB ═══════ */
+    .bb{background:linear-gradient(120deg,var(--blue-deep) 0%,var(--blue) 55%,var(--blue-light) 100%);border-radius:16px;padding:1.3rem 1.6rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:relative;overflow:hidden;box-shadow:0 8px 28px rgba(0,114,198,0.28);z-index:1;width:100%}
+    .bb::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.06);top:-60px;right:80px}
+    .bb::after{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.06);bottom:-40px;right:20px}
+    .bb-left{position:relative;z-index:1}
+    .bb-title{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:#fff;margin-bottom:.18rem}
+    .bb-desc{font-size:.78rem;color:rgba(255,255,255,0.6);font-weight:300}
+    .bb-right{display:flex;align-items:center;gap:.35rem;position:relative;z-index:1;flex-wrap:wrap}
+    .bc{display:flex;align-items:center;gap:.3rem;font-size:.78rem;color:rgba(255,255,255,0.7);font-weight:500}
+    .bc.cur{color:#fff;font-weight:600}
+    .bc-sep{color:rgba(255,255,255,0.35)}
+
+    /* ═══════ CARD ═══════ */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .card{background:var(--card-bg);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);position:relative;z-index:1;animation:fadeUp .45s var(--ease) both;width:100%;overflow:hidden;margin-bottom:1.2rem}
+    .card-head{padding:1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+    .card-head i{color:var(--blue);font-size:1rem;flex-shrink:0}
+    .card-head h6{font-size:.92rem;font-weight:700;color:var(--text-main);margin:0;flex:1}
+    .card-body{padding:1.4rem}
+
+    /* ═══════ TOOLBAR ═══════ */
+    .toolbar{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;margin-bottom:1.1rem;position:relative;z-index:2}
+    .search-wrap{position:relative;flex:1;min-width:180px;max-width:320px}
+    .search-wrap i{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.85rem;pointer-events:none}
+    .search-inp{width:100%;height:38px;border:1.5px solid var(--border);border-radius:9px;padding:0 .9rem 0 2.3rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;color:var(--text-main);background:#fff;outline:none;transition:border-color .2s,box-shadow .2s}
+    .search-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,114,198,0.1)}
+    .search-inp::placeholder{color:#b0bac7}
+    .tb-right-group{display:flex;align-items:center;gap:.5rem;margin-left:auto;flex-wrap:wrap}
+    .fsel-sm{height:38px;border:1.5px solid var(--border);border-radius:9px;padding:0 .8rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;color:var(--text-main);background:#fff;outline:none;cursor:pointer;transition:border-color .2s}
+    .fsel-sm:focus{border-color:var(--blue)}
+
+    /* ═══════ BUTTONS ═══════ */
+    .btn-p{display:inline-flex;align-items:center;gap:.42rem;padding:.5rem 1rem;border-radius:9px;border:none;background:linear-gradient(135deg,var(--blue),var(--blue-light));color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(0,114,198,0.28);transition:transform .2s,box-shadow .2s;white-space:nowrap;text-decoration:none}
+    .btn-p:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(0,114,198,0.38);color:#fff}
+    .btn-o{display:inline-flex;align-items:center;gap:.4rem;padding:.46rem .9rem;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer;transition:background .2s,color .2s,border-color .2s;white-space:nowrap;text-decoration:none}
+    .btn-o:hover{background:var(--blue-soft);color:var(--blue);border-color:rgba(0,114,198,0.3)}
+    .btn-ico{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);background:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:.88rem;transition:background .18s,color .18s,border-color .18s;flex-shrink:0}
+    .btn-ico:hover{background:var(--blue-soft);color:var(--blue);border-color:rgba(0,114,198,0.28)}
+
+    /* ═══════ ROLE GRID ═══════ */
+    .role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;position:relative;z-index:1}
+
+    /* ═══════ ROLE CARD ═══════ */
+    .role-card{background:#fff;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);padding:1.3rem 1.2rem 1.1rem;display:flex;flex-direction:column;gap:.75rem;animation:fadeUp .4s var(--ease) both;transition:transform .22s,box-shadow .22s;cursor:default;position:relative;overflow:hidden}
+    .role-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+    .role-card.rc-blue::before  {background:linear-gradient(90deg,var(--blue),var(--blue-light))}
+    .role-card.rc-green::before {background:linear-gradient(90deg,var(--green),#0ea05a)}
+    .role-card.rc-amber::before {background:linear-gradient(90deg,var(--amber),#d97706)}
+    .role-card.rc-purple::before{background:linear-gradient(90deg,#7c3aed,#6d28d9)}
+    .role-card.rc-teal::before  {background:linear-gradient(90deg,#0d9488,#0f766e)}
+    .role-card.rc-red::before   {background:linear-gradient(90deg,var(--red),#c0392b)}
+    .role-card:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(0,50,100,0.12)}
+    .role-card:nth-child(2){animation-delay:.07s}
+    .role-card:nth-child(3){animation-delay:.12s}
+    .role-card:nth-child(4){animation-delay:.17s}
+    .role-card:nth-child(5){animation-delay:.21s}
+    .role-card:nth-child(6){animation-delay:.25s}
+
+    /* role card header */
+    .rc-head{display:flex;align-items:flex-start;gap:.85rem}
+    .rc-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0}
+    .rc-icon.blue   {background:rgba(0,114,198,0.1);  color:var(--blue)}
+    .rc-icon.green  {background:rgba(16,185,100,0.1); color:var(--green)}
+    .rc-icon.amber  {background:rgba(245,158,11,0.1); color:#d97706}
+    .rc-icon.purple {background:rgba(124,58,237,0.1); color:#7c3aed}
+    .rc-icon.teal   {background:rgba(13,148,136,0.1); color:#0d9488}
+    .rc-icon.red    {background:rgba(220,53,69,0.1);  color:var(--red)}
+    .rc-info{flex:1;min-width:0}
+    .rc-name{font-size:.95rem;font-weight:800;color:var(--text-main);line-height:1.2;margin-bottom:.22rem}
+    .rc-desc{font-size:.74rem;color:var(--text-muted);line-height:1.5}
+
+    /* role badge */
+    .rc-badge{display:inline-flex;align-items:center;gap:.22rem;padding:.2rem .6rem;border-radius:100px;font-size:.68rem;font-weight:700;margin-top:.1rem}
+    .rcb-blue   {background:rgba(0,114,198,0.1);  color:var(--blue)}
+    .rcb-green  {background:rgba(16,185,100,0.1); color:var(--green)}
+    .rcb-amber  {background:rgba(245,158,11,0.1); color:#d97706}
+    .rcb-purple {background:rgba(124,58,237,0.1); color:#7c3aed}
+    .rcb-teal   {background:rgba(13,148,136,0.1); color:#0d9488}
+    .rcb-red    {background:rgba(220,53,69,0.1);  color:var(--red)}
+
+    /* role stats row */
+    .rc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border);border-radius:9px;overflow:hidden}
+    .rc-stat{padding:.52rem .4rem;text-align:center;border-right:1px solid var(--border)}
+    .rc-stat:last-child{border-right:none}
+    .rc-stat .sv{font-size:1.05rem;font-weight:800;color:var(--blue);line-height:1}
+    .rc-stat .sl{font-size:.62rem;color:var(--text-muted);margin-top:.1rem}
+
+    /* role permission summary */
+    .rc-perms{display:flex;flex-wrap:wrap;gap:.3rem}
+    .perm-tag{display:inline-flex;align-items:center;gap:.18rem;padding:.16rem .5rem;border-radius:100px;font-size:.67rem;font-weight:700}
+    .pt-create {background:rgba(16,185,100,0.1);  color:var(--green)}
+    .pt-read   {background:rgba(0,114,198,0.08);  color:var(--blue)}
+    .pt-update {background:rgba(245,158,11,0.1);  color:#d97706}
+    .pt-delete {background:rgba(220,53,69,0.1);   color:var(--red)}
+    .pt-export {background:rgba(124,58,237,0.1);  color:#7c3aed}
+    .pt-import {background:rgba(13,148,136,0.1);  color:#0d9488}
+
+    /* role card footer */
+    .rc-foot{display:flex;align-items:center;gap:.5rem;border-top:1px solid var(--border);padding-top:.85rem;margin-top:.1rem}
+    .rc-users{display:flex;align-items:center;gap:.3rem;font-size:.74rem;color:var(--text-muted);flex:1}
+    .rc-users i{color:var(--blue);font-size:.8rem}
+    .rc-users strong{color:var(--text-main)}
+
+    /* ═══════ MODAL OVERLAY ═══════ */
+    .modal-ov{position:fixed;inset:0;background:rgba(0,15,40,0.55);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);z-index:9000;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .3s}
+    .modal-ov.show{opacity:1;pointer-events:all}
+    .modal-box{background:#fff;border-radius:18px;box-shadow:0 30px 80px rgba(0,20,60,0.25);width:100%;max-width:780px;max-height:calc(100vh - 2rem);display:flex;flex-direction:column;transform:scale(.88) translateY(20px);transition:transform .38s var(--ease)}
+    .modal-ov.show .modal-box{transform:scale(1) translateY(0)}
+
+    /* modal header */
+    .modal-head{padding:1.2rem 1.5rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.7rem;flex-shrink:0}
+    .mh-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+    .mh-ico.blue  {background:rgba(0,114,198,0.1);color:var(--blue)}
+    .mh-ico.green {background:rgba(16,185,100,0.1);color:var(--green)}
+    .mh-ico.amber {background:rgba(245,158,11,0.1);color:#d97706}
+    .mh-ico.purple{background:rgba(124,58,237,0.1);color:#7c3aed}
+    .mh-ico.teal  {background:rgba(13,148,136,0.1);color:#0d9488}
+    .mh-ico.red   {background:rgba(220,53,69,0.1);color:var(--red)}
+    .modal-head h4{font-size:.97rem;font-weight:700;color:var(--text-main);margin:0;flex:1}
+    .modal-head p{font-size:.73rem;color:var(--text-muted);margin:.1rem 0 0}
+    .modal-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:.88rem;transition:background .18s,color .18s;flex-shrink:0}
+    .modal-close:hover{background:rgba(220,53,69,0.07);color:var(--red);border-color:rgba(220,53,69,0.22)}
+
+    /* modal toolbar (copy + search) */
+    .modal-toolbar{padding:.85rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;flex-shrink:0;background:#fafcff}
+    .modal-toolbar .fl-label{font-size:.78rem;font-weight:700;color:var(--text-main);white-space:nowrap}
+
+    /* Select2 override untuk modal toolbar */
+    .copy-select-wrap{flex:1;min-width:160px;max-width:260px}
+    .select2-container--default .select2-selection--single{height:36px;border:1.5px solid var(--border);border-radius:8px;background:#fff;display:flex;align-items:center}
+    .select2-container--default .select2-selection--single .select2-selection__rendered{line-height:36px;padding-left:.75rem;padding-right:2rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.81rem;color:var(--text-main)}
+    .select2-container--default .select2-selection--single .select2-selection__arrow{height:34px;right:8px}
+    .select2-container--default.select2-container--open .select2-selection--single{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,114,198,0.1)}
+    .select2-dropdown{border:1.5px solid var(--blue);border-radius:10px;box-shadow:0 8px 28px rgba(0,40,100,0.13);overflow:hidden}
+    .select2-search--dropdown .select2-search__field{border:1.5px solid var(--border);border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;padding:.38rem .65rem;outline:none}
+    .select2-search--dropdown .select2-search__field:focus{border-color:var(--blue)}
+    .select2-results__option{font-family:'Plus Jakarta Sans',sans-serif;font-size:.81rem;padding:.5rem .85rem;color:var(--text-main)}
+    .select2-results__option--highlighted{background:var(--blue-soft)!important;color:var(--blue)!important}
+    .select2-results__option[aria-selected=true]{background:rgba(0,114,198,0.06);color:var(--blue);font-weight:600}
+
+    /* search in modal toolbar */
+    .modal-search{position:relative;flex:1;min-width:140px;max-width:240px}
+    .modal-search i{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.8rem;pointer-events:none}
+    .modal-search-inp{width:100%;height:36px;border:1.5px solid var(--border);border-radius:8px;padding:0 .8rem 0 2.1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;background:#fff;outline:none;color:var(--text-main);transition:border-color .2s,box-shadow .2s}
+    .modal-search-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,114,198,0.1)}
+    .modal-search-inp::placeholder{color:#b0bac7}
+
+    /* modal body — scrollable */
+    .modal-body{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(0,114,198,0.15) transparent}
+    .modal-body::-webkit-scrollbar{width:4px}
+    .modal-body::-webkit-scrollbar-thumb{background:rgba(0,114,198,0.18);border-radius:4px}
+
+    /* ═══════ PERMISSION TABLE ═══════ */
+    .perm-table{width:100%;border-collapse:collapse}
+
+    /* table head */
+    .perm-thead th{background:#0f1c2e;color:#fff;font-size:.76rem;font-weight:700;letter-spacing:.04em;padding:.75rem 1rem;text-align:left;position:sticky;top:0;z-index:2}
+    .perm-thead th:first-child{min-width:200px}
+    .perm-thead th.th-actions{text-align:center;min-width:380px}
+
+    /* group row (parent menu) */
+    .perm-group td{background:#f5f8fc;padding:.65rem 1rem;border-top:1px solid var(--border)}
+    .perm-group.hidden-row{display:none}
+    .pg-name{font-size:.83rem;font-weight:800;color:var(--text-main);display:flex;align-items:center;gap:.5rem}
+    .pg-name .pg-arrow{font-size:.72rem;color:var(--text-muted);cursor:pointer;transition:transform .22s;width:18px;text-align:center}
+    .pg-name .pg-arrow.open{transform:rotate(90deg)}
+    .pg-read{display:flex;align-items:center;gap:.5rem}
+
+    /* child row (sub-menu) */
+    .perm-child td{padding:.6rem 1rem;border-top:1px solid var(--border)}
+    .perm-child.hidden-row{display:none}
+    .perm-child td:first-child{padding-left:2.2rem}
+    .pc-check{display:flex;align-items:center;gap:.45rem;cursor:pointer}
+    .pc-check input[type=checkbox]{display:none}
+    .pc-box{width:16px;height:16px;border:2px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .18s,background .18s;font-size:.65rem;color:transparent}
+    .pc-check input:checked + .pc-box{background:var(--blue);border-color:var(--blue);color:#fff}
+    .pc-name{font-size:.81rem;font-weight:500;color:var(--text-main)}
+
+    /* action toggles cell */
+    .perm-actions{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;padding:.1rem 0}
+    .perm-action-item{display:flex;align-items:center;gap:.35rem;min-width:90px}
+    .pa-label{font-size:.73rem;font-weight:500;color:var(--text-muted)}
+
+    /* Toggle Switch */
+    .tog{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0}
+    .tog input{opacity:0;width:0;height:0}
+    .tog-slider{position:absolute;inset:0;background:#d1d9e6;border-radius:100px;cursor:pointer;transition:background .25s}
+    .tog-slider::before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,0.18)}
+    .tog input:checked+.tog-slider{background:var(--blue)}
+    .tog input:checked+.tog-slider::before{transform:translateX(16px)}
+    /* color variants */
+    .tog.tog-green input:checked+.tog-slider{background:var(--green)}
+    .tog.tog-amber input:checked+.tog-slider{background:var(--amber)}
+    .tog.tog-red   input:checked+.tog-slider{background:var(--red)}
+    .tog.tog-purple input:checked+.tog-slider{background:#7c3aed}
+    .tog.tog-teal  input:checked+.tog-slider{background:#0d9488}
+
+    /* label variants for read (parent only) */
+    .pa-only-read{display:flex;align-items:center;gap:.5rem}
+
+    /* "select all" row */
+    .perm-selall td{padding:.55rem 1rem;border-top:2px solid var(--border);background:#f9fbff}
+    .selall-actions{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+    .selall-item{display:flex;align-items:center;gap:.35rem;min-width:90px}
+    .sa-label{font-size:.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em}
+    .selall-name{font-size:.77rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em}
+
+    /* modal footer */
+    .modal-foot{padding:.9rem 1.5rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.7rem;flex-wrap:wrap;flex-shrink:0;background:#fafcff}
+    .mf-info{font-size:.74rem;color:var(--text-muted);display:flex;align-items:center;gap:.35rem}
+    .mf-info i{color:var(--blue)}
+    .mf-btns{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+
+    /* ═══════ SIDEBAR OVERLAY ═══════ */
+    .sb-ov{position:fixed;inset:0;background:rgba(0,15,40,0.5);z-index:999;display:none;opacity:0;transition:opacity .3s}
+    .sb-ov.show{display:block;opacity:1}
+
+    /* ═══════ EMPTY STATE ═══════ */
+    .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center;gap:.65rem}
+    .es-ico{width:64px;height:64px;border-radius:18px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:1.7rem;color:var(--blue);margin-bottom:.3rem}
+    .es-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--text-main)}
+    .es-desc{font-size:.79rem;color:var(--text-muted);line-height:1.65;max-width:280px}
+
+    /* ═══════ FAB ═══════ */
+    .fab{position:fixed;right:1.6rem;bottom:1.8rem;width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--blue-light));border:none;color:#fff;font-size:1.05rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(0,114,198,0.4);z-index:700;opacity:0;pointer-events:none;transform:translateY(20px) scale(.85);transition:opacity .35s var(--ease),transform .35s var(--ease)}
+    .fab.vis{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
+    .fab:hover{transform:translateY(-3px) scale(1.06)!important}
+
+    /* ═══════ FOOTER ═══════ */
+    .footer{background:#fff;border-top:1px solid var(--border);padding:1rem 1.6rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+    .foot-l{font-size:.75rem;color:var(--text-muted)}
+    .foot-l strong{color:var(--blue)}
+    .foot-r{display:flex;align-items:center;gap:.5rem}
+    .foot-a{font-size:.73rem;color:var(--text-muted);text-decoration:none;transition:color .18s}
+    .foot-a:hover{color:var(--blue)}
+    .foot-sep{color:var(--border)}
+
+    /* ═══════ RESPONSIVE ═══════ */
+    @media(min-width:1400px){.content{padding:1.8rem 2.2rem}.role-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:1200px) and (max-width:1399px){.content{padding:1.5rem 1.8rem}}
+    @media(min-width:992px) and (max-width:1199px){.content{padding:1.2rem 1.4rem}}
+    @media(max-width:991px){
+      .sidebar{transform:translateX(-100%);width:var(--sidebar-w)!important;transition:transform var(--ease)}
+      .sidebar.mobile-open{transform:translateX(0)}
+      .main{margin-left:0!important;max-width:100vw!important}
+      .topbar{padding:0 1rem}
+      .content{padding:1rem}
+      .bb-right{display:none}
+      .role-grid{grid-template-columns:repeat(2,1fr)}
+      .modal-box{max-width:100%;border-radius:14px}
+      .perm-actions{gap:.6rem}
+      .perm-action-item{min-width:80px}
+    }
+    @media(min-width:576px) and (max-width:767px){
+      .content{padding:.85rem}
+      .bb{padding:.9rem 1rem;border-radius:12px}
+      .bb-title{font-size:1rem}
+      .user-info{display:none}
+      .topbar{padding:0 .85rem}
+      .role-grid{grid-template-columns:1fr}
+      .modal-toolbar{flex-wrap:wrap}
+    }
+    @media(max-width:575px){
+      .content{padding:.6rem}
+      .bb{padding:.75rem .9rem;border-radius:10px;flex-direction:column;align-items:flex-start;gap:.3rem}
+      .bb-title{font-size:.92rem}
+      .user-info{display:none}
+      .topbar{padding:0 .7rem;gap:.45rem}
+      .role-grid{grid-template-columns:1fr}
+      .toolbar{flex-wrap:wrap}
+      .search-wrap{max-width:100%;flex:1 1 100%}
+      .perm-table th,.perm-table td{font-size:.75rem;padding:.55rem .65rem}
+      .perm-child td:first-child{padding-left:1.3rem}
+      .perm-actions{gap:.45rem}
+      .perm-action-item{min-width:75px}
+      .pa-label{font-size:.68rem}
+      .modal-toolbar{gap:.5rem}
+      .modal-foot{flex-direction:column-reverse;gap:.5rem}
+      .mf-btns{width:100%;justify-content:flex-end}
+    }
+    @media(max-width:400px){
+      .content{padding:.45rem}
+      .perm-action-item{min-width:65px}
+    }
+  </style>
+</head>
+<body>
+
+<div class="sb-ov" id="sbOv" onclick="closeMobile()"></div>
+
+<!-- ═══════════════════════
+     MODAL: AKSES ROLE
+     ═══════════════════════ -->
+<div class="modal-ov" id="modalRole">
+  <div class="modal-box">
+
+    <!-- Modal Header -->
+    <div class="modal-head">
+      <div class="mh-ico blue" id="mhIco"><i class="bi bi-shield-lock-fill"></i></div>
+      <div style="flex:1;min-width:0">
+        <h4 id="mhTitle">Hak Akses Role</h4>
+        <p id="mhDesc">Atur permission setiap menu untuk role ini</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <!-- Modal Toolbar: copy + search -->
+    <div class="modal-toolbar">
+      <span class="fl-label">Salin dari role lain:</span>
+      <div class="copy-select-wrap">
+        <select id="copyRoleSelect">
+          <option value="">-- Pilih role --</option>
+          <option value="superadmin">Super Admin</option>
+          <option value="admin">Admin</option>
+          <option value="editor">Editor</option>
+          <option value="viewer">Viewer</option>
+          <option value="kontributor">Kontributor</option>
+          <option value="operator">Operator</option>
+        </select>
+      </div>
+      <button class="btn-o" style="height:36px;font-size:.78rem" onclick="doCopyRole()"><i class="bi bi-clipboard-fill"></i> Salin</button>
+      <div class="modal-search">
+        <i class="bi bi-search"></i>
+        <input type="text" class="modal-search-inp" id="menuSearch" placeholder="Cari menu..." oninput="filterMenu(this.value)"/>
+      </div>
+    </div>
+
+    <!-- Permission Table -->
+    <div class="modal-body">
+      <table class="perm-table" id="permTable">
+        <thead class="perm-thead">
+          <tr>
+            <th>Menu</th>
+            <th class="th-actions">Action</th>
+          </tr>
+        </thead>
+        <tbody id="permBody">
+          <!-- injected by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-foot">
+      <div class="mf-info"><i class="bi bi-info-circle-fill"></i> <span id="mfInfo">Perubahan belum disimpan</span></div>
+      <div class="mf-btns">
+        <button class="btn-o" onclick="resetPerms()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+        <button class="btn-o" onclick="closeModal()"><i class="bi bi-x"></i> Batal</button>
+        <button class="btn-p" onclick="savePerms()"><i class="bi bi-floppy-fill"></i> Simpan Hak Akses</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════
+     SHELL
+     ═══════════════════════ -->
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <a class="sb-brand" href="dashboard-ppid.html">
+      <div class="sb-icon"><i class="bi bi-shield-lock-fill"></i></div>
+      <div class="sb-text"><div class="sb-title">PPID Pekalongan</div><div class="sb-sub">Kota Pekalongan &middot; v2.0</div></div>
+    </a>
+    <nav class="sb-scroll">
+      <div class="sb-iw"><a href="dashboard-ppid.html" class="sb-link" data-tip="Dashboard"><i class="bi bi-grid-1x2-fill ico"></i><span class="lbl">Dashboard</span></a></div>
+      <div class="sb-sec">Master Data</div>
+      <div class="sb-iw"><a href="admin-pengelola-ppid.html" class="sb-link" data-tip="Admin Pengelola"><i class="bi bi-person-badge-fill ico"></i><span class="lbl">Admin Pengelola</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link active" data-tip="Akses Role"><i class="bi bi-shield-fill-check ico"></i><span class="lbl">Akses Role</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Pemohon"><i class="bi bi-people-fill ico"></i><span class="lbl">Pemohon</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Instansi"><i class="bi bi-building ico"></i><span class="lbl">Instansi / OPD</span></a></div>
+      <div class="sb-sec">Kelompok Informasi</div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIP"><i class="bi bi-folder2-open ico"></i><span class="lbl">Kelinfo DIP</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIB"><i class="bi bi-folder-fill ico"></i><span class="lbl">Kelinfo DIB</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIBS"><i class="bi bi-folder-symlink-fill ico"></i><span class="lbl">Kelinfo DIBS</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIU"><i class="bi bi-archive-fill ico"></i><span class="lbl">Kelinfo DIU</span></a></div>
+      <div class="sb-sec">Permohonan</div>
+      <div class="sb-iw"><a href="permohonan-masuk-ppid.html" class="sb-link" data-tip="Permohonan Masuk"><i class="bi bi-inbox-fill ico"></i><span class="lbl">Permohonan Masuk</span><span class="sb-badge">7</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Riwayat"><i class="bi bi-clock-history ico"></i><span class="lbl">Riwayat Permohonan</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Laporan"><i class="bi bi-bar-chart-fill ico"></i><span class="lbl">Laporan &amp; Statistik</span></a></div>
+      <div class="sb-sec">Konten Website</div>
+      <div class="sb-iw"><a href="berita-ppid.html" class="sb-link" data-tip="Berita"><i class="bi bi-newspaper ico"></i><span class="lbl">Berita</span></a></div>
+      <div class="sb-iw"><a href="galeri-ppid.html" class="sb-link" data-tip="Galeri"><i class="bi bi-images ico"></i><span class="lbl">Galeri</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Infografis"><i class="bi bi-pie-chart-fill ico"></i><span class="lbl">Infografis</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Kelola Menu"><i class="bi bi-list-nested ico"></i><span class="lbl">Kelola Menu</span></a></div>
+      <div class="sb-sec">Pengaturan</div>
+      <div class="sb-iw"><a href="pengaturan-ppid.html" class="sb-link" data-tip="Pengaturan"><i class="bi bi-gear-fill ico"></i><span class="lbl">Pengaturan Sistem</span></a></div>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-foot-inner">
+        <div class="sb-ficon"><i class="bi bi-info-circle"></i></div>
+        <div class="sb-ftext"><div class="sb-fver">Versi 2.0.1 &mdash; Stabil</div><div class="sb-fcopy">&copy; 2025 PPID Kota Pekalongan</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+    <header class="topbar">
+      <button class="tog-btn" id="togBtn" onclick="toggleSB()"><i class="bi bi-arrow-bar-left"></i></button>
+      <div class="tb-space"></div>
+      <div class="tb-right">
+        <button class="tb-ibtn"><i class="bi bi-bell"></i><span class="notif-dot"></span></button>
+        <button class="tb-ibtn" onclick="toggleFS()"><i class="bi bi-fullscreen" id="fsIco"></i></button>
+        <div class="user-menu">
+          <button class="user-trig" id="uTrig" onclick="toggleUM()" aria-expanded="false">
+            <div class="user-av">AS</div>
+            <div class="user-info"><div class="uname">Admin Sistem</div><div class="urole">@admin.ppid</div></div>
+            <i class="bi bi-chevron-down user-caret"></i>
+          </button>
+          <div class="user-dd" id="uDD">
+            <a class="dd-item" href="#"><i class="bi bi-person-circle"></i>Profil Saya</a>
+            <a class="dd-item" href="pengaturan-ppid.html"><i class="bi bi-gear"></i>Pengaturan</a>
+            <div class="dd-div"></div>
+            <button class="dd-item danger"><i class="bi bi-box-arrow-right"></i>Keluar</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- BB -->
+      <div class="bb">
+        <div class="bb-left">
+          <div class="bb-title">Akses Role</div>
+          <div class="bb-desc">Kelola hak akses dan permission untuk setiap role pengguna sistem</div>
+        </div>
+        <div class="bb-right">
+          <div class="bc"><i class="bi bi-house-fill"></i> Home</div>
+          <span class="bc-sep">/</span>
+          <div class="bc cur"><i class="bi bi-shield-fill-check"></i> Akses Role</div>
+        </div>
+      </div>
+
+      <!-- CARD: toolbar + role grid -->
+      <div class="card">
+        <div class="card-head">
+          <i class="bi bi-shield-fill-check"></i>
+          <h6>Daftar Role Pengguna</h6>
+          <span style="font-size:.73rem;color:var(--text-muted);margin-left:auto" id="roleCount">6 role terdaftar</span>
+        </div>
+        <div class="card-body">
+
+          <!-- Toolbar: search + filter -->
+          <div class="toolbar">
+            <div class="search-wrap">
+              <i class="bi bi-search"></i>
+              <input type="text" class="search-inp" placeholder="Cari role..." oninput="filterRoles(this.value)" id="roleSearch"/>
+            </div>
+            <div class="tb-right-group">
+              <select class="fsel-sm" onchange="filterRolesByType(this.value)">
+                <option value="">Semua Level</option>
+                <option value="system">System</option>
+                <option value="custom">Custom</option>
+              </select>
+              <button class="btn-ico" title="Refresh" onclick="showToast('Data role berhasil diperbarui.')"><i class="bi bi-arrow-clockwise"></i></button>
+            </div>
+          </div>
+
+          <!-- Role Grid -->
+          <div class="role-grid" id="roleGrid">
+
+            <!-- Role: Super Admin -->
+            <div class="role-card rc-blue" data-name="super admin" data-type="system">
+              <div class="rc-head">
+                <div class="rc-icon blue"><i class="bi bi-shield-fill-check"></i></div>
+                <div class="rc-info">
+                  <div class="rc-name">Super Admin</div>
+                  <div class="rc-desc">Akses penuh ke seluruh sistem tanpa pembatasan</div>
+                  <span class="rc-badge rcb-blue"><i class="bi bi-lock-fill"></i> System Role</span>
+                </div>
+              </div>
+              <div class="rc-stats">
+                <div class="rc-stat"><div class="sv">12</div><div class="sl">Menu</div></div>
+                <div class="rc-stat"><div class="sv">All</div><div class="sl">Aksi</div></div>
+                <div class="rc-stat"><div class="sv">3</div><div class="sl">Pengguna</div></div>
+              </div>
+              <div class="rc-perms">
+                <span class="perm-tag pt-create"><i class="bi bi-plus-circle-fill"></i> create</span>
+                <span class="perm-tag pt-read"><i class="bi bi-eye-fill"></i> read</span>
+                <span class="perm-tag pt-update"><i class="bi bi-pencil-fill"></i> update</span>
+                <span class="perm-tag pt-delete"><i class="bi bi-trash3-fill"></i> delete</span>
+                <span class="perm-tag pt-export"><i class="bi bi-download"></i> export</span>
+                <span class="perm-tag pt-import"><i class="bi bi-upload"></i> import</span>
+              </div>
+              <div class="rc-foot">
+                <div class="rc-users"><i class="bi bi-people-fill"></i> <strong>3</strong>&nbsp;pengguna aktif</div>
+                <button class="btn-p" style="font-size:.75rem;padding:.38rem .8rem" onclick="openModal('Super Admin','superadmin','blue')">
+                  <i class="bi bi-sliders2"></i> Detail Akses
+                </button>
+              </div>
+            </div>
+
+            <!-- Role: Admin -->
+            <div class="role-card rc-green" data-name="admin" data-type="system">
+              <div class="rc-head">
+                <div class="rc-icon green"><i class="bi bi-person-badge-fill"></i></div>
+                <div class="rc-info">
+                  <div class="rc-name">Admin</div>
+                  <div class="rc-desc">Pengelolaan konten, permohonan, dan pengguna (kecuali pengaturan sistem)</div>
+                  <span class="rc-badge rcb-green"><i class="bi bi-lock-fill"></i> System Role</span>
+                </div>
+              </div>
+              <div class="rc-stats">
+                <div class="rc-stat"><div class="sv">10</div><div class="sl">Menu</div></div>
+                <div class="rc-stat"><div class="sv">4</div><div class="sl">Aksi</div></div>
+                <div class="rc-stat"><div class="sv">7</div><div class="sl">Pengguna</div></div>
+              </div>
+              <div class="rc-perms">
+                <span class="perm-tag pt-create"><i class="bi bi-plus-circle-fill"></i> create</span>
+                <span class="perm-tag pt-read"><i class="bi bi-eye-fill"></i> read</span>
+                <span class="perm-tag pt-update"><i class="bi bi-pencil-fill"></i> update</span>
+                <span class="perm-tag pt-delete"><i class="bi bi-trash3-fill"></i> delete</span>
+              </div>
+              <div class="rc-foot">
+                <div class="rc-users"><i class="bi bi-people-fill"></i> <strong>7</strong>&nbsp;pengguna aktif</div>
+                <button class="btn-p" style="font-size:.75rem;padding:.38rem .8rem" onclick="openModal('Admin','admin','green')">
+                  <i class="bi bi-sliders2"></i> Detail Akses
+                </button>
+              </div>
+            </div>
+
+            <!-- Role: Editor -->
+            <div class="role-card rc-purple" data-name="editor" data-type="system">
+              <div class="rc-head">
+                <div class="rc-icon purple"><i class="bi bi-pen-fill"></i></div>
+                <div class="rc-info">
+                  <div class="rc-name">Editor</div>
+                  <div class="rc-desc">Membuat dan mengedit konten berita, galeri, dan infografis</div>
+                  <span class="rc-badge rcb-purple"><i class="bi bi-lock-fill"></i> System Role</span>
+                </div>
+              </div>
+              <div class="rc-stats">
+                <div class="rc-stat"><div class="sv">5</div><div class="sl">Menu</div></div>
+                <div class="rc-stat"><div class="sv">3</div><div class="sl">Aksi</div></div>
+                <div class="rc-stat"><div class="sv">12</div><div class="sl">Pengguna</div></div>
+              </div>
+              <div class="rc-perms">
+                <span class="perm-tag pt-create"><i class="bi bi-plus-circle-fill"></i> create</span>
+                <span class="perm-tag pt-read"><i class="bi bi-eye-fill"></i> read</span>
+                <span class="perm-tag pt-update"><i class="bi bi-pencil-fill"></i> update</span>
+              </div>
+              <div class="rc-foot">
+                <div class="rc-users"><i class="bi bi-people-fill"></i> <strong>12</strong>&nbsp;pengguna aktif</div>
+                <button class="btn-p" style="font-size:.75rem;padding:.38rem .8rem" onclick="openModal('Editor','editor','purple')">
+                  <i class="bi bi-sliders2"></i> Detail Akses
+                </button>
+              </div>
+            </div>
+
+            <!-- Role: Operator -->
+            <div class="role-card rc-teal" data-name="operator" data-type="custom">
+              <div class="rc-head">
+                <div class="rc-icon teal"><i class="bi bi-headset"></i></div>
+                <div class="rc-info">
+                  <div class="rc-name">Operator</div>
+                  <div class="rc-desc">Pemrosesan dan respon permohonan informasi dari masyarakat</div>
+                  <span class="rc-badge rcb-teal"><i class="bi bi-pencil-fill"></i> Custom Role</span>
+                </div>
+              </div>
+              <div class="rc-stats">
+                <div class="rc-stat"><div class="sv">4</div><div class="sl">Menu</div></div>
+                <div class="rc-stat"><div class="sv">3</div><div class="sl">Aksi</div></div>
+                <div class="rc-stat"><div class="sv">8</div><div class="sl">Pengguna</div></div>
+              </div>
+              <div class="rc-perms">
+                <span class="perm-tag pt-read"><i class="bi bi-eye-fill"></i> read</span>
+                <span class="perm-tag pt-update"><i class="bi bi-pencil-fill"></i> update</span>
+                <span class="perm-tag pt-export"><i class="bi bi-download"></i> export</span>
+              </div>
+              <div class="rc-foot">
+                <div class="rc-users"><i class="bi bi-people-fill"></i> <strong>8</strong>&nbsp;pengguna aktif</div>
+                <button class="btn-p" style="font-size:.75rem;padding:.38rem .8rem" onclick="openModal('Operator','operator','teal')">
+                  <i class="bi bi-sliders2"></i> Detail Akses
+                </button>
+              </div>
+            </div>
+
+            <!-- Role: Kontributor -->
+            <div class="role-card rc-amber" data-name="kontributor" data-type="custom">
+              <div class="rc-head">
+                <div class="rc-icon amber"><i class="bi bi-person-plus-fill"></i></div>
+                <div class="rc-info">
+                  <div class="rc-name">Kontributor</div>
+                  <div class="rc-desc">Mengajukan draft konten untuk diperiksa dan disetujui editor</div>
+                  <span class="rc-badge rcb-amber"><i class="bi bi-pencil-fill"></i> Custom Role</span>
+                </div>
+              </div>
+              <div class="rc-stats">
+                <div class="rc-stat"><div class="sv">3</div><div class="sl">Menu</div></div>
+                <div class="rc-stat"><div class="sv">2</div><div class="sl">Aksi</div></div>
+                <div class="rc-stat"><div class="sv">5</div><div class="sl">Pengguna</div></div>
+              </div>
+              <div class="rc-perms">
+                <span class="perm-tag pt-create"><i class="bi bi-plus-circle-fill"></i> create</span>
+                <span class="perm-tag pt-read"><i class="bi bi-eye-fill"></i> read</span>
+              </div>
+              <div class="rc-foot">
+                <div class="rc-users"><i class="bi bi-people-fill"></i> <strong>5</strong>&nbsp;pengguna aktif</div>
+                <button class="btn-p" style="font-size:.75rem;padding:.38rem .8rem" onclick="openModal('Kontributor','kontributor','amber')">
+                  <i class="bi bi-sliders2"></i> Detail Akses
+                </button>
+              </div>
+            </div>
+
+            <!-- Role: Viewer -->
+            <div class="role-card rc-red" data-name="viewer" data-type="custom">
+              <div class="rc-head">
+                <div class="rc-icon red"><i class="bi bi-eye-fill"></i></div>
+                <div class="rc-info">
+                  <div class="rc-name">Viewer</div>
+                  <div class="rc-desc">Hanya dapat melihat data tanpa akses edit atau hapus apapun</div>
+                  <span class="rc-badge rcb-red"><i class="bi bi-pencil-fill"></i> Custom Role</span>
+                </div>
+              </div>
+              <div class="rc-stats">
+                <div class="rc-stat"><div class="sv">8</div><div class="sl">Menu</div></div>
+                <div class="rc-stat"><div class="sv">1</div><div class="sl">Aksi</div></div>
+                <div class="rc-stat"><div class="sv">15</div><div class="sl">Pengguna</div></div>
+              </div>
+              <div class="rc-perms">
+                <span class="perm-tag pt-read"><i class="bi bi-eye-fill"></i> read only</span>
+              </div>
+              <div class="rc-foot">
+                <div class="rc-users"><i class="bi bi-people-fill"></i> <strong>15</strong>&nbsp;pengguna aktif</div>
+                <button class="btn-p" style="font-size:.75rem;padding:.38rem .8rem" onclick="openModal('Viewer','viewer','red')">
+                  <i class="bi bi-sliders2"></i> Detail Akses
+                </button>
+              </div>
+            </div>
+
+          </div><!-- end role-grid -->
+
+          <!-- Empty state (hidden by default) -->
+          <div class="empty-state" id="emptyState" style="display:none">
+            <div class="es-ico"><i class="bi bi-shield-slash"></i></div>
+            <div class="es-title">Role Tidak Ditemukan</div>
+            <p class="es-desc">Tidak ada role yang cocok dengan pencarian Anda.</p>
+          </div>
+
+        </div>
+      </div><!-- end card -->
+
+    </main>
+
+    <footer class="footer">
+      <div class="foot-l">&copy; 2025 <strong>PPID Kota Pekalongan</strong> &mdash; Sistem Informasi Layanan Publik.</div>
+      <div class="foot-r">
+        <a class="foot-a" href="#">Bantuan</a><span class="foot-sep">&middot;</span>
+        <a class="foot-a" href="#">Kebijakan Privasi</a><span class="foot-sep">&middot;</span>
+        <a class="foot-a" href="#">Kontak</a>
+      </div>
+    </footer>
+
+  </div><!-- end .main -->
+</div><!-- end .shell -->
+
+<button class="fab" id="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="bi bi-arrow-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+/* ═══════ SIDEBAR ═══════ */
+const sidebar=document.getElementById('sidebar'),mainEl=document.getElementById('main'),togBtn=document.getElementById('togBtn'),sbOv=document.getElementById('sbOv');
+let collapsed=false;
+const isMob=()=>window.innerWidth<=991;
+function toggleSB(){if(isMob()){const o=sidebar.classList.toggle('mobile-open');sbOv.classList.toggle('show',o);}else{collapsed=!collapsed;sidebar.classList.toggle('collapsed',collapsed);mainEl.classList.toggle('collapsed',collapsed);togBtn.classList.toggle('flip',collapsed);}}
+function closeMobile(){sidebar.classList.remove('mobile-open');sbOv.classList.remove('show');}
+window.addEventListener('resize',()=>{if(!isMob())closeMobile();});
+
+/* ═══════ TOPBAR ═══════ */
+const uTrig=document.getElementById('uTrig'),uDD=document.getElementById('uDD');
+function toggleUM(){const o=uDD.classList.toggle('open');uTrig.setAttribute('aria-expanded',o);}
+document.addEventListener('click',e=>{if(!uTrig.contains(e.target)&&!uDD.contains(e.target))uDD.classList.remove('open');});
+function toggleFS(){const ico=document.getElementById('fsIco');if(!document.fullscreenElement){document.documentElement.requestFullscreen();ico.className='bi bi-fullscreen-exit';}else{document.exitFullscreen();ico.className='bi bi-fullscreen';}}
+window.addEventListener('scroll',()=>document.getElementById('fab').classList.toggle('vis',scrollY>300));
+
+/* ═══════ PERMISSION DATA ═══════ */
+/* Struktur: menu group -> array of children (sub-menus) */
+/* Setiap sub-menu: {name, actions:[]} — parent: hanya read */
+const menuData = [
+  {
+    group: 'Dashboard',
+    icon: 'bi-grid-1x2-fill',
+    parentOnly: true,   /* hanya read, tidak punya child */
+    children: []
+  },
+  {
+    group: 'Manajemen Pengguna',
+    icon: 'bi-people-fill',
+    children: [
+      { name: 'Admin Pengelola', actions: ['create','read','update','delete','export'] },
+      { name: 'Akses Role',      actions: ['create','read','update','delete'] },
+      { name: 'Log Aktivitas',   actions: ['read','export'] },
+    ]
+  },
+  {
+    group: 'Permohonan Informasi',
+    icon: 'bi-inbox-fill',
+    children: [
+      { name: 'Permohonan Masuk',    actions: ['read','update','export'] },
+      { name: 'Riwayat Permohonan',  actions: ['read','export'] },
+      { name: 'Laporan & Statistik', actions: ['read','export'] },
+    ]
+  },
+  {
+    group: 'Kelompok Informasi',
+    icon: 'bi-folder2-open',
+    children: [
+      { name: 'Kelinfo DIP',  actions: ['create','read','update','delete','export'] },
+      { name: 'Kelinfo DIB',  actions: ['create','read','update','delete','export'] },
+      { name: 'Kelinfo DIBS', actions: ['create','read','update','delete','export'] },
+      { name: 'Kelinfo DIU',  actions: ['create','read','update','delete','export'] },
+    ]
+  },
+  {
+    group: 'Konten Website',
+    icon: 'bi-newspaper',
+    children: [
+      { name: 'Berita',    actions: ['create','read','update','delete','export','ubah_status'] },
+      { name: 'Galeri',    actions: ['create','read','update','delete','export'] },
+      { name: 'Infografis',actions: ['create','read','update','delete'] },
+      { name: 'Kelola Menu',actions: ['create','read','update','delete'] },
+    ]
+  },
+  {
+    group: 'Instansi & OPD',
+    icon: 'bi-building',
+    children: [
+      { name: 'Data Instansi', actions: ['create','read','update','delete','export'] },
+      { name: 'Pemohon',       actions: ['create','read','update','delete','export'] },
+    ]
+  },
+  {
+    group: 'Pengaturan Sistem',
+    icon: 'bi-gear-fill',
+    parentOnly: true,
+    children: []
+  },
+];
+
+/* preset permissions per role */
+const rolePresets = {
+  superadmin: 'all',
+  admin: {
+    'Permohonan Masuk':    ['read','update','export'],
+    'Riwayat Permohonan':  ['read','export'],
+    'Laporan & Statistik': ['read','export'],
+    'Berita':              ['create','read','update','delete','ubah_status'],
+    'Galeri':              ['create','read','update','delete'],
+    'Infografis':          ['create','read','update','delete'],
+    'Kelola Menu':         ['create','read','update','delete'],
+    'Admin Pengelola':     ['create','read','update','delete'],
+    'Akses Role':          ['read'],
+    'Data Instansi':       ['create','read','update'],
+    'Pemohon':             ['create','read','update','delete'],
+    'Kelinfo DIP':         ['create','read','update','delete','export'],
+    'Kelinfo DIB':         ['create','read','update','delete','export'],
+    'Kelinfo DIBS':        ['create','read','update','delete','export'],
+    'Kelinfo DIU':         ['create','read','update','delete','export'],
+  },
+  editor: {
+    'Berita':    ['create','read','update'],
+    'Galeri':    ['create','read','update'],
+    'Infografis':['create','read'],
+  },
+  operator: {
+    'Permohonan Masuk':   ['read','update','export'],
+    'Riwayat Permohonan': ['read'],
+    'Kelinfo DIP':        ['read'],
+    'Kelinfo DIB':        ['read'],
+  },
+  kontributor: {
+    'Berita': ['create','read'],
+    'Galeri': ['create','read'],
+  },
+  viewer: {},  /* hanya read semua */
+};
+
+/* current state: {menuName: {action: bool}} */
+let currentPerms = {};
+let currentRole = '';
+let expandedGroups = {};
+
+/* action label display */
+const actionMeta = {
+  create:      {lbl:'create',    cls:'tog-green'},
+  read:        {lbl:'read',      cls:''},
+  update:      {lbl:'update',    cls:'tog-amber'},
+  delete:      {lbl:'delete',    cls:'tog-red'},
+  export:      {lbl:'export',    cls:'tog-purple'},
+  import:      {lbl:'import',    cls:'tog-teal'},
+  ubah_status: {lbl:'ubah status',cls:'tog-purple'},
+};
+
+/* ═══════ BUILD PERMISSION STATE ═══════ */
+function buildInitialPerms(roleKey) {
+  const state = {};
+  const preset = rolePresets[roleKey];
+
+  menuData.forEach(grp => {
+    if (grp.parentOnly) {
+      /* parent-only: just read flag */
+      state['__group__' + grp.group] = { read: preset === 'all' || (preset && !!preset[grp.group]) };
+    } else {
+      grp.children.forEach(child => {
+        const perms = {};
+        child.actions.forEach(act => {
+          if (preset === 'all') {
+            perms[act] = true;
+          } else if (roleKey === 'viewer') {
+            perms[act] = act === 'read';
+          } else {
+            perms[act] = !!(preset && preset[child.name] && preset[child.name].includes(act));
+          }
+        });
+        state[child.name] = perms;
+      });
+    }
+  });
+  return state;
+}
+
+/* ═══════ RENDER PERMISSION TABLE ═══════ */
+function renderPermTable(roleKey) {
+  const tbody = document.getElementById('permBody');
+  tbody.innerHTML = '';
+  expandedGroups = {};
+
+  menuData.forEach((grp, gi) => {
+    expandedGroups[grp.group] = true; /* default expanded */
+    const groupId = 'grp_' + gi;
+
+    if (grp.parentOnly) {
+      /* group row — read only */
+      const gRow = document.createElement('tr');
+      gRow.className = 'perm-group';
+      gRow.id = 'gRow_' + gi;
+      gRow.dataset.group = grp.group;
+      const isChecked = currentPerms['__group__' + grp.group]?.read ? 'checked' : '';
+      gRow.innerHTML = `
+        <td>
+          <div class="pg-name">
+            <i class="bi ${grp.icon}" style="color:var(--blue);font-size:.85rem"></i>
+            ${grp.group}
+          </div>
+        </td>
+        <td>
+          <div class="pa-only-read">
+            <label class="tog">
+              <input type="checkbox" ${isChecked} data-group="${grp.group}" data-action="read" onchange="toggleGroupRead(this)"/>
+              <span class="tog-slider"></span>
+            </label>
+            <span class="pa-label">read</span>
+          </div>
+        </td>`;
+      tbody.appendChild(gRow);
+
+    } else {
+      /* group row with arrow toggle */
+      const gRow = document.createElement('tr');
+      gRow.className = 'perm-group';
+      gRow.id = 'gRow_' + gi;
+      gRow.dataset.group = grp.group;
+
+      /* count checked children */
+      const totalChildren = grp.children.length;
+      const checkedChildren = grp.children.filter(c => {
+        const p = currentPerms[c.name];
+        return p && Object.values(p).some(v => v);
+      }).length;
+
+      gRow.innerHTML = `
+        <td>
+          <div class="pg-name">
+            <span class="pg-arrow open" id="arrow_${gi}" onclick="toggleGroup(${gi}, '${grp.group}')">
+              <i class="bi bi-chevron-right"></i>
+            </span>
+            <i class="bi ${grp.icon}" style="color:var(--blue);font-size:.85rem"></i>
+            ${grp.group}
+            <span style="font-size:.65rem;color:var(--text-muted);margin-left:.3rem">(${checkedChildren}/${totalChildren} aktif)</span>
+          </div>
+        </td>
+        <td>
+          <button class="btn-o" style="font-size:.7rem;padding:.25rem .65rem;height:28px" onclick="toggleAllGroup(${gi},'${grp.group}',true)">
+            <i class="bi bi-check-all"></i> Semua
+          </button>
+          <button class="btn-o" style="font-size:.7rem;padding:.25rem .65rem;height:28px;margin-left:.35rem" onclick="toggleAllGroup(${gi},'${grp.group}',false)">
+            <i class="bi bi-x"></i> Reset
+          </button>
+        </td>`;
+      tbody.appendChild(gRow);
+
+      /* child rows */
+      grp.children.forEach((child, ci) => {
+        const cRow = document.createElement('tr');
+        cRow.className = 'perm-child';
+        cRow.id = `cRow_${gi}_${ci}`;
+        cRow.dataset.group = grp.group;
+        cRow.dataset.childname = child.name.toLowerCase();
+
+        const perms = currentPerms[child.name] || {};
+        const isChildActive = Object.values(perms).some(v => v);
+
+        /* actions HTML */
+        const actionsHtml = child.actions.map(act => {
+          const meta = actionMeta[act] || {lbl: act, cls: ''};
+          const chk = perms[act] ? 'checked' : '';
+          return `
+            <div class="perm-action-item">
+              <label class="tog ${meta.cls}">
+                <input type="checkbox" ${chk} data-menu="${child.name}" data-action="${act}" onchange="togglePerm(this)"/>
+                <span class="tog-slider"></span>
+              </label>
+              <span class="pa-label">${meta.lbl}</span>
+            </div>`;
+        }).join('');
+
+        cRow.innerHTML = `
+          <td>
+            <label class="pc-check">
+              <input type="checkbox" ${isChildActive ? 'checked' : ''} data-menu="${child.name}" data-type="row-toggle" onchange="toggleChildRow(this,'${grp.group}',${gi})"/>
+              <span class="pc-box"><i class="bi bi-check2"></i></span>
+              <span class="pc-name">${child.name}</span>
+            </label>
+          </td>
+          <td>
+            <div class="perm-actions" id="acts_${gi}_${ci}">
+              ${actionsHtml}
+            </div>
+          </td>`;
+        tbody.appendChild(cRow);
+      });
+    }
+  });
+}
+
+/* ═══════ TOGGLE GROUP EXPAND ═══════ */
+function toggleGroup(gi, group) {
+  expandedGroups[group] = !expandedGroups[group];
+  const arrow = document.getElementById('arrow_' + gi);
+  arrow.classList.toggle('open', expandedGroups[group]);
+  document.querySelectorAll(`[data-group="${group}"].perm-child`).forEach(r => {
+    r.classList.toggle('hidden-row', !expandedGroups[group]);
+  });
+}
+
+/* ═══════ TOGGLE SINGLE PERM ═══════ */
+function togglePerm(inp) {
+  const menu = inp.dataset.menu;
+  const act  = inp.dataset.action;
+  if (currentPerms[menu]) {
+    currentPerms[menu][act] = inp.checked;
+  }
+  /* if turning on any action, also ensure row checkbox reflects it */
+  const rowChk = document.querySelector(`[data-menu="${menu}"][data-type="row-toggle"]`);
+  if (rowChk) {
+    const anyOn = Object.values(currentPerms[menu]).some(v => v);
+    rowChk.checked = anyOn;
+    const box = rowChk.nextElementSibling;
+    if (box) box.style.background = anyOn ? 'var(--blue)' : '';
+  }
+  markUnsaved();
+}
+
+/* ═══════ TOGGLE CHILD ROW (checkbox) ═══════ */
+function toggleChildRow(inp, group, gi) {
+  const menu = inp.dataset.menu;
+  if (!currentPerms[menu]) return;
+  /* enable/disable all actions for this menu */
+  Object.keys(currentPerms[menu]).forEach(act => {
+    currentPerms[menu][act] = inp.checked;
+  });
+  /* sync all toggle inputs for this menu */
+  document.querySelectorAll(`[data-menu="${menu}"][data-action]`).forEach(t => {
+    t.checked = inp.checked;
+  });
+  markUnsaved();
+}
+
+/* ═══════ TOGGLE GROUP READ (parent-only) ═══════ */
+function toggleGroupRead(inp) {
+  const group = inp.dataset.group;
+  const key   = '__group__' + group;
+  if (currentPerms[key]) currentPerms[key].read = inp.checked;
+  markUnsaved();
+}
+
+/* ═══════ TOGGLE ALL IN GROUP ═══════ */
+function toggleAllGroup(gi, group, on) {
+  const grp = menuData[gi];
+  grp.children.forEach((child, ci) => {
+    if (!currentPerms[child.name]) return;
+    Object.keys(currentPerms[child.name]).forEach(act => {
+      currentPerms[child.name][act] = on;
+    });
+  });
+  /* re-render just that group's rows */
+  document.querySelectorAll(`[data-group="${group}"] input[type=checkbox]`).forEach(inp => {
+    if (inp.dataset.action || inp.dataset.type === 'row-toggle') inp.checked = on;
+  });
+  markUnsaved();
+}
+
+/* ═══════ FILTER MENU (search inside modal) ═══════ */
+function filterMenu(q) {
+  q = q.toLowerCase().trim();
+  document.querySelectorAll('.perm-child').forEach(row => {
+    const name = row.dataset.childname || '';
+    row.classList.toggle('hidden-row', q && !name.includes(q));
+  });
+  document.querySelectorAll('.perm-group').forEach(row => {
+    const grp = row.dataset.group || '';
+    if (!q) { row.classList.remove('hidden-row'); return; }
+    /* show group if any child matches */
+    const children = document.querySelectorAll(`.perm-child[data-group="${grp}"]`);
+    const anyVisible = Array.from(children).some(c => !c.classList.contains('hidden-row'));
+    row.classList.toggle('hidden-row', !anyVisible);
+  });
+}
+
+/* ═══════ COPY ROLE ═══════ */
+function doCopyRole() {
+  const val = $('#copyRoleSelect').val();
+  if (!val) { showToast('Pilih role yang ingin disalin terlebih dahulu.'); return; }
+  currentPerms = buildInitialPerms(val);
+  renderPermTable(currentRole);
+  showToast('Hak akses berhasil disalin dari role ' + val + '.');
+  markUnsaved();
+}
+
+/* ═══════ SAVE / RESET ═══════ */
+function savePerms() {
+  const info = document.getElementById('mfInfo');
+  info.textContent = 'Menyimpan...';
+  setTimeout(() => {
+    info.innerHTML = '<i class="bi bi-check-circle-fill" style="color:var(--green)"></i> Tersimpan';
+    showToast('Hak akses role ' + currentRole + ' berhasil disimpan.');
+  }, 800);
+}
+function resetPerms() {
+  currentPerms = buildInitialPerms(currentRole);
+  renderPermTable(currentRole);
+  document.getElementById('mfInfo').textContent = 'Perubahan dibatalkan';
+  showToast('Hak akses direset ke pengaturan awal.');
+}
+function markUnsaved() {
+  document.getElementById('mfInfo').textContent = 'Ada perubahan belum disimpan';
+}
+
+/* ═══════ OPEN / CLOSE MODAL ═══════ */
+const colorMap = {
+  blue:'blue', green:'green', amber:'amber', purple:'purple', teal:'teal', red:'red'
+};
+const iconMap = {
+  superadmin:'bi-shield-fill-check', admin:'bi-person-badge-fill', editor:'bi-pen-fill',
+  operator:'bi-headset', kontributor:'bi-person-plus-fill', viewer:'bi-eye-fill'
+};
+
+function openModal(roleName, roleKey, color) {
+  currentRole = roleKey;
+  currentPerms = buildInitialPerms(roleKey);
+
+  /* set header */
+  document.getElementById('mhTitle').textContent = 'Hak Akses: ' + roleName;
+  document.getElementById('mhDesc').textContent  = 'Role: ' + roleName + ' — atur permission per menu';
+  const ico = document.getElementById('mhIco');
+  ico.className = 'mh-ico ' + (colorMap[color] || 'blue');
+  ico.innerHTML = `<i class="bi ${iconMap[roleKey] || 'bi-shield-lock-fill'}"></i>`;
+
+  document.getElementById('mfInfo').textContent = 'Perubahan belum disimpan';
+  document.getElementById('menuSearch').value = '';
+
+  renderPermTable(roleKey);
+
+  document.getElementById('modalRole').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalRole').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modalRole').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalRole')) closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+/* ═══════ ROLE LIST FILTER ═══════ */
+function filterRoles(q) {
+  q = q.toLowerCase();
+  let visible = 0;
+  document.querySelectorAll('.role-card').forEach(c => {
+    const name = c.dataset.name || '';
+    const show = !q || name.includes(q);
+    c.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  document.getElementById('emptyState').style.display = visible ? 'none' : '';
+  document.getElementById('roleCount').textContent = visible + ' role' + (q ? ' ditemukan' : ' terdaftar');
+}
+
+function filterRolesByType(type) {
+  let visible = 0;
+  const q = document.getElementById('roleSearch').value.toLowerCase();
+  document.querySelectorAll('.role-card').forEach(c => {
+    const cardType = c.dataset.type || '';
+    const name = c.dataset.name || '';
+    const matchType = !type || cardType === type;
+    const matchQ    = !q || name.includes(q);
+    const show = matchType && matchQ;
+    c.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  document.getElementById('emptyState').style.display = visible ? 'none' : '';
+  document.getElementById('roleCount').textContent = visible + ' role' + (type ? ` (${type})` : ' terdaftar');
+}
+
+/* ═══════ SELECT2 INIT ═══════ */
+$(document).ready(function() {
+  $('#copyRoleSelect').select2({
+    placeholder: '-- Salin dari role --',
+    dropdownParent: $('#modalRole'),
+    width: '100%',
+    minimumResultsForSearch: -1,
+  });
+});
+
+/* ═══════ TOAST ═══════ */
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style, {
+    position:'fixed', bottom:'1.5rem', left:'50%',
+    transform:'translateX(-50%) translateY(20px)',
+    background:'#0f1c2e', color:'#fff',
+    padding:'.6rem 1.2rem', borderRadius:'10px',
+    fontSize:'.82rem', fontWeight:'600',
+    zIndex:'9999', opacity:'0',
+    transition:'all .3s',
+    boxShadow:'0 8px 24px rgba(0,0,0,0.28)',
+    whiteSpace:'nowrap'
+  });
+  document.body.appendChild(t);
+  requestAnimationFrame(() => {
+    t.style.opacity = '1';
+    t.style.transform = 'translateX(-50%) translateY(0)';
+  });
+  setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(8px)';
+    setTimeout(() => t.remove(), 400);
+  }, 2400);
+}
+</script>
+</body>
+</html>
