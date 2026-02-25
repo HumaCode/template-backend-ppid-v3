@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Profil Akun — PPID Kota Pekalongan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    /* ═══════ ROOT ═══════ */
+    :root{
+      --blue:#0072c6;--blue-dark:#005499;--blue-deep:#003d70;--blue-light:#1a8fe0;
+      --blue-soft:rgba(0,114,198,0.08);--sidebar-w:260px;--sidebar-col:68px;
+      --topbar-h:64px;--sidebar-bg:#001f42;--content-bg:#f0f4f9;
+      --card-bg:#fff;--text-main:#0f1c2e;--text-muted:#6b7a8d;
+      --border:rgba(0,0,0,0.07);--shadow:0 2px 16px rgba(0,50,100,0.08);
+      --ease:.28s cubic-bezier(.22,1,.36,1);--r:14px;--inp-h:42px;
+      --green:#10b964;--amber:#f59e0b;--red:#dc3545;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--content-bg);color:var(--text-main);min-height:100vh}
+
+    /* ═══════ SHELL ═══════ */
+    .shell{display:flex;min-height:100vh;width:100%;overflow-x:hidden}
+    .main{flex:1;margin-left:var(--sidebar-w);display:flex;flex-direction:column;min-height:100vh;min-width:0;max-width:calc(100vw - var(--sidebar-w));transition:margin-left var(--ease),max-width var(--ease)}
+    .main.collapsed{margin-left:var(--sidebar-col);max-width:calc(100vw - var(--sidebar-col))}
+
+    /* ═══════ SIDEBAR ═══════ */
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:1000;overflow:hidden;transition:width var(--ease);box-shadow:4px 0 24px rgba(0,18,50,0.18)}
+    .sidebar.collapsed{width:var(--sidebar-col)}
+    .sb-brand{display:flex;align-items:center;gap:.85rem;padding:1.3rem 1.1rem 1.2rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.07);min-height:var(--topbar-h);text-decoration:none;overflow:hidden;flex-shrink:0}
+    .sb-icon{width:38px;height:38px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,114,198,0.45);animation:iconPulse 3s ease-in-out infinite}
+    .sb-icon i{font-size:1.1rem;color:#fff}
+    @keyframes iconPulse{0%,100%{box-shadow:0 4px 14px rgba(0,114,198,0.45)}50%{box-shadow:0 6px 22px rgba(0,114,198,0.7)}}
+    .sb-text{overflow:hidden;white-space:nowrap}
+    .sb-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;line-height:1.15}
+    .sb-sub{font-size:.65rem;color:rgba(255,255,255,0.4);letter-spacing:.04em}
+    .sb-scroll{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;padding:.8rem 0}
+    .sb-scroll::-webkit-scrollbar{width:3px}
+    .sb-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+    .sb-sec{font-size:.6rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,0.28);padding:1rem 1.25rem .35rem;white-space:nowrap;overflow:hidden;transition:opacity var(--ease)}
+    .sidebar.collapsed .sb-sec{opacity:0}
+    .sb-iw{padding:.08rem .7rem}
+    .sb-link{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:10px;text-decoration:none;color:rgba(255,255,255,0.5);font-size:.84rem;font-weight:500;white-space:nowrap;overflow:hidden;transition:background var(--ease),color var(--ease);position:relative}
+    .sb-link .ico{font-size:1.05rem;flex-shrink:0;width:20px;text-align:center}
+    .sb-link .lbl{flex:1;overflow:hidden;text-overflow:ellipsis;transition:opacity var(--ease),max-width var(--ease)}
+    .sb-link:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.88)}
+    .sb-link.active{background:linear-gradient(90deg,rgba(0,114,198,0.35),rgba(0,114,198,0.1));color:#fff;box-shadow:inset 3px 0 0 var(--blue)}
+    .sb-link.active .ico{color:#7ecbff}
+    .sb-badge{background:var(--blue);color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .42rem;border-radius:100px;flex-shrink:0}
+    .sidebar.collapsed .lbl,.sidebar.collapsed .sb-badge{opacity:0;max-width:0;overflow:hidden}
+    .sidebar.collapsed .sb-link{justify-content:center;padding:.65rem}
+    .sidebar.collapsed .sb-iw{padding-left:.5rem;padding-right:.5rem}
+    .sidebar.collapsed .sb-link[data-tip]::after{content:attr(data-tip);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);background:#0d2340;color:#fff;font-size:.74rem;padding:.3rem .7rem;border-radius:7px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9999}
+    .sidebar.collapsed .sb-link[data-tip]:hover::after{opacity:1}
+    .sb-foot{padding:.9rem 1rem;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+    .sb-foot-inner{display:flex;align-items:center;gap:.7rem;overflow:hidden}
+    .sb-ficon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .sb-ficon i{font-size:.9rem;color:rgba(255,255,255,0.4)}
+    .sb-ftext{overflow:hidden;white-space:nowrap}
+    .sb-fver{font-size:.68rem;color:rgba(255,255,255,0.25)}
+    .sb-fcopy{font-size:.63rem;color:rgba(255,255,255,0.18)}
+    .sidebar.collapsed .sb-ftext{opacity:0;max-width:0}
+
+    /* ═══════ TOPBAR ═══════ */
+    .topbar{height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;position:sticky;top:0;z-index:900;box-shadow:0 1px 12px rgba(0,40,100,0.06);gap:1rem}
+    .tog-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:1.05rem;transition:background .2s,color .2s,transform .3s;flex-shrink:0}
+    .tog-btn:hover{background:var(--blue-soft);color:var(--blue)}
+    .tog-btn.flip{transform:rotate(180deg)}
+    .tb-space{flex:1}
+    .tb-right{display:flex;align-items:center;gap:.6rem}
+    .tb-ibtn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:1rem;transition:background .2s,color .2s;position:relative}
+    .tb-ibtn:hover{background:var(--blue-soft);color:var(--blue)}
+    .notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#e84242;border:1.5px solid #fff;animation:notifPulse 1.8s ease-in-out infinite}
+    @keyframes notifPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,66,66,.5)}50%{box-shadow:0 0 0 5px rgba(232,66,66,0)}}
+    .user-menu{position:relative}
+    .user-trig{display:flex;align-items:center;gap:.6rem;padding:.35rem .65rem .35rem .45rem;border-radius:10px;border:1px solid var(--border);background:transparent;cursor:pointer;transition:background .2s}
+    .user-trig:hover{background:var(--blue-soft)}
+    .user-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;font-weight:700;flex-shrink:0;box-shadow:0 2px 8px rgba(0,114,198,0.4)}
+    .user-info .uname{font-size:.8rem;font-weight:600;color:var(--text-main);line-height:1.2}
+    .user-info .urole{font-size:.68rem;color:var(--text-muted)}
+    .user-caret{font-size:.7rem;color:var(--text-muted);transition:transform .25s}
+    .user-trig[aria-expanded="true"] .user-caret{transform:rotate(180deg)}
+    .user-dd{position:absolute;right:0;top:calc(100% + 8px);min-width:190px;background:#fff;border:1px solid var(--border);border-radius:13px;box-shadow:0 10px 40px rgba(0,40,100,0.13);padding:.45rem;display:none;z-index:999;animation:dropIn .25s var(--ease)}
+    .user-dd.open{display:block}
+    @keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .dd-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;border-radius:8px;font-size:.82rem;color:var(--text-main);text-decoration:none;cursor:pointer;transition:background .18s;font-weight:500;border:none;background:none;width:100%;text-align:left}
+    .dd-item i{font-size:.95rem;color:var(--text-muted);width:18px}
+    .dd-item:hover{background:var(--blue-soft);color:var(--blue)}
+    .dd-item.danger:hover{background:rgba(220,50,50,0.06);color:#c0392b}
+    .dd-div{height:1px;background:var(--border);margin:.35rem 0}
+
+    /* ═══════ CONTENT ═══════ */
+    .content{flex:1;padding:1.6rem;position:relative;width:100%;overflow-x:hidden}
+    .content::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(0,100,200,0.04) 1px,transparent 0);background-size:28px 28px;pointer-events:none;z-index:0}
+
+    /* ═══════ BB ═══════ */
+    .bb{background:linear-gradient(120deg,var(--blue-deep) 0%,var(--blue) 55%,var(--blue-light) 100%);border-radius:16px;padding:1.3rem 1.6rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:relative;overflow:hidden;box-shadow:0 8px 28px rgba(0,114,198,0.28);z-index:1;width:100%}
+    .bb::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.06);top:-60px;right:80px}
+    .bb::after{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.06);bottom:-40px;right:20px}
+    .bb-left{position:relative;z-index:1}
+    .bb-title{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:#fff;margin-bottom:.18rem}
+    .bb-desc{font-size:.78rem;color:rgba(255,255,255,0.6);font-weight:300}
+    .bb-right{display:flex;align-items:center;gap:.35rem;position:relative;z-index:1;flex-wrap:wrap}
+    .bc{display:flex;align-items:center;gap:.3rem;font-size:.78rem;color:rgba(255,255,255,0.7);font-weight:500}
+    .bc.cur{color:#fff;font-weight:600}
+    .bc-sep{color:rgba(255,255,255,0.35)}
+
+    /* ═══════ PROFILE LAYOUT ═══════ */
+    .prof-grid{display:grid;grid-template-columns:300px 1fr;gap:1.2rem;align-items:start;position:relative;z-index:1}
+
+    /* ═══════ CARD ═══════ */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .card{background:var(--card-bg);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);width:100%;overflow:hidden;animation:fadeUp .4s var(--ease) both;margin-bottom:1.1rem}
+    .card:last-child{margin-bottom:0}
+    .card:nth-child(2){animation-delay:.07s}
+    .card:nth-child(3){animation-delay:.14s}
+    .card:nth-child(4){animation-delay:.2s}
+    .card-head{padding:.95rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.55rem}
+    .card-head i{color:var(--blue);font-size:1rem;flex-shrink:0}
+    .card-head h6{font-size:.9rem;font-weight:700;color:var(--text-main);margin:0;flex:1}
+    .card-body{padding:1.3rem;width:100%}
+
+    /* ═══════ AVATAR SECTION ═══════ */
+    .av-section{display:flex;flex-direction:column;align-items:center;padding:1.8rem 1.3rem 1.3rem;text-align:center;background:linear-gradient(180deg,var(--blue-soft) 0%,transparent 100%);border-bottom:1px solid var(--border)}
+    .av-ring{position:relative;display:inline-block;margin-bottom:1rem}
+    .av-img{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 20px rgba(0,114,198,0.28);display:block}
+    .av-initials{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:#fff;border:3px solid #fff;box-shadow:0 4px 20px rgba(0,114,198,0.35)}
+    .av-upload-btn{position:absolute;bottom:2px;right:2px;width:30px;height:30px;border-radius:50%;background:var(--blue);border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,transform .2s;box-shadow:0 2px 8px rgba(0,114,198,0.4)}
+    .av-upload-btn:hover{background:var(--blue-dark);transform:scale(1.1)}
+    .av-upload-btn i{font-size:.72rem;color:#fff;pointer-events:none}
+    .av-upload-inp{position:absolute;inset:0;opacity:0;cursor:pointer;border-radius:50%}
+    .av-name{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--text-main);margin-bottom:.2rem;line-height:1.2}
+    .av-role{font-size:.78rem;color:var(--text-muted)}
+    .av-role span{display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .6rem;border-radius:100px;background:rgba(0,114,198,0.1);color:var(--blue);font-weight:600;font-size:.71rem}
+
+    /* ═══════ PROFILE STATS ═══════ */
+    .prof-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--border)}
+    .ps-item{padding:.75rem .5rem;text-align:center;border-right:1px solid var(--border)}
+    .ps-item:last-child{border-right:none}
+    .ps-val{font-size:1.15rem;font-weight:800;color:var(--blue);line-height:1}
+    .ps-lbl{font-size:.65rem;color:var(--text-muted);margin-top:.18rem}
+
+    /* ═══════ QUICK NAV (aside card) ═══════ */
+    .qnav-item{display:flex;align-items:center;gap:.65rem;padding:.62rem .8rem;border-radius:9px;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--text-muted);transition:background .18s,color .18s;border:none;background:none;width:100%;text-align:left;border-left:3px solid transparent;text-decoration:none}
+    .qnav-item i{font-size:.92rem;width:18px;text-align:center;flex-shrink:0}
+    .qnav-item:hover{background:var(--blue-soft);color:var(--blue)}
+    .qnav-item.active{background:var(--blue-soft);color:var(--blue);border-left-color:var(--blue);font-weight:700}
+    .qnav-div{height:1px;background:var(--border);margin:.3rem 0}
+
+    /* ═══════ FORM FIELDS ═══════ */
+    .fg{display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem}
+    .fg:last-child{margin-bottom:0}
+    .fl{font-size:.79rem;font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:.3rem}
+    .fl .req{color:#dc3545;font-size:.72rem}
+    .fl .tip{width:16px;height:16px;border-radius:50%;background:rgba(0,114,198,0.12);color:var(--blue);display:inline-flex;align-items:center;justify-content:center;font-size:.63rem;cursor:help}
+    .fh{font-size:.71rem;color:var(--text-muted);line-height:1.5}
+    .fi,.fta,.fsel{width:100%;border:1.5px solid var(--border);border-radius:9px;background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.84rem;color:var(--text-main);outline:none;transition:border-color .2s,box-shadow .2s}
+    .fi{height:var(--inp-h);padding:0 .9rem}
+    .fi.ico{padding-left:2.4rem}
+    .fi:read-only{background:#f8f9fb;color:var(--text-muted);cursor:default}
+    .fi::placeholder,.fta::placeholder{color:#b0bac7}
+    .fi:focus:not(:read-only),.fta:focus,.fsel:focus{border-color:var(--blue);box-shadow:0 0 0 3.5px rgba(0,114,198,0.11)}
+    .fta{padding:.8rem .9rem;resize:vertical;min-height:80px;line-height:1.65}
+    .fsel{height:var(--inp-h);padding:0 .9rem;cursor:pointer}
+    .fiw{position:relative}
+    .fii{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.86rem;pointer-events:none}
+    .fg-row{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+
+    /* strength meter */
+    .pw-strength{height:4px;border-radius:100px;background:#e9edf3;margin-top:.35rem;overflow:hidden}
+    .pw-fill{height:100%;border-radius:100px;width:0;transition:width .4s var(--ease),background .4s}
+    .pw-label{font-size:.7rem;margin-top:.22rem;font-weight:600}
+
+    /* ═══════ TOGGLE SWITCH ═══════ */
+    .tog-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.65rem 0;border-bottom:1px solid var(--border)}
+    .tog-row:last-child{border-bottom:none;padding-bottom:0}
+    .tog-info .tog-title{font-size:.83rem;font-weight:600;color:var(--text-main)}
+    .tog-info .tog-desc{font-size:.72rem;color:var(--text-muted);margin-top:.1rem;line-height:1.45}
+    .tog{position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0}
+    .tog input{opacity:0;width:0;height:0}
+    .tog-slider{position:absolute;inset:0;background:#d1d9e6;border-radius:100px;cursor:pointer;transition:background .25s}
+    .tog-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,0.18)}
+    .tog input:checked+.tog-slider{background:var(--blue)}
+    .tog input:checked+.tog-slider::before{transform:translateX(18px)}
+
+    /* ═══════ ACTIVITY FEED ═══════ */
+    .act-item{display:flex;align-items:flex-start;gap:.85rem;padding:.7rem 0;border-bottom:1px solid var(--border)}
+    .act-item:last-child{border-bottom:none;padding-bottom:0}
+    .act-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem}
+    .act-ico.blue{background:rgba(0,114,198,0.1);color:var(--blue)}
+    .act-ico.green{background:rgba(16,185,100,0.1);color:#10b964}
+    .act-ico.amber{background:rgba(245,158,11,0.1);color:#d97706}
+    .act-ico.red{background:rgba(220,53,69,0.1);color:#dc3545}
+    .act-ico.slate{background:rgba(100,116,139,0.1);color:#64748b}
+    .act-body{flex:1;min-width:0}
+    .act-title{font-size:.81rem;font-weight:600;color:var(--text-main);line-height:1.35}
+    .act-meta{font-size:.7rem;color:var(--text-muted);margin-top:.12rem}
+    .act-time{font-size:.69rem;color:var(--text-muted);white-space:nowrap;flex-shrink:0}
+
+    /* ═══════ SESSION TABLE ═══════ */
+    .ses-item{display:flex;align-items:center;gap:.75rem;padding:.65rem 0;border-bottom:1px solid var(--border)}
+    .ses-item:last-child{border-bottom:none;padding-bottom:0}
+    .ses-dev{width:36px;height:36px;border-radius:9px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .ses-dev i{font-size:1rem;color:var(--blue)}
+    .ses-info{flex:1;min-width:0}
+    .ses-name{font-size:.81rem;font-weight:600;color:var(--text-main)}
+    .ses-detail{font-size:.7rem;color:var(--text-muted);margin-top:.1rem}
+    .ses-badge{display:inline-flex;align-items:center;gap:.22rem;padding:.18rem .55rem;border-radius:100px;font-size:.67rem;font-weight:700}
+    .sb-now{background:rgba(16,185,100,0.1);color:#10b964}
+    .sb-old{background:rgba(100,116,139,0.1);color:#64748b}
+    .ses-rm{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.75rem;color:var(--text-muted);transition:background .18s,color .18s;flex-shrink:0}
+    .ses-rm:hover{background:rgba(220,53,69,0.07);color:#dc3545;border-color:rgba(220,53,69,0.25)}
+
+    /* ═══════ BADGES ═══════ */
+    .role-badge{display:inline-flex;align-items:center;gap:.28rem;padding:.24rem .7rem;border-radius:100px;font-size:.71rem;font-weight:700}
+    .rb-superadmin{background:linear-gradient(135deg,rgba(0,114,198,0.12),rgba(26,143,224,0.12));color:var(--blue);border:1px solid rgba(0,114,198,0.2)}
+    .rb-admin{background:rgba(124,58,237,0.1);color:#7c3aed;border:1px solid rgba(124,58,237,0.2)}
+    .rb-editor{background:rgba(16,185,100,0.1);color:#10b964;border:1px solid rgba(16,185,100,0.2)}
+
+    /* ═══════ ALERT BOX ═══════ */
+    .alert-box{display:flex;gap:.65rem;align-items:flex-start;border-radius:10px;padding:.85rem 1rem}
+    .alert-box i{flex-shrink:0;margin-top:.08rem;font-size:1rem}
+    .alert-box p{font-size:.78rem;line-height:1.6;margin:0}
+    .ab-info{background:rgba(0,114,198,0.06);border:1px solid rgba(0,114,198,0.15)}
+    .ab-info i{color:var(--blue)}
+    .ab-warn{background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2)}
+    .ab-warn i{color:#d97706}
+    .ab-success{background:rgba(16,185,100,0.07);border:1px solid rgba(16,185,100,0.2)}
+    .ab-success i{color:#10b964}
+
+    /* ═══════ BUTTONS ═══════ */
+    .btn-p{display:inline-flex;align-items:center;gap:.42rem;padding:.52rem 1rem;border-radius:9px;border:none;background:linear-gradient(135deg,var(--blue),var(--blue-light));color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(0,114,198,0.28);transition:transform .2s,box-shadow .2s;white-space:nowrap;text-decoration:none}
+    .btn-p:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(0,114,198,0.38);color:#fff}
+    .btn-o{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem .9rem;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer;transition:background .2s,color .2s,border-color .2s;white-space:nowrap;text-decoration:none}
+    .btn-o:hover{background:var(--blue-soft);color:var(--blue);border-color:rgba(0,114,198,0.28)}
+    .btn-o.red:hover{background:rgba(220,53,69,0.06);color:#dc3545;border-color:rgba(220,53,69,0.28)}
+    .btn-o.green:hover{background:rgba(16,185,100,0.07);color:#10b964;border-color:rgba(16,185,100,0.28)}
+    .btn-row{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+
+    /* ═══════ DIVIDER ═══════ */
+    .fdiv{height:1px;background:var(--border);margin:.8rem 0}
+    .s-head{font-size:.74rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:.7rem;display:flex;align-items:center;gap:.4rem}
+    .s-head::after{content:'';flex:1;height:1px;background:rgba(0,114,198,0.15)}
+
+    /* ═══════ STICKY SAVE BAR ═══════ */
+    .save-bar{background:#fff;border-top:1px solid var(--border);padding:.85rem 1.6rem;display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;box-shadow:0 -4px 24px rgba(0,40,100,0.08);position:sticky;bottom:0;left:0;right:0;z-index:800}
+    .save-info{display:flex;align-items:center;gap:.45rem;font-size:.78rem;color:var(--text-muted)}
+    .save-info i{color:var(--blue)}
+    .save-btns{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+
+    /* ═══════ MODAL ═══════ */
+    .modal-ov{position:fixed;inset:0;background:rgba(0,15,40,0.55);backdrop-filter:blur(6px);z-index:9100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+    .modal-ov.show{opacity:1;pointer-events:all}
+    .modal-box{background:#fff;border-radius:18px;padding:2rem 1.8rem 1.6rem;max-width:400px;width:92%;box-shadow:0 24px 70px rgba(0,20,60,0.22);transform:scale(.88) translateY(18px);transition:transform .35s var(--ease)}
+    .modal-ov.show .modal-box{transform:scale(1) translateY(0)}
+    .modal-ico{width:60px;height:60px;margin:0 auto .9rem;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .modal-ico.red{background:linear-gradient(135deg,#fee2e2,#fecaca)}
+    .modal-ico.red i{font-size:1.5rem;color:#dc3545}
+    .modal-ttl{font-size:1rem;font-weight:700;color:var(--text-main);margin-bottom:.35rem;text-align:center}
+    .modal-desc{font-size:.8rem;color:var(--text-muted);line-height:1.65;margin-bottom:1.3rem;text-align:center}
+    .modal-btns{display:flex;gap:.65rem}
+    .mbtn-cancel{flex:1;padding:.6rem;border-radius:10px;border:1px solid var(--border);background:#f8f9fb;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer}
+    .mbtn-cancel:hover{background:#eef0f5}
+    .mbtn-ok{flex:1;padding:.6rem;border-radius:10px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer}
+    .mbtn-ok.red{background:linear-gradient(135deg,#dc3545,#c0392b);color:#fff;box-shadow:0 4px 14px rgba(220,53,69,0.28)}
+
+    /* ═══════ SIDEBAR OVERLAY ═══════ */
+    .sb-ov{position:fixed;inset:0;background:rgba(0,15,40,0.5);z-index:999;display:none;opacity:0;transition:opacity .3s}
+    .sb-ov.show{display:block;opacity:1}
+
+    /* ═══════ FAB ═══════ */
+    .fab{position:fixed;right:1.6rem;bottom:5rem;width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--blue-light));border:none;color:#fff;font-size:1.05rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(0,114,198,0.4);z-index:700;opacity:0;pointer-events:none;transform:translateY(20px) scale(.85);transition:opacity .35s var(--ease),transform .35s var(--ease)}
+    .fab.vis{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
+    .fab:hover{transform:translateY(-3px) scale(1.06)!important}
+
+    /* ═══════ FOOTER ═══════ */
+    .footer{background:#fff;border-top:1px solid var(--border);padding:1rem 1.6rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+    .foot-l{font-size:.75rem;color:var(--text-muted)}
+    .foot-l strong{color:var(--blue)}
+    .foot-r{display:flex;align-items:center;gap:.5rem}
+    .foot-a{font-size:.73rem;color:var(--text-muted);text-decoration:none;transition:color .18s}
+    .foot-a:hover{color:var(--blue)}
+    .foot-sep{color:var(--border)}
+
+    /* ═══════ RESPONSIVE ═══════ */
+    @media(min-width:1400px){.content{padding:1.8rem 2.2rem}.prof-grid{grid-template-columns:320px 1fr}}
+    @media(min-width:1200px) and (max-width:1399px){.content{padding:1.5rem 1.8rem}.prof-grid{grid-template-columns:290px 1fr}}
+    @media(min-width:992px) and (max-width:1199px){.content{padding:1.2rem 1.4rem}.prof-grid{grid-template-columns:265px 1fr}}
+    @media(max-width:991px){
+      .sidebar{transform:translateX(-100%);width:var(--sidebar-w)!important;transition:transform var(--ease)}
+      .sidebar.mobile-open{transform:translateX(0)}
+      .main{margin-left:0!important;max-width:100vw!important;width:100%}
+      .topbar{padding:0 1rem}
+      .content{padding:1rem}
+      .bb-right{display:none}
+      /* on tablet: aside moves below */
+      .prof-grid{grid-template-columns:1fr}
+      .prof-aside{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+      .prof-aside .card{margin-bottom:0}
+      .save-bar{padding:.85rem 1rem}
+    }
+    @media(min-width:768px) and (max-width:991px){
+      .bb{padding:1rem 1.2rem;border-radius:13px}
+      .bb-title{font-size:1.1rem}
+      .av-section{flex-direction:row;text-align:left;padding:1.2rem;gap:1.2rem}
+      .av-section .av-name{font-size:1rem}
+      .prof-stats{grid-template-columns:repeat(3,1fr)}
+    }
+    @media(min-width:576px) and (max-width:767px){
+      .content{padding:.85rem}
+      .bb{padding:.9rem 1rem;border-radius:12px;margin-bottom:1rem}
+      .bb-title{font-size:1rem}.bb-desc{font-size:.72rem}
+      .user-info{display:none}
+      .topbar{padding:0 .85rem}
+      .prof-aside{grid-template-columns:1fr}
+      .fg-row{grid-template-columns:1fr 1fr}
+      .save-bar{flex-direction:column-reverse;gap:.5rem;padding:.75rem .85rem}
+      .save-info,.save-btns{width:100%}
+      .save-btns{justify-content:flex-end}
+    }
+    @media(max-width:575px){
+      .content{padding:.6rem;padding-bottom:8.5rem}
+      .bb{padding:.75rem .9rem;border-radius:10px;margin-bottom:.85rem;flex-direction:column;align-items:flex-start;gap:.3rem}
+      .bb-title{font-size:.92rem}.bb-desc{font-size:.7rem}
+      .bb-right{display:none}
+      .user-info{display:none}
+      .topbar{padding:0 .7rem;gap:.45rem}
+      .card-body{padding:1rem}
+      :root{--inp-h:44px}
+      .prof-aside{grid-template-columns:1fr}
+      .fg-row{grid-template-columns:1fr}
+      .av-initials,.av-img{width:82px;height:82px;font-size:1.7rem}
+      .av-upload-btn{width:26px;height:26px}
+      .prof-stats{grid-template-columns:repeat(3,1fr)}
+      .ps-val{font-size:.95rem}
+      .ps-lbl{font-size:.6rem}
+      .save-bar{flex-direction:column-reverse;gap:.5rem;padding:.65rem .75rem;position:fixed;bottom:0;left:0;right:0}
+      .save-info,.save-btns{width:100%}
+      .save-btns .btn-p{flex:1;justify-content:center}
+      .fab{bottom:8rem}
+      .ses-detail{display:none}
+    }
+    @media(max-width:400px){
+      .content{padding:.45rem;padding-bottom:9rem}
+      .bb-title{font-size:.87rem}
+      .card-body{padding:.8rem}
+      .av-initials,.av-img{width:72px;height:72px;font-size:1.4rem}
+    }
+  </style>
+</head>
+<body>
+
+<div class="sb-ov" id="sbOv" onclick="closeMobile()"></div>
+
+<!-- MODAL: Hapus Foto -->
+<div class="modal-ov" id="modDelPhoto">
+  <div class="modal-box">
+    <div class="modal-ico red"><i class="bi bi-person-x-fill"></i></div>
+    <h4 class="modal-ttl">Hapus Foto Profil?</h4>
+    <p class="modal-desc">Foto profil Anda akan dihapus dan diganti dengan inisial nama. Tindakan ini tidak dapat dibatalkan.</p>
+    <div class="modal-btns">
+      <button class="mbtn-cancel" onclick="closeModal('modDelPhoto')">Batal</button>
+      <button class="mbtn-ok red" onclick="doDelPhoto()"><i class="bi bi-trash3"></i> Hapus Foto</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Cabut Sesi -->
+<div class="modal-ov" id="modRevoke">
+  <div class="modal-box">
+    <div class="modal-ico red"><i class="bi bi-shield-x"></i></div>
+    <h4 class="modal-ttl">Cabut Sesi Ini?</h4>
+    <p class="modal-desc">Perangkat tersebut akan segera keluar dari sistem dan tidak dapat mengakses akun Anda sampai login kembali.</p>
+    <div class="modal-btns">
+      <button class="mbtn-cancel" onclick="closeModal('modRevoke')">Batal</button>
+      <button class="mbtn-ok red" onclick="doRevoke()"><i class="bi bi-x-circle"></i> Cabut Sesi</button>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <a class="sb-brand" href="dashboard-ppid.html">
+      <div class="sb-icon"><i class="bi bi-shield-lock-fill"></i></div>
+      <div class="sb-text"><div class="sb-title">PPID Pekalongan</div><div class="sb-sub">Kota Pekalongan &middot; v2.0</div></div>
+    </a>
+    <nav class="sb-scroll">
+      <div class="sb-iw"><a href="dashboard-ppid.html" class="sb-link" data-tip="Dashboard"><i class="bi bi-grid-1x2-fill ico"></i><span class="lbl">Dashboard</span></a></div>
+      <div class="sb-sec">Master Data</div>
+      <div class="sb-iw"><a href="admin-pengelola-ppid.html" class="sb-link" data-tip="Admin Pengelola"><i class="bi bi-person-badge-fill ico"></i><span class="lbl">Admin Pengelola</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Pemohon"><i class="bi bi-people-fill ico"></i><span class="lbl">Pemohon</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Instansi"><i class="bi bi-building ico"></i><span class="lbl">Instansi / OPD</span></a></div>
+      <div class="sb-sec">Kelompok Informasi</div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIP"><i class="bi bi-folder2-open ico"></i><span class="lbl">Kelinfo DIP</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIB"><i class="bi bi-folder-fill ico"></i><span class="lbl">Kelinfo DIB</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIBS"><i class="bi bi-folder-symlink-fill ico"></i><span class="lbl">Kelinfo DIBS</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIU"><i class="bi bi-archive-fill ico"></i><span class="lbl">Kelinfo DIU</span></a></div>
+      <div class="sb-sec">Permohonan</div>
+      <div class="sb-iw"><a href="permohonan-masuk-ppid.html" class="sb-link" data-tip="Permohonan Masuk"><i class="bi bi-inbox-fill ico"></i><span class="lbl">Permohonan Masuk</span><span class="sb-badge">7</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Riwayat"><i class="bi bi-clock-history ico"></i><span class="lbl">Riwayat Permohonan</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Laporan"><i class="bi bi-bar-chart-fill ico"></i><span class="lbl">Laporan &amp; Statistik</span></a></div>
+      <div class="sb-sec">Konten Website</div>
+      <div class="sb-iw"><a href="berita-ppid.html" class="sb-link" data-tip="Berita"><i class="bi bi-newspaper ico"></i><span class="lbl">Berita</span></a></div>
+      <div class="sb-iw"><a href="galeri-ppid.html" class="sb-link" data-tip="Galeri"><i class="bi bi-images ico"></i><span class="lbl">Galeri</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Infografis"><i class="bi bi-pie-chart-fill ico"></i><span class="lbl">Infografis</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Kelola Menu"><i class="bi bi-list-nested ico"></i><span class="lbl">Kelola Menu</span></a></div>
+      <div class="sb-sec">Pengaturan</div>
+      <div class="sb-iw"><a href="pengaturan-ppid.html" class="sb-link" data-tip="Pengaturan"><i class="bi bi-gear-fill ico"></i><span class="lbl">Pengaturan Sistem</span></a></div>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-foot-inner">
+        <div class="sb-ficon"><i class="bi bi-info-circle"></i></div>
+        <div class="sb-ftext"><div class="sb-fver">Versi 2.0.1 &mdash; Stabil</div><div class="sb-fcopy">&copy; 2025 PPID Kota Pekalongan</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+    <header class="topbar">
+      <button class="tog-btn" id="togBtn" onclick="toggleSB()"><i class="bi bi-arrow-bar-left"></i></button>
+      <div class="tb-space"></div>
+      <div class="tb-right">
+        <button class="tb-ibtn"><i class="bi bi-bell"></i><span class="notif-dot"></span></button>
+        <button class="tb-ibtn" onclick="toggleFS()"><i class="bi bi-fullscreen" id="fsIco"></i></button>
+        <div class="user-menu">
+          <button class="user-trig" id="uTrig" onclick="toggleUM()" aria-expanded="false">
+            <div class="user-av">AS</div>
+            <div class="user-info"><div class="uname">Admin Sistem</div><div class="urole">@admin.ppid</div></div>
+            <i class="bi bi-chevron-down user-caret"></i>
+          </button>
+          <div class="user-dd" id="uDD">
+            <a class="dd-item" href="#"><i class="bi bi-person-circle"></i>Profil Saya</a>
+            <a class="dd-item" href="#"><i class="bi bi-gear"></i>Pengaturan</a>
+            <div class="dd-div"></div>
+            <button class="dd-item danger"><i class="bi bi-box-arrow-right"></i>Keluar</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <div class="bb">
+        <div class="bb-left">
+          <div class="bb-title">Profil Akun</div>
+          <div class="bb-desc">Kelola informasi pribadi, keamanan, dan preferensi akun Anda</div>
+        </div>
+        <div class="bb-right">
+          <div class="bc"><i class="bi bi-house-fill"></i> Home</div>
+          <span class="bc-sep">/</span>
+          <div class="bc cur"><i class="bi bi-person-circle"></i> Profil</div>
+        </div>
+      </div>
+
+      <div class="prof-grid">
+
+        <!-- ══ ASIDE KIRI ══ -->
+        <div class="prof-aside">
+
+          <!-- Card: Avatar & Info Ringkas -->
+          <div class="card" style="overflow:hidden">
+            <div class="av-section">
+              <div class="av-ring">
+                <div class="av-initials" id="avInitials">AF</div>
+                <img class="av-img" id="avImg" src="" alt="Foto Profil" style="display:none;position:absolute;inset:0" />
+                <label class="av-upload-btn" title="Ganti foto">
+                  <i class="bi bi-camera-fill"></i>
+                  <input type="file" class="av-upload-inp" accept="image/*" onchange="previewAvatar(this)" />
+                </label>
+              </div>
+              <div class="av-name" id="avName">Ahmad Fauzi</div>
+              <div class="av-role">
+                <span class="role-badge rb-superadmin"><i class="bi bi-shield-fill-check"></i> Super Admin</span>
+              </div>
+              <div style="font-size:.76rem;color:var(--text-muted);margin-top:.5rem">
+                <i class="bi bi-building" style="color:var(--blue)"></i> Dinas Kominfo
+              </div>
+              <div style="font-size:.76rem;color:var(--text-muted);margin-top:.2rem">
+                <i class="bi bi-calendar-check" style="color:var(--blue)"></i> Bergabung Jan 2022
+              </div>
+              <div style="margin-top:.9rem">
+                <button class="btn-o red" style="font-size:.75rem;padding:.38rem .75rem" onclick="openModal('modDelPhoto')">
+                  <i class="bi bi-trash3"></i> Hapus Foto
+                </button>
+              </div>
+            </div>
+
+            <div class="prof-stats">
+              <div class="ps-item"><div class="ps-val">247</div><div class="ps-lbl">Berita</div></div>
+              <div class="ps-item"><div class="ps-val">1.8K</div><div class="ps-lbl">Aksi</div></div>
+              <div class="ps-item"><div class="ps-val">3 th</div><div class="ps-lbl">Bergabung</div></div>
+            </div>
+          </div>
+
+          <!-- Card: Navigasi Cepat -->
+          <div class="card">
+            <div class="card-head"><i class="bi bi-list-ul"></i><h6>Menu Profil</h6></div>
+            <div class="card-body" style="padding:.5rem">
+              <button class="qnav-item active" onclick="scrollToSection('sec-info')"><i class="bi bi-person-fill"></i> Informasi Pribadi</button>
+              <button class="qnav-item" onclick="scrollToSection('sec-akun')"><i class="bi bi-at"></i> Pengaturan Akun</button>
+              <button class="qnav-item" onclick="scrollToSection('sec-pw')"><i class="bi bi-key-fill"></i> Ubah Password</button>
+              <div class="qnav-div"></div>
+              <button class="qnav-item" onclick="scrollToSection('sec-notif')"><i class="bi bi-bell-fill"></i> Preferensi Notifikasi</button>
+              <button class="qnav-item" onclick="scrollToSection('sec-sesi')"><i class="bi bi-laptop"></i> Sesi Aktif</button>
+              <div class="qnav-div"></div>
+              <button class="qnav-item" onclick="scrollToSection('sec-activity')"><i class="bi bi-clock-history"></i> Aktivitas Terakhir</button>
+            </div>
+          </div>
+
+          <!-- Card: Status Akun -->
+          <div class="card">
+            <div class="card-head"><i class="bi bi-info-circle-fill"></i><h6>Status Akun</h6></div>
+            <div class="card-body" style="padding:1rem">
+              <div style="display:flex;flex-direction:column;gap:.55rem">
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:.8rem">
+                  <span style="color:var(--text-muted);font-weight:500">Status</span>
+                  <span style="display:inline-flex;align-items:center;gap:.25rem;background:rgba(16,185,100,0.1);color:#10b964;padding:.18rem .6rem;border-radius:100px;font-size:.69rem;font-weight:700"><span style="width:5px;height:5px;border-radius:50%;background:#10b964;display:inline-block"></span>Aktif</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:.8rem">
+                  <span style="color:var(--text-muted);font-weight:500">Peran</span>
+                  <span class="role-badge rb-superadmin"><i class="bi bi-shield-fill-check"></i> Super Admin</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:.8rem">
+                  <span style="color:var(--text-muted);font-weight:500">2FA</span>
+                  <span style="display:inline-flex;align-items:center;gap:.25rem;background:rgba(245,158,11,0.1);color:#d97706;padding:.18rem .6rem;border-radius:100px;font-size:.69rem;font-weight:700"><i class="bi bi-shield-exclamation"></i>Nonaktif</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:.8rem">
+                  <span style="color:var(--text-muted);font-weight:500">Login Terakhir</span>
+                  <span style="font-weight:600;font-size:.77rem">Hari ini, 08.14</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:.8rem">
+                  <span style="color:var(--text-muted);font-weight:500">IP Login</span>
+                  <span style="font-weight:600;font-size:.77rem;font-family:monospace">182.253.12.xx</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end aside -->
+
+        <!-- ══ MAIN CONTENT ══ -->
+        <div class="prof-main">
+
+          <!-- ── SECTION: INFORMASI PRIBADI ── -->
+          <div class="card" id="sec-info">
+            <div class="card-head"><i class="bi bi-person-fill"></i><h6>Informasi Pribadi</h6></div>
+            <div class="card-body">
+              <div class="fg-row">
+                <div class="fg">
+                  <label class="fl">Nama Depan <span class="req">*</span></label>
+                  <div class="fiw"><i class="bi bi-person fii"></i>
+                  <input type="text" class="fi ico" id="fNamaDepan" value="Ahmad" oninput="syncName()" /></div>
+                </div>
+                <div class="fg">
+                  <label class="fl">Nama Belakang <span class="req">*</span></label>
+                  <div class="fiw"><i class="bi bi-person fii"></i>
+                  <input type="text" class="fi ico" id="fNamaBelakang" value="Fauzi" oninput="syncName()" /></div>
+                </div>
+              </div>
+              <div class="fg">
+                <label class="fl">Nama Tampilan <span class="req">*</span></label>
+                <div class="fiw"><i class="bi bi-type fii"></i>
+                <input type="text" class="fi ico" id="fNamaTampil" value="Ahmad Fauzi" /></div>
+                <p class="fh">Nama ini yang akan tampil di seluruh sistem sebagai identitas Anda.</p>
+              </div>
+              <div class="fg-row">
+                <div class="fg">
+                  <label class="fl">Jabatan / Posisi</label>
+                  <div class="fiw"><i class="bi bi-briefcase fii"></i>
+                  <input type="text" class="fi ico" value="Kepala Bidang Pengelolaan Informasi" /></div>
+                </div>
+                <div class="fg">
+                  <label class="fl">NIP</label>
+                  <div class="fiw"><i class="bi bi-card-text fii"></i>
+                  <input type="text" class="fi ico" value="197812242005011003" /></div>
+                </div>
+              </div>
+              <div class="fg">
+                <label class="fl">Instansi / OPD</label>
+                <select class="fsel">
+                  <option selected>Dinas Komunikasi dan Informatika</option>
+                  <option>Bagian Humas Setda</option>
+                  <option>Bappeda</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label class="fl">Nomor HP / WA</label>
+                <div class="fiw"><i class="bi bi-phone fii"></i>
+                <input type="tel" class="fi ico" value="+62 812 3456 7890" /></div>
+              </div>
+              <div class="fg">
+                <label class="fl">Bio / Deskripsi Singkat</label>
+                <textarea class="fta" rows="3">Admin PPID dengan pengalaman 8 tahun dalam pengelolaan informasi publik dan keterbukaan pemerintahan. Aktif sebagai narasumber pelatihan KIP tingkat provinsi.</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── SECTION: PENGATURAN AKUN ── -->
+          <div class="card" id="sec-akun">
+            <div class="card-head"><i class="bi bi-at"></i><h6>Pengaturan Akun</h6></div>
+            <div class="card-body">
+              <div class="fg">
+                <label class="fl">Username <span class="req">*</span></label>
+                <div class="fiw"><i class="bi bi-at fii"></i>
+                <input type="text" class="fi ico" value="admin.fauzi" /></div>
+                <p class="fh">Digunakan untuk login. Hanya huruf kecil, angka, dan titik.</p>
+              </div>
+              <div class="fg-row">
+                <div class="fg">
+                  <label class="fl">Email Utama <span class="req">*</span></label>
+                  <div class="fiw"><i class="bi bi-envelope fii"></i>
+                  <input type="email" class="fi ico" value="ahmad.fauzi@pekalongan.go.id" /></div>
+                </div>
+                <div class="fg">
+                  <label class="fl">Email Pemulihan</label>
+                  <div class="fiw"><i class="bi bi-envelope-at fii"></i>
+                  <input type="email" class="fi ico" value="a.fauzi.personal@gmail.com" /></div>
+                </div>
+              </div>
+              <div class="fg">
+                <label class="fl">Peran / Role</label>
+                <div class="fiw"><i class="bi bi-shield-lock fii"></i>
+                <input type="text" class="fi ico" value="Super Admin" readonly /></div>
+                <p class="fh">Peran hanya dapat diubah oleh Super Admin lain melalui halaman Manajemen Pengguna.</p>
+              </div>
+              <div class="fg-row">
+                <div class="fg">
+                  <label class="fl">Bahasa Antarmuka</label>
+                  <select class="fsel">
+                    <option selected>Bahasa Indonesia</option>
+                    <option>English</option>
+                  </select>
+                </div>
+                <div class="fg">
+                  <label class="fl">Zona Waktu</label>
+                  <select class="fsel">
+                    <option selected>WIB (UTC+7)</option>
+                    <option>WITA (UTC+8)</option>
+                    <option>WIT (UTC+9)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── SECTION: UBAH PASSWORD ── -->
+          <div class="card" id="sec-pw">
+            <div class="card-head"><i class="bi bi-key-fill"></i><h6>Ubah Password</h6></div>
+            <div class="card-body">
+              <div class="alert-box ab-info" style="margin-bottom:1rem">
+                <i class="bi bi-info-circle-fill"></i>
+                <p>Password baru minimal <strong>8 karakter</strong> dan mengandung huruf kapital serta angka. Anda akan diminta login ulang setelah password berhasil diubah.</p>
+              </div>
+              <div class="fg">
+                <label class="fl">Password Saat Ini <span class="req">*</span></label>
+                <div class="fiw">
+                  <i class="bi bi-lock fii"></i>
+                  <input type="password" class="fi ico" id="pwCurrent" placeholder="Masukkan password saat ini..." style="padding-right:2.6rem" />
+                  <button type="button" onclick="togglePw('pwCurrent','eyeCurrent')" style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:.9rem"><i class="bi bi-eye" id="eyeCurrent"></i></button>
+                </div>
+              </div>
+              <div class="fg">
+                <label class="fl">Password Baru <span class="req">*</span></label>
+                <div class="fiw">
+                  <i class="bi bi-lock-fill fii"></i>
+                  <input type="password" class="fi ico" id="pwNew" placeholder="Minimal 8 karakter..." style="padding-right:2.6rem" oninput="checkStrength(this.value)" />
+                  <button type="button" onclick="togglePw('pwNew','eyeNew')" style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:.9rem"><i class="bi bi-eye" id="eyeNew"></i></button>
+                </div>
+                <div class="pw-strength"><div class="pw-fill" id="pwFill"></div></div>
+                <div class="pw-label" id="pwLabel" style="color:var(--text-muted)"></div>
+              </div>
+              <div class="fg">
+                <label class="fl">Konfirmasi Password Baru <span class="req">*</span></label>
+                <div class="fiw">
+                  <i class="bi bi-lock-fill fii"></i>
+                  <input type="password" class="fi ico" id="pwConfirm" placeholder="Ulangi password baru..." style="padding-right:2.6rem" />
+                  <button type="button" onclick="togglePw('pwConfirm','eyeConfirm')" style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:.9rem"><i class="bi bi-eye" id="eyeConfirm"></i></button>
+                </div>
+              </div>
+              <div class="btn-row" style="margin-top:.3rem">
+                <button class="btn-p" onclick="doChangePassword()"><i class="bi bi-key"></i> Ubah Password</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── SECTION: PREFERENSI NOTIFIKASI ── -->
+          <div class="card" id="sec-notif">
+            <div class="card-head"><i class="bi bi-bell-fill"></i><h6>Preferensi Notifikasi</h6></div>
+            <div class="card-body">
+              <div class="s-head"><i class="bi bi-envelope-fill"></i> Email</div>
+              <div class="tog-row">
+                <div class="tog-info"><div class="tog-title">Permohonan Baru</div><div class="tog-desc">Email saat ada permohonan informasi baru masuk</div></div>
+                <label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label>
+              </div>
+              <div class="tog-row">
+                <div class="tog-info"><div class="tog-title">Permohonan Mendekati Tenggat</div><div class="tog-desc">Pengingat 3 hari sebelum batas respons berakhir</div></div>
+                <label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label>
+              </div>
+              <div class="tog-row">
+                <div class="tog-info"><div class="tog-title">Laporan Harian</div><div class="tog-desc">Ringkasan aktivitas sistem setiap pagi pukul 07.00</div></div>
+                <label class="tog"><input type="checkbox" /><span class="tog-slider"></span></label>
+              </div>
+              <div class="fdiv"></div>
+              <div class="s-head"><i class="bi bi-browser-chrome"></i> Browser / In-App</div>
+              <div class="tog-row">
+                <div class="tog-info"><div class="tog-title">Notifikasi Browser</div><div class="tog-desc">Tampilkan pop-up di browser saat ada aktivitas penting</div></div>
+                <label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label>
+              </div>
+              <div class="tog-row">
+                <div class="tog-info"><div class="tog-title">Suara Notifikasi</div><div class="tog-desc">Mainkan suara saat menerima notifikasi baru</div></div>
+                <label class="tog"><input type="checkbox" /><span class="tog-slider"></span></label>
+              </div>
+              <div class="tog-row">
+                <div class="tog-info"><div class="tog-title">Ringkasan Mingguan</div><div class="tog-desc">Terima laporan performa mingguan via email setiap Senin</div></div>
+                <label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── SECTION: SESI AKTIF ── -->
+          <div class="card" id="sec-sesi">
+            <div class="card-head"><i class="bi bi-laptop"></i><h6>Sesi Aktif</h6>
+              <button class="btn-o red" style="margin-left:auto;font-size:.75rem;padding:.35rem .75rem" onclick="revokeAll()"><i class="bi bi-x-circle"></i> Cabut Semua</button>
+            </div>
+            <div class="card-body" style="padding:1rem 1.2rem">
+
+              <div class="ses-item">
+                <div class="ses-dev"><i class="bi bi-display-fill"></i></div>
+                <div class="ses-info">
+                  <div class="ses-name">Windows 11 &mdash; Chrome 121</div>
+                  <div class="ses-detail">182.253.12.xx &middot; Pekalongan, Jawa Tengah</div>
+                </div>
+                <span class="ses-badge sb-now"><i class="bi bi-circle-fill" style="font-size:.45rem"></i> Sesi Ini</span>
+              </div>
+
+              <div class="ses-item">
+                <div class="ses-dev"><i class="bi bi-phone-fill"></i></div>
+                <div class="ses-info">
+                  <div class="ses-name">Android 14 &mdash; Samsung Browser</div>
+                  <div class="ses-detail">182.253.88.xx &middot; 2 jam yang lalu</div>
+                </div>
+                <span class="ses-badge sb-old">Aktif</span>
+                <button class="ses-rm" title="Cabut sesi" onclick="openModal('modRevoke')"><i class="bi bi-x-lg"></i></button>
+              </div>
+
+              <div class="ses-item">
+                <div class="ses-dev"><i class="bi bi-laptop-fill"></i></div>
+                <div class="ses-info">
+                  <div class="ses-name">macOS Sequoia &mdash; Safari 17</div>
+                  <div class="ses-detail">103.119.44.xx &middot; 1 hari yang lalu</div>
+                </div>
+                <span class="ses-badge sb-old">Aktif</span>
+                <button class="ses-rm" title="Cabut sesi" onclick="openModal('modRevoke')"><i class="bi bi-x-lg"></i></button>
+              </div>
+
+              <div class="ses-item" style="border-bottom:none;padding-bottom:0">
+                <div class="ses-dev"><i class="bi bi-tablet-fill"></i></div>
+                <div class="ses-info">
+                  <div class="ses-name">iPadOS 17 &mdash; Safari Mobile</div>
+                  <div class="ses-detail">140.213.xx.xx &middot; 3 hari yang lalu</div>
+                </div>
+                <span class="ses-badge sb-old">Aktif</span>
+                <button class="ses-rm" title="Cabut sesi" onclick="openModal('modRevoke')"><i class="bi bi-x-lg"></i></button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ── SECTION: AKTIVITAS TERAKHIR ── -->
+          <div class="card" id="sec-activity">
+            <div class="card-head"><i class="bi bi-clock-history"></i><h6>Aktivitas Terakhir</h6>
+              <span class="ch-sub">30 hari terakhir</span>
+            </div>
+            <div class="card-body" style="padding:1rem 1.2rem">
+
+              <div class="act-item">
+                <div class="act-ico green"><i class="bi bi-send-fill"></i></div>
+                <div class="act-body">
+                  <div class="act-title">Mempublikasikan berita <em>PPID Raih Predikat Informatif KIP 2024</em></div>
+                  <div class="act-meta">Berita &middot; Tema PPID</div>
+                </div>
+                <div class="act-time">2 jam lalu</div>
+              </div>
+
+              <div class="act-item">
+                <div class="act-ico blue"><i class="bi bi-pencil-fill"></i></div>
+                <div class="act-body">
+                  <div class="act-title">Mengedit berita <em>Prosedur Permohonan Informasi Online</em></div>
+                  <div class="act-meta">Berita &middot; Tema Layanan</div>
+                </div>
+                <div class="act-time">5 jam lalu</div>
+              </div>
+
+              <div class="act-item">
+                <div class="act-ico amber"><i class="bi bi-inbox-fill"></i></div>
+                <div class="act-body">
+                  <div class="act-title">Merespons permohonan <em>#PMH-2025-0142</em> — Informasi Anggaran OPD</div>
+                  <div class="act-meta">Permohonan &middot; Status: Selesai</div>
+                </div>
+                <div class="act-time">Kemarin</div>
+              </div>
+
+              <div class="act-item">
+                <div class="act-ico blue"><i class="bi bi-images"></i></div>
+                <div class="act-body">
+                  <div class="act-title">Mengunggah 8 foto ke galeri <em>Pelatihan PPID 2025</em></div>
+                  <div class="act-meta">Galeri &middot; Album Kegiatan</div>
+                </div>
+                <div class="act-time">2 hari lalu</div>
+              </div>
+
+              <div class="act-item">
+                <div class="act-ico green"><i class="bi bi-person-plus-fill"></i></div>
+                <div class="act-body">
+                  <div class="act-title">Menambahkan admin baru <em>Dewi Kusuma</em> sebagai Editor</div>
+                  <div class="act-meta">Manajemen Admin</div>
+                </div>
+                <div class="act-time">3 hari lalu</div>
+              </div>
+
+              <div class="act-item">
+                <div class="act-ico slate"><i class="bi bi-gear-fill"></i></div>
+                <div class="act-body">
+                  <div class="act-title">Mengubah pengaturan SMTP dan konfigurasi email sistem</div>
+                  <div class="act-meta">Pengaturan Sistem</div>
+                </div>
+                <div class="act-time">5 hari lalu</div>
+              </div>
+
+              <div class="act-item">
+                <div class="act-ico red"><i class="bi bi-trash3-fill"></i></div>
+                <div class="act-body">
+                  <div class="act-title">Menghapus berita <em>Pengumuman Jam Layanan 2023</em></div>
+                  <div class="act-meta">Berita &middot; Diarsipkan sebelumnya</div>
+                </div>
+                <div class="act-time">1 minggu lalu</div>
+              </div>
+
+              <div class="act-item" style="border-bottom:none;padding-bottom:0">
+                <div class="act-ico amber"><i class="bi bi-download"></i></div>
+                <div class="act-body">
+                  <div class="act-title">Mengunduh laporan statistik permohonan Q4 2024</div>
+                  <div class="act-meta">Laporan &amp; Statistik</div>
+                </div>
+                <div class="act-time">2 minggu lalu</div>
+              </div>
+
+            </div>
+          </div>
+
+        </div><!-- end prof-main -->
+      </div><!-- end prof-grid -->
+
+    </main>
+
+    <!-- STICKY SAVE BAR -->
+    <div class="save-bar">
+      <div class="save-info" id="saveInfo"><i class="bi bi-cloud-check-fill"></i> Perubahan belum disimpan</div>
+      <div class="save-btns">
+        <button class="btn-o" onclick="resetProfile()"><i class="bi bi-arrow-counterclockwise"></i> Batalkan</button>
+        <button class="btn-p" onclick="saveProfile()"><i class="bi bi-floppy-fill"></i> Simpan Profil</button>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="foot-l">&copy; 2025 <strong>PPID Kota Pekalongan</strong> &mdash; Sistem Informasi Layanan Publik.</div>
+      <div class="foot-r">
+        <a class="foot-a" href="#">Bantuan</a><span class="foot-sep">&middot;</span>
+        <a class="foot-a" href="#">Kebijakan Privasi</a><span class="foot-sep">&middot;</span>
+        <a class="foot-a" href="#">Kontak</a>
+      </div>
+    </footer>
+
+  </div>
+</div>
+
+<button class="fab" id="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="bi bi-arrow-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ── SIDEBAR ── */
+const sidebar=document.getElementById('sidebar'),mainEl=document.getElementById('main'),togBtn=document.getElementById('togBtn'),sbOv=document.getElementById('sbOv');
+let collapsed=false;
+const isMob=()=>window.innerWidth<=991;
+function toggleSB(){if(isMob()){const o=sidebar.classList.toggle('mobile-open');sbOv.classList.toggle('show',o);}else{collapsed=!collapsed;sidebar.classList.toggle('collapsed',collapsed);mainEl.classList.toggle('collapsed',collapsed);togBtn.classList.toggle('flip',collapsed);}}
+function closeMobile(){sidebar.classList.remove('mobile-open');sbOv.classList.remove('show');}
+window.addEventListener('resize',()=>{if(!isMob())closeMobile();});
+
+/* ── TOPBAR ── */
+const uTrig=document.getElementById('uTrig'),uDD=document.getElementById('uDD');
+function toggleUM(){const o=uDD.classList.toggle('open');uTrig.setAttribute('aria-expanded',o);}
+document.addEventListener('click',e=>{if(!uTrig.contains(e.target)&&!uDD.contains(e.target))uDD.classList.remove('open');});
+function toggleFS(){const ico=document.getElementById('fsIco');if(!document.fullscreenElement){document.documentElement.requestFullscreen();ico.className='bi bi-fullscreen-exit';}else{document.exitFullscreen();ico.className='bi bi-fullscreen';}}
+window.addEventListener('scroll',()=>document.getElementById('fab').classList.toggle('vis',scrollY>300));
+
+/* ── AVATAR PREVIEW ── */
+function previewAvatar(input){
+  if(!input.files||!input.files[0])return;
+  if(input.files[0].size>2*1024*1024){showToast('Ukuran gambar maks. 2 MB');return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    const img=document.getElementById('avImg');
+    const ini=document.getElementById('avInitials');
+    img.src=e.target.result;
+    img.style.display='block';
+    ini.style.display='none';
+    showToast('\uD83D\uDDBC\uFE0F Foto profil diperbarui. Simpan untuk menyimpan perubahan.');
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+/* ── SYNC NAME ── */
+function syncName(){
+  const d=document.getElementById('fNamaDepan').value;
+  const b=document.getElementById('fNamaBelakang').value;
+  const full=(d+' '+b).trim();
+  document.getElementById('fNamaTampil').value=full;
+  document.getElementById('avName').textContent=full||'Nama Lengkap';
+  // update initials
+  const parts=full.trim().split(' ');
+  const ini=(parts[0]?.[0]||'')+(parts[1]?.[0]||'');
+  document.getElementById('avInitials').textContent=ini.toUpperCase()||'?';
+}
+
+/* ── PASSWORD TOGGLE ── */
+function togglePw(id,eyeId){
+  const inp=document.getElementById(id);
+  const ico=document.getElementById(eyeId);
+  const show=inp.type==='password';
+  inp.type=show?'text':'password';
+  ico.className=show?'bi bi-eye-slash':'bi bi-eye';
+}
+
+/* ── PASSWORD STRENGTH ── */
+function checkStrength(pw){
+  const fill=document.getElementById('pwFill');
+  const lbl=document.getElementById('pwLabel');
+  if(!pw){fill.style.width='0';lbl.textContent='';return;}
+  let score=0;
+  if(pw.length>=8)score++;
+  if(pw.length>=12)score++;
+  if(/[A-Z]/.test(pw))score++;
+  if(/[0-9]/.test(pw))score++;
+  if(/[^A-Za-z0-9]/.test(pw))score++;
+  const levels=[
+    {w:'20%',c:'#dc3545',t:'Sangat Lemah'},
+    {w:'40%',c:'#f59e0b',t:'Lemah'},
+    {w:'60%',c:'#d97706',t:'Sedang'},
+    {w:'80%',c:'#10b964',t:'Kuat'},
+    {w:'100%',c:'#059669',t:'Sangat Kuat'},
+  ];
+  const lv=levels[Math.min(score-1,4)]||levels[0];
+  fill.style.width=lv.w;fill.style.background=lv.c;
+  lbl.style.color=lv.c;lbl.textContent=lv.t;
+}
+
+/* ── SCROLL NAV ── */
+function scrollToSection(id){
+  const el=document.getElementById(id);
+  if(el){const top=el.getBoundingClientRect().top+window.scrollY-80;window.scrollTo({top,behavior:'smooth'});}
+  document.querySelectorAll('.qnav-item').forEach(b=>b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+/* ── MODALS ── */
+function openModal(id){document.getElementById(id).classList.add('show');document.body.style.overflow='hidden';}
+function closeModal(id){document.getElementById(id).classList.remove('show');document.body.style.overflow='';}
+document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id);}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-ov.show').forEach(m=>closeModal(m.id));});
+
+/* ── ACTIONS ── */
+function doDelPhoto(){
+  closeModal('modDelPhoto');
+  document.getElementById('avImg').style.display='none';
+  document.getElementById('avInitials').style.display='flex';
+  showToast('\uD83D\uDDBC\uFE0F Foto profil dihapus.');
+}
+function doRevoke(){closeModal('modRevoke');showToast('\u2705 Sesi berhasil dicabut.');}
+function revokeAll(){showToast('\u2705 Semua sesi lain berhasil dicabut.');}
+function doChangePassword(){
+  const c=document.getElementById('pwCurrent').value;
+  const n=document.getElementById('pwNew').value;
+  const cf=document.getElementById('pwConfirm').value;
+  if(!c){showToast('\u26A0\uFE0F Masukkan password saat ini.');return;}
+  if(n.length<8){showToast('\u26A0\uFE0F Password baru minimal 8 karakter.');return;}
+  if(n!==cf){showToast('\u26A0\uFE0F Konfirmasi password tidak cocok.');return;}
+  showToast('\u2705 Password berhasil diubah! Silakan login kembali.');
+  document.getElementById('pwCurrent').value='';
+  document.getElementById('pwNew').value='';
+  document.getElementById('pwConfirm').value='';
+  document.getElementById('pwFill').style.width='0';
+  document.getElementById('pwLabel').textContent='';
+}
+function saveProfile(){
+  const info=document.getElementById('saveInfo');
+  info.innerHTML='<i class="bi bi-arrow-repeat" style="animation:spin .7s linear infinite"></i> Menyimpan...';
+  setTimeout(()=>{info.innerHTML='<i class="bi bi-cloud-check-fill" style="color:#10b964"></i> Profil tersimpan';showToast('\u2705 Profil berhasil disimpan!');},900);
+}
+function resetProfile(){showToast('\uD83D\uDD04 Perubahan dibatalkan.');}
+
+/* ── TOAST ── */
+function showToast(msg){
+  const t=document.createElement('div');
+  t.textContent=msg;
+  Object.assign(t.style,{position:'fixed',bottom:'5.5rem',left:'50%',transform:'translateX(-50%) translateY(20px)',background:'#0f1c2e',color:'#fff',padding:'.6rem 1.2rem',borderRadius:'10px',fontSize:'.82rem',fontWeight:'600',zIndex:'9999',opacity:'0',transition:'all .3s',boxShadow:'0 8px 24px rgba(0,0,0,0.3)',whiteSpace:'nowrap'});
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>{t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(8px)';setTimeout(()=>t.remove(),400);},2400);
+}
+const st=document.createElement('style');st.textContent='@keyframes spin{to{transform:rotate(360deg)}}';document.head.appendChild(st);
+</script>
+</body>
+</html>
