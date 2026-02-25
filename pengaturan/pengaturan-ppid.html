@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pengaturan Sistem — PPID Kota Pekalongan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════ ROOT ═══════ */
+    :root{
+      --blue:#0072c6;--blue-dark:#005499;--blue-deep:#003d70;--blue-light:#1a8fe0;
+      --blue-soft:rgba(0,114,198,0.08);--sidebar-w:260px;--sidebar-col:68px;
+      --topbar-h:64px;--sidebar-bg:#001f42;--content-bg:#f0f4f9;
+      --card-bg:#fff;--text-main:#0f1c2e;--text-muted:#6b7a8d;
+      --border:rgba(0,0,0,0.07);--shadow:0 2px 16px rgba(0,50,100,0.08);
+      --ease:.28s cubic-bezier(.22,1,.36,1);--r:14px;--inp-h:42px;
+      --green:#10b964;--amber:#f59e0b;--red:#dc3545;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--content-bg);color:var(--text-main);min-height:100vh}
+
+    /* ═══════ SHELL ═══════ */
+    .shell{display:flex;min-height:100vh;width:100%;overflow-x:hidden}
+    .main{flex:1;margin-left:var(--sidebar-w);display:flex;flex-direction:column;min-height:100vh;min-width:0;max-width:calc(100vw - var(--sidebar-w));transition:margin-left var(--ease),max-width var(--ease)}
+    .main.collapsed{margin-left:var(--sidebar-col);max-width:calc(100vw - var(--sidebar-col))}
+
+    /* ═══════ SIDEBAR ═══════ */
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:1000;overflow:hidden;transition:width var(--ease);box-shadow:4px 0 24px rgba(0,18,50,0.18)}
+    .sidebar.collapsed{width:var(--sidebar-col)}
+    .sb-brand{display:flex;align-items:center;gap:.85rem;padding:1.3rem 1.1rem 1.2rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.07);min-height:var(--topbar-h);text-decoration:none;overflow:hidden;flex-shrink:0}
+    .sb-icon{width:38px;height:38px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,114,198,0.45);animation:iconPulse 3s ease-in-out infinite}
+    .sb-icon i{font-size:1.1rem;color:#fff}
+    @keyframes iconPulse{0%,100%{box-shadow:0 4px 14px rgba(0,114,198,0.45)}50%{box-shadow:0 6px 22px rgba(0,114,198,0.7)}}
+    .sb-text{overflow:hidden;white-space:nowrap}
+    .sb-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;line-height:1.15}
+    .sb-sub{font-size:.65rem;color:rgba(255,255,255,0.4);letter-spacing:.04em}
+    .sb-scroll{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;padding:.8rem 0}
+    .sb-scroll::-webkit-scrollbar{width:3px}
+    .sb-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+    .sb-sec{font-size:.6rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,0.28);padding:1rem 1.25rem .35rem;white-space:nowrap;overflow:hidden;transition:opacity var(--ease)}
+    .sidebar.collapsed .sb-sec{opacity:0}
+    .sb-iw{padding:.08rem .7rem}
+    .sb-link{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:10px;text-decoration:none;color:rgba(255,255,255,0.5);font-size:.84rem;font-weight:500;white-space:nowrap;overflow:hidden;transition:background var(--ease),color var(--ease);position:relative}
+    .sb-link .ico{font-size:1.05rem;flex-shrink:0;width:20px;text-align:center}
+    .sb-link .lbl{flex:1;overflow:hidden;text-overflow:ellipsis;transition:opacity var(--ease),max-width var(--ease)}
+    .sb-link:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.88)}
+    .sb-link.active{background:linear-gradient(90deg,rgba(0,114,198,0.35),rgba(0,114,198,0.1));color:#fff;box-shadow:inset 3px 0 0 var(--blue)}
+    .sb-link.active .ico{color:#7ecbff}
+    .sb-badge{background:var(--blue);color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .42rem;border-radius:100px;flex-shrink:0}
+    .sidebar.collapsed .lbl,.sidebar.collapsed .sb-badge{opacity:0;max-width:0;overflow:hidden}
+    .sidebar.collapsed .sb-link{justify-content:center;padding:.65rem}
+    .sidebar.collapsed .sb-iw{padding-left:.5rem;padding-right:.5rem}
+    .sidebar.collapsed .sb-link[data-tip]::after{content:attr(data-tip);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);background:#0d2340;color:#fff;font-size:.74rem;padding:.3rem .7rem;border-radius:7px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9999}
+    .sidebar.collapsed .sb-link[data-tip]:hover::after{opacity:1}
+    .sb-foot{padding:.9rem 1rem;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+    .sb-foot-inner{display:flex;align-items:center;gap:.7rem;overflow:hidden}
+    .sb-ficon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .sb-ficon i{font-size:.9rem;color:rgba(255,255,255,0.4)}
+    .sb-ftext{overflow:hidden;white-space:nowrap}
+    .sb-fver{font-size:.68rem;color:rgba(255,255,255,0.25)}
+    .sb-fcopy{font-size:.63rem;color:rgba(255,255,255,0.18)}
+    .sidebar.collapsed .sb-ftext{opacity:0;max-width:0}
+
+    /* ═══════ TOPBAR ═══════ */
+    .topbar{height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;position:sticky;top:0;z-index:900;box-shadow:0 1px 12px rgba(0,40,100,0.06);gap:1rem}
+    .tog-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:1.05rem;transition:background .2s,color .2s,transform .3s;flex-shrink:0}
+    .tog-btn:hover{background:var(--blue-soft);color:var(--blue)}
+    .tog-btn.flip{transform:rotate(180deg)}
+    .tb-space{flex:1}
+    .tb-right{display:flex;align-items:center;gap:.6rem}
+    .tb-ibtn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:1rem;transition:background .2s,color .2s;position:relative}
+    .tb-ibtn:hover{background:var(--blue-soft);color:var(--blue)}
+    .notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#e84242;border:1.5px solid #fff;animation:notifPulse 1.8s ease-in-out infinite}
+    @keyframes notifPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,66,66,.5)}50%{box-shadow:0 0 0 5px rgba(232,66,66,0)}}
+    .user-menu{position:relative}
+    .user-trig{display:flex;align-items:center;gap:.6rem;padding:.35rem .65rem .35rem .45rem;border-radius:10px;border:1px solid var(--border);background:transparent;cursor:pointer;transition:background .2s}
+    .user-trig:hover{background:var(--blue-soft)}
+    .user-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;font-weight:700;flex-shrink:0;box-shadow:0 2px 8px rgba(0,114,198,0.4)}
+    .user-info .uname{font-size:.8rem;font-weight:600;color:var(--text-main);line-height:1.2}
+    .user-info .urole{font-size:.68rem;color:var(--text-muted)}
+    .user-caret{font-size:.7rem;color:var(--text-muted);transition:transform .25s}
+    .user-trig[aria-expanded="true"] .user-caret{transform:rotate(180deg)}
+    .user-dd{position:absolute;right:0;top:calc(100% + 8px);min-width:190px;background:#fff;border:1px solid var(--border);border-radius:13px;box-shadow:0 10px 40px rgba(0,40,100,0.13);padding:.45rem;display:none;z-index:999;animation:dropIn .25s var(--ease)}
+    .user-dd.open{display:block}
+    @keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .dd-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;border-radius:8px;font-size:.82rem;color:var(--text-main);text-decoration:none;cursor:pointer;transition:background .18s;font-weight:500;border:none;background:none;width:100%;text-align:left}
+    .dd-item i{font-size:.95rem;color:var(--text-muted);width:18px}
+    .dd-item:hover{background:var(--blue-soft);color:var(--blue)}
+    .dd-item.danger:hover{background:rgba(220,50,50,0.06);color:#c0392b}
+    .dd-div{height:1px;background:var(--border);margin:.35rem 0}
+
+    /* ═══════ CONTENT ═══════ */
+    .content{flex:1;padding:1.6rem;position:relative;width:100%;overflow-x:hidden}
+    .content::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(0,100,200,0.04) 1px,transparent 0);background-size:28px 28px;pointer-events:none;z-index:0}
+
+    /* ═══════ BREADCRUMB BANNER ═══════ */
+    .bb{background:linear-gradient(120deg,var(--blue-deep) 0%,var(--blue) 55%,var(--blue-light) 100%);border-radius:16px;padding:1.3rem 1.6rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:relative;overflow:hidden;box-shadow:0 8px 28px rgba(0,114,198,0.28);z-index:1;width:100%}
+    .bb::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.06);top:-60px;right:80px}
+    .bb::after{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.06);bottom:-40px;right:20px}
+    .bb-left{position:relative;z-index:1}
+    .bb-title{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:#fff;margin-bottom:.18rem}
+    .bb-desc{font-size:.78rem;color:rgba(255,255,255,0.6);font-weight:300}
+    .bb-right{display:flex;align-items:center;gap:.35rem;position:relative;z-index:1;flex-wrap:wrap}
+    .bc{display:flex;align-items:center;gap:.3rem;font-size:.78rem;color:rgba(255,255,255,0.7);font-weight:500}
+    .bc.cur{color:#fff;font-weight:600}
+    .bc-sep{color:rgba(255,255,255,0.35)}
+
+    /* ═══════ SETTINGS LAYOUT ═══════ */
+    /* Tab navigation on left, content on right */
+    .set-wrap{display:grid;grid-template-columns:230px 1fr;gap:1.2rem;align-items:start;position:relative;z-index:1}
+
+    /* ─── TAB NAV ─── */
+    .tab-nav{background:var(--card-bg);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;position:sticky;top:calc(var(--topbar-h) + 1.4rem);animation:fadeUp .4s var(--ease) both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .tab-nav-head{padding:.9rem 1.1rem;border-bottom:1px solid var(--border);background:linear-gradient(135deg,var(--blue-deep),var(--blue))}
+    .tab-nav-head h6{font-size:.82rem;font-weight:700;color:#fff;margin:0;display:flex;align-items:center;gap:.4rem}
+    .tab-nav-head h6 i{font-size:.9rem}
+    .tab-btn{display:flex;align-items:center;gap:.65rem;padding:.7rem 1rem;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--text-muted);transition:background .18s,color .18s;border:none;background:none;width:100%;text-align:left;border-left:3px solid transparent;text-decoration:none}
+    .tab-btn i{font-size:.95rem;width:18px;text-align:center;flex-shrink:0}
+    .tab-btn:hover{background:var(--blue-soft);color:var(--blue)}
+    .tab-btn.active{background:var(--blue-soft);color:var(--blue);border-left-color:var(--blue);font-weight:700}
+    .tab-btn.active i{color:var(--blue)}
+    .tab-div{height:1px;background:var(--border);margin:.3rem 0}
+    .tab-btn.red:hover,.tab-btn.red.active{background:rgba(220,53,69,0.06);color:#dc3545;border-left-color:#dc3545}
+
+    /* ─── CONTENT PANELS ─── */
+    .set-panels{display:flex;flex-direction:column;gap:0}
+    .set-panel{display:none}
+    .set-panel.active{display:flex;flex-direction:column;gap:1.1rem}
+
+    /* ─── CARD ─── */
+    .card{background:var(--card-bg);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);width:100%;overflow:hidden;animation:fadeUp .4s var(--ease) both}
+    .card:nth-child(2){animation-delay:.06s}
+    .card:nth-child(3){animation-delay:.12s}
+    .card:nth-child(4){animation-delay:.18s}
+    .card-head{padding:.95rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.55rem}
+    .card-head i{color:var(--blue);font-size:1rem;flex-shrink:0}
+    .card-head h6{font-size:.9rem;font-weight:700;color:var(--text-main);margin:0;flex:1}
+    .card-head .ch-sub{font-size:.72rem;color:var(--text-muted);margin-left:auto}
+    .card-body{padding:1.3rem;width:100%}
+
+    /* ─── FORM FIELDS ─── */
+    .fg{display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem}
+    .fg:last-child{margin-bottom:0}
+    .fl{font-size:.79rem;font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:.3rem}
+    .fl .req{color:#dc3545;font-size:.72rem}
+    .fl .tip{width:16px;height:16px;border-radius:50%;background:rgba(0,114,198,0.12);color:var(--blue);display:inline-flex;align-items:center;justify-content:center;font-size:.63rem;cursor:help;flex-shrink:0}
+    .fh{font-size:.71rem;color:var(--text-muted);line-height:1.5}
+
+    .fi,.fta,.fsel{width:100%;border:1.5px solid var(--border);border-radius:9px;background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.84rem;color:var(--text-main);outline:none;transition:border-color .2s,box-shadow .2s}
+    .fi{height:var(--inp-h);padding:0 .9rem}
+    .fi.ico{padding-left:2.4rem}
+    .fi::placeholder,.fta::placeholder{color:#b0bac7}
+    .fi:focus,.fta:focus,.fsel:focus{border-color:var(--blue);box-shadow:0 0 0 3.5px rgba(0,114,198,0.11)}
+    .fta{padding:.8rem .9rem;resize:vertical;min-height:80px;line-height:1.65}
+    .fsel{height:var(--inp-h);padding:0 .9rem;cursor:pointer}
+    .fiw{position:relative}
+    .fii{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.86rem;pointer-events:none}
+
+    /* input grid */
+    .fg-row{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+    .fg-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.85rem}
+
+    /* ─── TOGGLE SWITCH ─── */
+    .tog-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.65rem 0;border-bottom:1px solid var(--border)}
+    .tog-row:last-child{border-bottom:none;padding-bottom:0}
+    .tog-info{flex:1;min-width:0}
+    .tog-title{font-size:.83rem;font-weight:600;color:var(--text-main)}
+    .tog-desc{font-size:.72rem;color:var(--text-muted);margin-top:.12rem;line-height:1.45}
+    .tog-wrap{flex-shrink:0}
+    .tog{position:relative;display:inline-block;width:42px;height:24px}
+    .tog input{opacity:0;width:0;height:0}
+    .tog-slider{position:absolute;inset:0;background:#d1d9e6;border-radius:100px;cursor:pointer;transition:background .25s}
+    .tog-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,0.18)}
+    .tog input:checked + .tog-slider{background:var(--blue)}
+    .tog input:checked + .tog-slider::before{transform:translateX(18px)}
+    .tog input:focus + .tog-slider{box-shadow:0 0 0 3px rgba(0,114,198,0.15)}
+
+    /* ─── DIVIDER ─── */
+    .fdiv{height:1px;background:var(--border);margin:.8rem 0}
+
+    /* ─── SECTION HEADING ─── */
+    .s-head{font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:.65rem;display:flex;align-items:center;gap:.4rem}
+    .s-head::after{content:'';flex:1;height:1px;background:rgba(0,114,198,0.15)}
+
+    /* ─── COLOR PICKER ─── */
+    .color-row{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+    .color-swatch{width:32px;height:32px;border-radius:8px;cursor:pointer;border:2.5px solid transparent;transition:transform .18s,box-shadow .18s;flex-shrink:0}
+    .color-swatch:hover{transform:scale(1.12);box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+    .color-swatch.picked{border-color:#fff;box-shadow:0 0 0 3px var(--blue),0 4px 12px rgba(0,0,0,0.18)}
+    .color-custom{display:flex;align-items:center;gap:.5rem;margin-left:auto}
+    .color-input{width:38px;height:32px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;padding:2px 3px;background:transparent}
+
+    /* ─── FILE UPLOAD ─── */
+    .upload-zone{border:2px dashed rgba(0,114,198,0.22);border-radius:10px;padding:1.3rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;cursor:pointer;text-align:center;background:#fafcff;transition:border-color .2s,background .2s;position:relative;overflow:hidden}
+    .upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--blue-soft)}
+    .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .uz-ico{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--blue-soft),rgba(0,114,198,0.14));display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--blue)}
+    .uz-ttl{font-size:.82rem;font-weight:700;color:var(--text-main)}
+    .uz-sub{font-size:.71rem;color:var(--text-muted)}
+    .logo-preview{display:none;align-items:center;gap:.85rem;background:#f5f9ff;border:1.5px solid rgba(0,114,198,0.15);border-radius:10px;padding:.75rem 1rem}
+    .logo-preview.show{display:flex}
+    .logo-preview img{height:44px;object-fit:contain;max-width:140px}
+    .logo-preview-rm{margin-left:auto;width:28px;height:28px;border-radius:7px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.78rem;color:var(--text-muted);transition:background .18s,color .18s;flex-shrink:0}
+    .logo-preview-rm:hover{background:rgba(220,53,69,0.08);color:#dc3545}
+
+    /* ─── BADGE ─── */
+    .badge-status{display:inline-flex;align-items:center;gap:.25rem;padding:.2rem .6rem;border-radius:100px;font-size:.67rem;font-weight:700}
+    .bs-ok  {background:rgba(16,185,100,0.1);color:#10b964}
+    .bs-warn{background:rgba(245,158,11,0.1);color:#d97706}
+    .bs-err {background:rgba(220,53,69,0.1); color:#dc3545}
+    .bs-dot {width:5px;height:5px;border-radius:50%;flex-shrink:0}
+    .bs-ok .bs-dot{background:#10b964}
+    .bs-warn .bs-dot{background:#f59e0b}
+    .bs-err .bs-dot{background:#dc3545}
+
+    /* ─── INFO/WARN/DANGER BOX ─── */
+    .alert-box{display:flex;gap:.65rem;align-items:flex-start;border-radius:10px;padding:.85rem 1rem}
+    .alert-box i{flex-shrink:0;margin-top:.08rem;font-size:1rem}
+    .alert-box p{font-size:.78rem;line-height:1.6;margin:0}
+    .ab-info{background:rgba(0,114,198,0.06);border:1px solid rgba(0,114,198,0.15)}
+    .ab-info i{color:var(--blue)}
+    .ab-warn{background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2)}
+    .ab-warn i{color:#d97706}
+    .ab-danger{background:rgba(220,53,69,0.06);border:1px solid rgba(220,53,69,0.18)}
+    .ab-danger i{color:#dc3545}
+
+    /* ─── SYSTEM INFO TABLE ─── */
+    .sys-row{display:flex;align-items:center;justify-content:space-between;padding:.58rem 0;border-bottom:1px solid var(--border)}
+    .sys-row:last-child{border-bottom:none}
+    .sys-key{font-size:.79rem;color:var(--text-muted);font-weight:500}
+    .sys-val{font-size:.79rem;font-weight:600;color:var(--text-main);text-align:right}
+
+    /* ─── PROGRESS BAR ─── */
+    .prog-wrap{margin-top:.35rem}
+    .prog-meta{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-muted);margin-bottom:.3rem}
+    .prog-bar{height:7px;border-radius:100px;background:#e9edf3;overflow:hidden}
+    .prog-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--blue),var(--blue-light));transition:width .6s var(--ease)}
+    .prog-fill.amber{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+    .prog-fill.red  {background:linear-gradient(90deg,#dc3545,#f87171)}
+
+    /* ─── BUTTONS ─── */
+    .btn-p{display:inline-flex;align-items:center;gap:.42rem;padding:.52rem 1rem;border-radius:9px;border:none;background:linear-gradient(135deg,var(--blue),var(--blue-light));color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(0,114,198,0.28);transition:transform .2s,box-shadow .2s;white-space:nowrap;text-decoration:none}
+    .btn-p:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(0,114,198,0.38);color:#fff}
+    .btn-g{display:inline-flex;align-items:center;gap:.42rem;padding:.52rem 1rem;border-radius:9px;border:none;background:linear-gradient(135deg,#10b964,#0ea05a);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(16,185,100,0.28);transition:transform .2s,box-shadow .2s;white-space:nowrap}
+    .btn-g:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(16,185,100,0.38)}
+    .btn-o{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem .9rem;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer;transition:background .2s,color .2s,border-color .2s;white-space:nowrap;text-decoration:none}
+    .btn-o:hover{background:var(--blue-soft);color:var(--blue);border-color:rgba(0,114,198,0.28)}
+    .btn-o.red:hover{background:rgba(220,53,69,0.06);color:#dc3545;border-color:rgba(220,53,69,0.3)}
+    .btn-o.amber:hover{background:rgba(245,158,11,0.07);color:#d97706;border-color:rgba(245,158,11,0.3)}
+    .btn-row{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+
+    /* ─── STICKY SAVE BAR ─── */
+    .save-bar{background:#fff;border-top:1px solid var(--border);padding:.85rem 1.6rem;display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;box-shadow:0 -4px 24px rgba(0,40,100,0.08);position:sticky;bottom:0;left:0;right:0;z-index:800}
+    .save-info{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--text-muted)}
+    .save-info i{color:var(--blue)}
+    .save-btns{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+
+    /* ─── DANGER ZONE ─── */
+    .dz-item{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 0;border-bottom:1px solid var(--border)}
+    .dz-item:last-child{border-bottom:none;padding-bottom:0}
+    .dz-info .dz-ttl{font-size:.84rem;font-weight:700;color:var(--text-main)}
+    .dz-info .dz-desc{font-size:.74rem;color:var(--text-muted);margin-top:.18rem;line-height:1.5}
+
+    /* ─── SIDEBAR OVERLAY ─── */
+    .sb-ov{position:fixed;inset:0;background:rgba(0,15,40,0.5);z-index:999;display:none;opacity:0;transition:opacity .3s}
+    .sb-ov.show{display:block;opacity:1}
+
+    /* ─── FAB ─── */
+    .fab{position:fixed;right:1.6rem;bottom:5rem;width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--blue-light));border:none;color:#fff;font-size:1.05rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(0,114,198,0.4);z-index:700;opacity:0;pointer-events:none;transform:translateY(20px) scale(.85);transition:opacity .35s var(--ease),transform .35s var(--ease)}
+    .fab.vis{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
+    .fab:hover{transform:translateY(-3px) scale(1.06)!important}
+
+    /* ─── FOOTER ─── */
+    .footer{background:#fff;border-top:1px solid var(--border);padding:1rem 1.6rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+    .foot-l{font-size:.75rem;color:var(--text-muted)}
+    .foot-l strong{color:var(--blue)}
+    .foot-r{display:flex;align-items:center;gap:.5rem}
+    .foot-a{font-size:.73rem;color:var(--text-muted);text-decoration:none;transition:color .18s}
+    .foot-a:hover{color:var(--blue)}
+    .foot-sep{color:var(--border)}
+
+    /* ─── MODAL ─── */
+    .modal-ov{position:fixed;inset:0;background:rgba(0,15,40,0.55);backdrop-filter:blur(6px);z-index:9100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+    .modal-ov.show{opacity:1;pointer-events:all}
+    .modal-box{background:#fff;border-radius:18px;padding:2rem 1.8rem 1.6rem;max-width:400px;width:92%;box-shadow:0 24px 70px rgba(0,20,60,0.22);transform:scale(.88) translateY(18px);transition:transform .35s var(--ease)}
+    .modal-ov.show .modal-box{transform:scale(1) translateY(0)}
+    .modal-ico{width:60px;height:60px;margin:0 auto .9rem;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .modal-ico.red{background:linear-gradient(135deg,#fee2e2,#fecaca)}
+    .modal-ico.red i{font-size:1.5rem;color:#dc3545}
+    .modal-ico.amber{background:linear-gradient(135deg,#fef3c7,#fde68a)}
+    .modal-ico.amber i{font-size:1.5rem;color:#d97706}
+    .modal-ttl{font-size:1rem;font-weight:700;color:var(--text-main);margin-bottom:.35rem;text-align:center}
+    .modal-desc{font-size:.8rem;color:var(--text-muted);line-height:1.65;margin-bottom:1.3rem;text-align:center}
+    .modal-confirm-inp{width:100%;border:1.5px solid var(--border);border-radius:9px;height:40px;padding:0 .9rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.84rem;outline:none;margin-bottom:1rem;transition:border-color .2s}
+    .modal-confirm-inp:focus{border-color:var(--blue)}
+    .modal-btns{display:flex;gap:.65rem}
+    .mbtn-cancel{flex:1;padding:.6rem;border-radius:10px;border:1px solid var(--border);background:#f8f9fb;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer}
+    .mbtn-cancel:hover{background:#eef0f5}
+    .mbtn-ok{flex:1;padding:.6rem;border-radius:10px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer}
+    .mbtn-ok.red{background:linear-gradient(135deg,#dc3545,#c0392b);color:#fff;box-shadow:0 4px 14px rgba(220,53,69,0.28)}
+    .mbtn-ok.amber{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;box-shadow:0 4px 14px rgba(245,158,11,0.28)}
+
+    /* ─── MOBILE TAB NAV (horizontal scroll) ─── */
+    .tab-nav-mobile{display:none;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:1rem;animation:fadeUp .4s var(--ease) both}
+    .tab-nav-mobile::-webkit-scrollbar{display:none}
+    .tab-nav-mobile .tab-btn{white-space:nowrap;padding:.65rem .9rem;border-left:none;border-bottom:3px solid transparent;flex-direction:column;align-items:center;gap:.22rem;min-width:80px;font-size:.72rem}
+    .tab-nav-mobile .tab-btn i{font-size:1.05rem;width:auto}
+    .tab-nav-mobile .tab-btn.active{border-bottom-color:var(--blue);border-left:none;background:var(--blue-soft)}
+
+    /* ═══════ RESPONSIVE ═══════ */
+    @media(min-width:1400px){.content{padding:1.8rem 2.2rem}.set-wrap{grid-template-columns:250px 1fr}}
+    @media(min-width:1200px) and (max-width:1399px){.content{padding:1.5rem 1.8rem}}
+    @media(min-width:992px) and (max-width:1199px){.content{padding:1.2rem 1.4rem}.set-wrap{grid-template-columns:210px 1fr}}
+
+    @media(max-width:991px){
+      .sidebar{transform:translateX(-100%);width:var(--sidebar-w)!important;transition:transform var(--ease)}
+      .sidebar.mobile-open{transform:translateX(0)}
+      .main{margin-left:0!important;max-width:100vw!important;width:100%}
+      .topbar{padding:0 1rem}
+      .content{padding:1rem}
+      .bb-right{display:none}
+      .set-wrap{grid-template-columns:1fr}
+      .tab-nav{display:none}
+      .tab-nav-mobile{display:flex}
+      .save-bar{padding:.85rem 1rem}
+      .fg-row,.fg-row3{grid-template-columns:1fr 1fr}
+    }
+    @media(min-width:768px) and (max-width:991px){
+      .bb{padding:1rem 1.2rem;border-radius:13px}
+      .bb-title{font-size:1.1rem}
+    }
+    @media(min-width:576px) and (max-width:767px){
+      .content{padding:.85rem}
+      .bb{padding:.9rem 1rem;border-radius:12px;margin-bottom:1rem}
+      .bb-title{font-size:1rem}.bb-desc{font-size:.72rem}
+      .user-info{display:none}
+      .topbar{padding:0 .85rem}
+      .fg-row,.fg-row3{grid-template-columns:1fr 1fr}
+      .save-bar{flex-direction:column-reverse;gap:.5rem;padding:.75rem .85rem}
+      .save-info,.save-btns{width:100%}
+      .save-btns{justify-content:flex-end}
+    }
+    @media(max-width:575px){
+      .content{padding:.6rem;padding-bottom:8.5rem}
+      .bb{padding:.75rem .9rem;border-radius:10px;margin-bottom:.85rem;flex-direction:column;align-items:flex-start;gap:.3rem}
+      .bb-title{font-size:.92rem}.bb-desc{font-size:.7rem}
+      .bb-right{display:none}
+      .user-info{display:none}
+      .topbar{padding:0 .7rem;gap:.45rem}
+      .card-body{padding:1rem}
+      .fg-row,.fg-row3{grid-template-columns:1fr}
+      :root{--inp-h:44px}
+      .color-row{gap:.5rem}
+      .color-swatch{width:28px;height:28px;border-radius:7px}
+      .save-bar{flex-direction:column-reverse;gap:.5rem;padding:.65rem .75rem;position:fixed;bottom:0;left:0;right:0}
+      .save-info,.save-btns{width:100%}
+      .save-btns .btn-p,.save-btns .btn-g{flex:1;justify-content:center}
+      .fab{bottom:8rem}
+      .dz-item{flex-direction:column;align-items:flex-start;gap:.6rem}
+    }
+    @media(max-width:400px){
+      .content{padding:.45rem;padding-bottom:9rem}
+      .bb-title{font-size:.87rem}
+      .card-body{padding:.8rem}
+    }
+  </style>
+</head>
+<body>
+
+<div class="sb-ov" id="sbOv" onclick="closeMobile()"></div>
+
+<!-- ── MODAL KONFIRMASI RESET ── -->
+<div class="modal-ov" id="modReset">
+  <div class="modal-box">
+    <div class="modal-ico amber"><i class="bi bi-arrow-counterclockwise"></i></div>
+    <h4 class="modal-ttl">Reset ke Pengaturan Default?</h4>
+    <p class="modal-desc">Semua pengaturan pada panel ini akan dikembalikan ke nilai bawaan sistem. Tindakan ini tidak dapat dibatalkan.</p>
+    <div class="modal-btns">
+      <button class="mbtn-cancel" onclick="closeModal('modReset')">Batal</button>
+      <button class="mbtn-ok amber" onclick="doReset()"><i class="bi bi-arrow-counterclockwise"></i> Reset Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL HAPUS CACHE ── -->
+<div class="modal-ov" id="modCache">
+  <div class="modal-box">
+    <div class="modal-ico amber"><i class="bi bi-database-fill-x"></i></div>
+    <h4 class="modal-ttl">Hapus Cache Sistem?</h4>
+    <p class="modal-desc">Cache aplikasi, tampilan, dan sesi akan dihapus. Proses ini mungkin memperlambat halaman sebentar hingga cache terisi kembali.</p>
+    <div class="modal-btns">
+      <button class="mbtn-cancel" onclick="closeModal('modCache')">Batal</button>
+      <button class="mbtn-ok amber" onclick="doClearCache()"><i class="bi bi-trash3"></i> Hapus Cache</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL DANGER: RESET SISTEM ── -->
+<div class="modal-ov" id="modDanger">
+  <div class="modal-box">
+    <div class="modal-ico red"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    <h4 class="modal-ttl">Reset Penuh Sistem?</h4>
+    <p class="modal-desc">Ini akan menghapus <strong>SEMUA DATA</strong> termasuk pengguna, berita, pengaturan, dan log. Tindakan ini <strong>tidak dapat dibatalkan</strong>.<br/><br/>Ketik <strong>RESET SISTEM</strong> untuk melanjutkan.</p>
+    <input class="modal-confirm-inp" type="text" id="confirmInput" placeholder="Ketik: RESET SISTEM" />
+    <div class="modal-btns">
+      <button class="mbtn-cancel" onclick="closeModal('modDanger')">Batal</button>
+      <button class="mbtn-ok red" id="btnDangerOk" onclick="doDanger()" disabled style="opacity:.5;cursor:not-allowed"><i class="bi bi-exclamation-triangle"></i> Lanjutkan</button>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <a class="sb-brand" href="dashboard-ppid.html">
+      <div class="sb-icon"><i class="bi bi-shield-lock-fill"></i></div>
+      <div class="sb-text"><div class="sb-title">PPID Pekalongan</div><div class="sb-sub">Kota Pekalongan &middot; v2.0</div></div>
+    </a>
+    <nav class="sb-scroll">
+      <div class="sb-iw"><a href="dashboard-ppid.html" class="sb-link" data-tip="Dashboard"><i class="bi bi-grid-1x2-fill ico"></i><span class="lbl">Dashboard</span></a></div>
+      <div class="sb-sec">Master Data</div>
+      <div class="sb-iw"><a href="admin-pengelola-ppid.html" class="sb-link" data-tip="Admin Pengelola"><i class="bi bi-person-badge-fill ico"></i><span class="lbl">Admin Pengelola</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Pemohon"><i class="bi bi-people-fill ico"></i><span class="lbl">Pemohon</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Instansi"><i class="bi bi-building ico"></i><span class="lbl">Instansi / OPD</span></a></div>
+      <div class="sb-sec">Kelompok Informasi</div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIP"><i class="bi bi-folder2-open ico"></i><span class="lbl">Kelinfo DIP</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIB"><i class="bi bi-folder-fill ico"></i><span class="lbl">Kelinfo DIB</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIBS"><i class="bi bi-folder-symlink-fill ico"></i><span class="lbl">Kelinfo DIBS</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIU"><i class="bi bi-archive-fill ico"></i><span class="lbl">Kelinfo DIU</span></a></div>
+      <div class="sb-sec">Permohonan</div>
+      <div class="sb-iw"><a href="permohonan-masuk-ppid.html" class="sb-link" data-tip="Permohonan Masuk"><i class="bi bi-inbox-fill ico"></i><span class="lbl">Permohonan Masuk</span><span class="sb-badge">7</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Riwayat"><i class="bi bi-clock-history ico"></i><span class="lbl">Riwayat Permohonan</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Laporan"><i class="bi bi-bar-chart-fill ico"></i><span class="lbl">Laporan &amp; Statistik</span></a></div>
+      <div class="sb-sec">Konten Website</div>
+      <div class="sb-iw"><a href="berita-ppid.html" class="sb-link" data-tip="Berita"><i class="bi bi-newspaper ico"></i><span class="lbl">Berita</span></a></div>
+      <div class="sb-iw"><a href="galeri-ppid.html" class="sb-link" data-tip="Galeri"><i class="bi bi-images ico"></i><span class="lbl">Galeri</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Infografis"><i class="bi bi-pie-chart-fill ico"></i><span class="lbl">Infografis</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Kelola Menu"><i class="bi bi-list-nested ico"></i><span class="lbl">Kelola Menu</span></a></div>
+      <div class="sb-sec">Pengaturan</div>
+      <div class="sb-iw"><a href="#" class="sb-link active" data-tip="Pengaturan"><i class="bi bi-gear-fill ico"></i><span class="lbl">Pengaturan Sistem</span></a></div>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-foot-inner">
+        <div class="sb-ficon"><i class="bi bi-info-circle"></i></div>
+        <div class="sb-ftext"><div class="sb-fver">Versi 2.0.1 &mdash; Stabil</div><div class="sb-fcopy">&copy; 2025 PPID Kota Pekalongan</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+    <header class="topbar">
+      <button class="tog-btn" id="togBtn" onclick="toggleSB()"><i class="bi bi-arrow-bar-left"></i></button>
+      <div class="tb-space"></div>
+      <div class="tb-right">
+        <button class="tb-ibtn"><i class="bi bi-bell"></i><span class="notif-dot"></span></button>
+        <button class="tb-ibtn" onclick="toggleFS()"><i class="bi bi-fullscreen" id="fsIco"></i></button>
+        <div class="user-menu">
+          <button class="user-trig" id="uTrig" onclick="toggleUM()" aria-expanded="false">
+            <div class="user-av">AS</div>
+            <div class="user-info"><div class="uname">Admin Sistem</div><div class="urole">@admin.ppid</div></div>
+            <i class="bi bi-chevron-down user-caret"></i>
+          </button>
+          <div class="user-dd" id="uDD">
+            <a class="dd-item" href="#"><i class="bi bi-person-circle"></i>Profil Saya</a>
+            <a class="dd-item" href="#"><i class="bi bi-gear"></i>Pengaturan</a>
+            <div class="dd-div"></div>
+            <button class="dd-item danger"><i class="bi bi-box-arrow-right"></i>Keluar</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <div class="bb">
+        <div class="bb-left">
+          <div class="bb-title">Pengaturan Sistem</div>
+          <div class="bb-desc">Konfigurasi umum, tampilan, keamanan, dan pemeliharaan sistem PPID</div>
+        </div>
+        <div class="bb-right">
+          <div class="bc"><i class="bi bi-house-fill"></i> Home</div>
+          <span class="bc-sep">/</span>
+          <div class="bc cur"><i class="bi bi-gear-fill"></i> Pengaturan</div>
+        </div>
+      </div>
+
+      <!-- MOBILE TAB NAV -->
+      <div class="tab-nav-mobile" id="tabNavMob">
+        <button class="tab-btn active" data-panel="umum"     onclick="switchTab('umum',this)"><i class="bi bi-gear-fill"></i>Umum</button>
+        <button class="tab-btn"        data-panel="tampilan" onclick="switchTab('tampilan',this)"><i class="bi bi-palette-fill"></i>Tampilan</button>
+        <button class="tab-btn"        data-panel="email"    onclick="switchTab('email',this)"><i class="bi bi-envelope-fill"></i>Email</button>
+        <button class="tab-btn"        data-panel="keamanan" onclick="switchTab('keamanan',this)"><i class="bi bi-shield-lock-fill"></i>Keamanan</button>
+        <button class="tab-btn"        data-panel="notif"    onclick="switchTab('notif',this)"><i class="bi bi-bell-fill"></i>Notifikasi</button>
+        <button class="tab-btn"        data-panel="sistem"   onclick="switchTab('sistem',this)"><i class="bi bi-hdd-fill"></i>Sistem</button>
+        <button class="tab-btn red"    data-panel="danger"   onclick="switchTab('danger',this)"><i class="bi bi-exclamation-triangle-fill"></i>Bahaya</button>
+      </div>
+
+      <div class="set-wrap">
+
+        <!-- ── TAB NAV (desktop sidebar) ── -->
+        <nav class="tab-nav" id="tabNavDesk">
+          <div class="tab-nav-head"><h6><i class="bi bi-sliders2"></i> Menu Pengaturan</h6></div>
+          <button class="tab-btn active" data-panel="umum"     onclick="switchTab('umum',this)"><i class="bi bi-gear-fill"></i> Umum</button>
+          <button class="tab-btn"        data-panel="tampilan" onclick="switchTab('tampilan',this)"><i class="bi bi-palette-fill"></i> Tampilan</button>
+          <div class="tab-div"></div>
+          <button class="tab-btn"        data-panel="email"    onclick="switchTab('email',this)"><i class="bi bi-envelope-fill"></i> Email &amp; SMTP</button>
+          <button class="tab-btn"        data-panel="keamanan" onclick="switchTab('keamanan',this)"><i class="bi bi-shield-lock-fill"></i> Keamanan</button>
+          <button class="tab-btn"        data-panel="notif"    onclick="switchTab('notif',this)"><i class="bi bi-bell-fill"></i> Notifikasi</button>
+          <div class="tab-div"></div>
+          <button class="tab-btn"        data-panel="sistem"   onclick="switchTab('sistem',this)"><i class="bi bi-hdd-fill"></i> Info &amp; Pemeliharaan</button>
+          <button class="tab-btn red"    data-panel="danger"   onclick="switchTab('danger',this)"><i class="bi bi-exclamation-triangle-fill"></i> Zona Bahaya</button>
+        </nav>
+
+        <!-- ── PANELS ── -->
+        <div class="set-panels">
+
+          <!-- ════ PANEL: UMUM ════ -->
+          <div class="set-panel active" id="panel-umum">
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-building-fill"></i><h6>Identitas Instansi</h6></div>
+              <div class="card-body">
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">Nama Instansi <span class="req">*</span></label>
+                    <input type="text" class="fi" value="Pemerintah Kota Pekalongan" />
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Singkatan</label>
+                    <input type="text" class="fi" value="Pemkot Pekalongan" />
+                  </div>
+                </div>
+                <div class="fg">
+                  <label class="fl">Nama Sistem <span class="req">*</span></label>
+                  <div class="fiw"><i class="bi bi-shield-lock fii"></i>
+                  <input type="text" class="fi ico" value="PPID Kota Pekalongan" /></div>
+                </div>
+                <div class="fg">
+                  <label class="fl">Deskripsi Singkat</label>
+                  <textarea class="fta" rows="2">Portal Pejabat Pengelola Informasi dan Dokumentasi resmi Pemerintah Kota Pekalongan untuk pelayanan keterbukaan informasi publik.</textarea>
+                </div>
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">Website Resmi</label>
+                    <div class="fiw"><i class="bi bi-globe fii"></i>
+                    <input type="url" class="fi ico" value="https://www.pekalongan.go.id" /></div>
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Domain Portal PPID</label>
+                    <div class="fiw"><i class="bi bi-link-45deg fii"></i>
+                    <input type="url" class="fi ico" value="https://ppid.pekalongan.go.id" /></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-geo-alt-fill"></i><h6>Alamat &amp; Kontak</h6></div>
+              <div class="card-body">
+                <div class="fg">
+                  <label class="fl">Alamat Lengkap <span class="req">*</span></label>
+                  <textarea class="fta" rows="2">Jl. Sriwijaya No. 7, Bendan Kergon, Kec. Pekalongan Barat, Kota Pekalongan, Jawa Tengah 51111</textarea>
+                </div>
+                <div class="fg-row3">
+                  <div class="fg">
+                    <label class="fl">Telepon</label>
+                    <div class="fiw"><i class="bi bi-telephone fii"></i>
+                    <input type="tel" class="fi ico" value="(0285) 421948" /></div>
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Fax</label>
+                    <div class="fiw"><i class="bi bi-printer fii"></i>
+                    <input type="tel" class="fi ico" value="(0285) 421948" /></div>
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Email PPID</label>
+                    <div class="fiw"><i class="bi bi-envelope fii"></i>
+                    <input type="email" class="fi ico" value="ppid@pekalongan.go.id" /></div>
+                  </div>
+                </div>
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">Jam Operasional</label>
+                    <input type="text" class="fi" value="Senin – Jumat, 08.00 – 15.00 WIB" />
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Zona Waktu</label>
+                    <select class="fsel">
+                      <option selected>WIB (UTC+7)</option>
+                      <option>WITA (UTC+8)</option>
+                      <option>WIT (UTC+9)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-translate"></i><h6>Regional &amp; Format</h6></div>
+              <div class="card-body">
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">Bahasa Default</label>
+                    <select class="fsel">
+                      <option selected>Bahasa Indonesia</option>
+                      <option>English</option>
+                    </select>
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Format Tanggal</label>
+                    <select class="fsel">
+                      <option selected>DD MMMM YYYY</option>
+                      <option>DD/MM/YYYY</option>
+                      <option>YYYY-MM-DD</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">Mata Uang</label>
+                    <select class="fsel">
+                      <option selected>IDR (Rupiah)</option>
+                    </select>
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Jumlah Hasil per Halaman</label>
+                    <select class="fsel">
+                      <option>10</option>
+                      <option selected>25</option>
+                      <option>50</option>
+                      <option>100</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- end panel umum -->
+
+          <!-- ════ PANEL: TAMPILAN ════ -->
+          <div class="set-panel" id="panel-tampilan">
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-image-fill"></i><h6>Logo &amp; Favicon</h6></div>
+              <div class="card-body">
+                <div class="s-head"><i class="bi bi-image"></i> Logo Utama</div>
+                <div class="logo-preview show" id="logoPreview">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Logo_Kota_Pekalongan.png/200px-Logo_Kota_Pekalongan.png" alt="Logo" />
+                  <div style="flex:1">
+                    <div style="font-size:.82rem;font-weight:700;color:var(--text-main)">logo-ppid-pekalongan.png</div>
+                    <div style="font-size:.71rem;color:var(--text-muted);margin-top:.1rem">PNG &middot; 200 &times; 80 px &middot; 24 KB</div>
+                  </div>
+                  <button class="logo-preview-rm" onclick="removeLogo()"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <div class="upload-zone" id="logoUpload" style="display:none">
+                  <input type="file" accept="image/*" onchange="previewLogo(this)" />
+                  <div class="uz-ico"><i class="bi bi-cloud-upload"></i></div>
+                  <div class="uz-ttl">Unggah Logo Baru</div>
+                  <div class="uz-sub">PNG atau SVG transparan, maks 1 MB</div>
+                </div>
+
+                <div class="fdiv"></div>
+                <div class="s-head"><i class="bi bi-browser-edge"></i> Favicon</div>
+                <div class="logo-preview show" style="gap:.7rem">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Logo_Kota_Pekalongan.png/200px-Logo_Kota_Pekalongan.png" alt="Favicon" style="height:32px;width:32px;object-fit:contain" />
+                  <div style="flex:1"><div style="font-size:.82rem;font-weight:700">favicon.ico</div><div style="font-size:.71rem;color:var(--text-muted)">ICO &middot; 32&times;32 px</div></div>
+                  <button class="logo-preview-rm"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-palette-fill"></i><h6>Warna Tema</h6></div>
+              <div class="card-body">
+                <div class="fg">
+                  <label class="fl">Warna Utama (Primary) <span class="tip" title="Warna yang digunakan pada elemen interaktif, tombol, dan aksen">?</span></label>
+                  <div class="color-row">
+                    <div class="color-swatch picked" style="background:#0072c6" onclick="pickColor(this,'#0072c6')" title="#0072c6"></div>
+                    <div class="color-swatch" style="background:#1e40af" onclick="pickColor(this,'#1e40af')" title="#1e40af"></div>
+                    <div class="color-swatch" style="background:#7c3aed" onclick="pickColor(this,'#7c3aed')" title="#7c3aed"></div>
+                    <div class="color-swatch" style="background:#0d9488" onclick="pickColor(this,'#0d9488')" title="#0d9488"></div>
+                    <div class="color-swatch" style="background:#10b964" onclick="pickColor(this,'#10b964')" title="#10b964"></div>
+                    <div class="color-swatch" style="background:#d97706" onclick="pickColor(this,'#d97706')" title="#d97706"></div>
+                    <div class="color-swatch" style="background:#dc2626" onclick="pickColor(this,'#dc2626')" title="#dc2626"></div>
+                    <div class="color-custom">
+                      <span style="font-size:.75rem;color:var(--text-muted)">Custom:</span>
+                      <input type="color" class="color-input" value="#0072c6" id="colorPrimary" onchange="pickColorCustom(this)" />
+                    </div>
+                  </div>
+                </div>
+                <div class="fg">
+                  <label class="fl">Warna Sidebar</label>
+                  <div class="color-row">
+                    <div class="color-swatch picked" style="background:#001f42" onclick="pickColor(this,'#001f42')" title="#001f42"></div>
+                    <div class="color-swatch" style="background:#0f172a" onclick="pickColor(this,'#0f172a')" title="#0f172a"></div>
+                    <div class="color-swatch" style="background:#1e1b4b" onclick="pickColor(this,'#1e1b4b')" title="#1e1b4b"></div>
+                    <div class="color-swatch" style="background:#164e63" onclick="pickColor(this,'#164e63')" title="#164e63"></div>
+                    <div class="color-swatch" style="background:#14532d" onclick="pickColor(this,'#14532d')" title="#14532d"></div>
+                    <div class="color-swatch" style="background:#292524" onclick="pickColor(this,'#292524')" title="#292524"></div>
+                    <div class="color-custom">
+                      <span style="font-size:.75rem;color:var(--text-muted)">Custom:</span>
+                      <input type="color" class="color-input" value="#001f42" onchange="pickColorCustom(this)" />
+                    </div>
+                  </div>
+                </div>
+                <div class="fg">
+                  <label class="fl">Mode Tampilan</label>
+                  <div style="display:flex;gap:.7rem;flex-wrap:wrap">
+                    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.82rem;font-weight:500;padding:.5rem .85rem;border-radius:9px;border:1.5px solid var(--blue);background:var(--blue-soft);color:var(--blue)">
+                      <input type="radio" name="mode" checked style="accent-color:var(--blue)" /> <i class="bi bi-sun-fill"></i> Light Mode
+                    </label>
+                    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.82rem;font-weight:500;padding:.5rem .85rem;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--text-muted)">
+                      <input type="radio" name="mode" style="accent-color:var(--blue)" /> <i class="bi bi-moon-fill"></i> Dark Mode
+                    </label>
+                    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.82rem;font-weight:500;padding:.5rem .85rem;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--text-muted)">
+                      <input type="radio" name="mode" style="accent-color:var(--blue)" /> <i class="bi bi-circle-half"></i> Ikuti Sistem
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-type"></i><h6>Tipografi &amp; Layout</h6></div>
+              <div class="card-body">
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">Font Utama</label>
+                    <select class="fsel">
+                      <option selected>Plus Jakarta Sans</option>
+                      <option>Inter</option>
+                      <option>Poppins</option>
+                      <option>Nunito</option>
+                    </select>
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Font Heading</label>
+                    <select class="fsel">
+                      <option selected>Playfair Display</option>
+                      <option>Merriweather</option>
+                      <option>Lora</option>
+                      <option>Sama dengan utama</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">Lebar Konten Maks</label>
+                    <select class="fsel">
+                      <option>1200px</option>
+                      <option selected>1400px</option>
+                      <option>1600px</option>
+                      <option>Full Width</option>
+                    </select>
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Lebar Sidebar</label>
+                    <select class="fsel">
+                      <option>220px</option>
+                      <option selected>260px</option>
+                      <option>300px</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- end panel tampilan -->
+
+          <!-- ════ PANEL: EMAIL ════ -->
+          <div class="set-panel" id="panel-email">
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-envelope-fill"></i><h6>Konfigurasi SMTP</h6></div>
+              <div class="card-body">
+                <div class="alert-box ab-info" style="margin-bottom:1rem">
+                  <i class="bi bi-info-circle-fill"></i>
+                  <p>Pengaturan ini digunakan untuk mengirim email notifikasi permohonan, reset password, dan pemberitahuan sistem kepada pengguna.</p>
+                </div>
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">SMTP Host <span class="req">*</span></label>
+                    <div class="fiw"><i class="bi bi-server fii"></i>
+                    <input type="text" class="fi ico" value="mail.pekalongan.go.id" /></div>
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Port <span class="req">*</span></label>
+                    <input type="number" class="fi" value="587" />
+                  </div>
+                </div>
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">Username</label>
+                    <div class="fiw"><i class="bi bi-person fii"></i>
+                    <input type="text" class="fi ico" value="noreply@pekalongan.go.id" /></div>
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Password</label>
+                    <div class="fiw"><i class="bi bi-lock fii"></i>
+                    <input type="password" class="fi ico" value="••••••••••" /></div>
+                  </div>
+                </div>
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">Enkripsi</label>
+                    <select class="fsel">
+                      <option>None</option>
+                      <option selected>TLS</option>
+                      <option>SSL</option>
+                    </select>
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Autentikasi</label>
+                    <select class="fsel">
+                      <option selected>Login</option>
+                      <option>Plain</option>
+                      <option>CRAM-MD5</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="fdiv"></div>
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">Nama Pengirim</label>
+                    <input type="text" class="fi" value="PPID Kota Pekalongan" />
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Email Pengirim</label>
+                    <div class="fiw"><i class="bi bi-at fii"></i>
+                    <input type="email" class="fi ico" value="noreply@pekalongan.go.id" /></div>
+                  </div>
+                </div>
+                <div class="btn-row" style="margin-top:.5rem">
+                  <button class="btn-o" onclick="testEmail()"><i class="bi bi-send"></i> Kirim Email Tes</button>
+                  <span class="badge-status bs-ok" id="smtpStatus" style="display:none"><span class="bs-dot"></span>Terhubung</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-file-earmark-text-fill"></i><h6>Template Email</h6></div>
+              <div class="card-body">
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Header Logo</div><div class="tog-desc">Tampilkan logo instansi di bagian atas email</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Footer Kontak</div><div class="tog-desc">Sertakan informasi kontak di bagian bawah email</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="fg" style="margin-top:.85rem">
+                  <label class="fl">Warna Aksen Email</label>
+                  <div class="color-row">
+                    <div class="color-swatch picked" style="background:#0072c6"></div>
+                    <div class="color-swatch" style="background:#003d70"></div>
+                    <div class="color-swatch" style="background:#0d9488"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- end panel email -->
+
+          <!-- ════ PANEL: KEAMANAN ════ -->
+          <div class="set-panel" id="panel-keamanan">
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-shield-lock-fill"></i><h6>Autentikasi &amp; Akses</h6></div>
+              <div class="card-body">
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Autentikasi Dua Faktor (2FA)</div><div class="tog-desc">Wajibkan OTP via email/aplikasi saat login untuk semua admin</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">CAPTCHA pada Login</div><div class="tog-desc">Aktifkan Google reCAPTCHA v3 untuk mencegah akses bot</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Pembatasan IP</div><div class="tog-desc">Batasi akses panel admin hanya dari IP tertentu</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="fdiv"></div>
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">Maks. Percobaan Login <span class="tip" title="Akun dikunci sementara setelah melebihi batas">?</span></label>
+                    <input type="number" class="fi" value="5" min="3" max="20" />
+                    <p class="fh">Percobaan gagal sebelum akun dikunci</p>
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Durasi Kunci Akun (menit)</label>
+                    <input type="number" class="fi" value="30" min="5" />
+                  </div>
+                </div>
+                <div class="fg-row">
+                  <div class="fg">
+                    <label class="fl">Timeout Sesi (jam)</label>
+                    <input type="number" class="fi" value="8" min="1" max="72" />
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Token Reset Password Kedaluwarsa (jam)</label>
+                    <input type="number" class="fi" value="24" min="1" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-key-fill"></i><h6>Kebijakan Password</h6></div>
+              <div class="card-body">
+                <div class="fg">
+                  <label class="fl">Panjang Minimum Password</label>
+                  <input type="number" class="fi" value="8" min="6" max="32" style="max-width:150px" />
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Wajib Huruf Kapital</div><div class="tog-desc">Password harus mengandung minimal satu huruf besar</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Wajib Angka</div><div class="tog-desc">Password harus mengandung minimal satu angka</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Wajib Karakter Spesial</div><div class="tog-desc">Password harus mengandung !@#$% dsb.</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Paksa Ganti Password Berkala</div><div class="tog-desc">Admin wajib mengganti password setiap 90 hari</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" /><span class="tog-slider"></span></label></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-journal-code"></i><h6>Log Aktivitas</h6></div>
+              <div class="card-body">
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Catat Log Login</div><div class="tog-desc">Rekam semua aktivitas masuk dan keluar pengguna</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Catat Log Perubahan Data</div><div class="tog-desc">Rekam setiap perubahan pada data penting sistem</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="fg" style="margin-top:.85rem">
+                  <label class="fl">Retensi Log (hari)</label>
+                  <input type="number" class="fi" value="90" min="30" style="max-width:150px" />
+                  <p class="fh">Log yang lebih lama dari batas ini akan dihapus otomatis</p>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- end panel keamanan -->
+
+          <!-- ════ PANEL: NOTIFIKASI ════ -->
+          <div class="set-panel" id="panel-notif">
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-bell-fill"></i><h6>Notifikasi Permohonan</h6></div>
+              <div class="card-body">
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Permohonan Baru Masuk</div><div class="tog-desc">Kirim notifikasi email ke admin saat ada permohonan baru</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Permohonan Mendekati Tenggat</div><div class="tog-desc">Ingatkan admin 3 hari sebelum batas waktu respon berakhir</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Permohonan Melewati Tenggat</div><div class="tog-desc">Kirim peringatan darurat jika permohonan melampaui batas waktu</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Notifikasi ke Pemohon</div><div class="tog-desc">Kirim update status otomatis ke email pemohon</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-globe2"></i><h6>Notifikasi Sistem &amp; Website</h6></div>
+              <div class="card-body">
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Laporan Harian Otomatis</div><div class="tog-desc">Kirim ringkasan aktivitas harian ke email super admin setiap pukul 07.00</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Notifikasi Backup Selesai</div><div class="tog-desc">Konfirmasi via email setiap proses backup otomatis berhasil</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Peringatan Error Sistem</div><div class="tog-desc">Kirim notifikasi instan jika terjadi error kritis pada aplikasi</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="fdiv"></div>
+                <div class="fg">
+                  <label class="fl">Email Notifikasi Admin</label>
+                  <div class="fiw"><i class="bi bi-envelope fii"></i>
+                  <input type="email" class="fi ico" value="admin@pekalongan.go.id" /></div>
+                  <p class="fh">Semua notifikasi sistem akan dikirim ke alamat ini</p>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- end panel notif -->
+
+          <!-- ════ PANEL: SISTEM ════ -->
+          <div class="set-panel" id="panel-sistem">
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-cpu-fill"></i><h6>Informasi Sistem</h6></div>
+              <div class="card-body">
+                <div class="sys-row"><span class="sys-key">Versi Aplikasi</span><span class="sys-val">v2.0.1 <span class="badge-status bs-ok"><span class="bs-dot"></span>Stabil</span></span></div>
+                <div class="sys-row"><span class="sys-key">Versi PHP</span><span class="sys-val">8.2.15</span></div>
+                <div class="sys-row"><span class="sys-key">Framework</span><span class="sys-val">Laravel 11.x</span></div>
+                <div class="sys-row"><span class="sys-key">Database</span><span class="sys-val">MySQL 8.0.36 <span class="badge-status bs-ok"><span class="bs-dot"></span>Online</span></span></div>
+                <div class="sys-row"><span class="sys-key">Server OS</span><span class="sys-val">Ubuntu 22.04 LTS</span></div>
+                <div class="sys-row"><span class="sys-key">Web Server</span><span class="sys-val">Nginx 1.24.0</span></div>
+                <div class="sys-row"><span class="sys-key">Server Time</span><span class="sys-val" id="srvTime">—</span></div>
+                <div class="sys-row"><span class="sys-key">Uptime</span><span class="sys-val">14 hari 8 jam <span class="badge-status bs-ok"><span class="bs-dot"></span>Normal</span></span></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-hdd-fill"></i><h6>Penggunaan Penyimpanan</h6></div>
+              <div class="card-body">
+                <div class="prog-wrap" style="margin-bottom:1rem">
+                  <div class="prog-meta"><span>Total Penyimpanan</span><span><strong>3.8 GB</strong> / 20 GB</span></div>
+                  <div class="prog-bar"><div class="prog-fill" style="width:19%"></div></div>
+                </div>
+                <div class="sys-row"><span class="sys-key">Unggahan Media</span><span class="sys-val">2.1 GB</span></div>
+                <div class="sys-row"><span class="sys-key">Database</span><span class="sys-val">840 MB</span></div>
+                <div class="sys-row"><span class="sys-key">Log File</span><span class="sys-val">
+                  <span class="badge-status bs-warn"><span class="bs-dot"></span>620 MB</span>
+                </span></div>
+                <div class="sys-row"><span class="sys-key">Cache</span><span class="sys-val">240 MB</span></div>
+                <div class="fdiv"></div>
+                <div class="prog-wrap">
+                  <div class="prog-meta"><span>Penggunaan RAM</span><span><strong>1.2 GB</strong> / 4 GB (30%)</span></div>
+                  <div class="prog-bar"><div class="prog-fill" style="width:30%"></div></div>
+                </div>
+                <div class="prog-wrap" style="margin-top:.65rem">
+                  <div class="prog-meta"><span>CPU Load</span><span><strong>12%</strong></span></div>
+                  <div class="prog-bar"><div class="prog-fill" style="width:12%"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><i class="bi bi-arrow-repeat"></i><h6>Backup &amp; Pemeliharaan</h6></div>
+              <div class="card-body">
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Backup Otomatis</div><div class="tog-desc">Buat backup database dan file setiap hari pukul 02.00</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" checked /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="tog-row">
+                  <div class="tog-info"><div class="tog-title">Mode Pemeliharaan</div><div class="tog-desc">Aktifkan halaman maintenance, blokir akses publik ke portal</div></div>
+                  <div class="tog-wrap"><label class="tog"><input type="checkbox" /><span class="tog-slider"></span></label></div>
+                </div>
+                <div class="fg-row" style="margin-top:.85rem">
+                  <div class="fg">
+                    <label class="fl">Retensi Backup (hari)</label>
+                    <input type="number" class="fi" value="30" min="7" />
+                  </div>
+                  <div class="fg">
+                    <label class="fl">Backup Terakhir</label>
+                    <div class="fiw"><i class="bi bi-clock fii"></i>
+                    <input type="text" class="fi ico" value="Hari ini, 02.00 WIB" readonly style="background:#f8f9fb;color:var(--text-muted)" /></div>
+                  </div>
+                </div>
+                <div class="fdiv"></div>
+                <div class="btn-row">
+                  <button class="btn-o" onclick="doBackup()"><i class="bi bi-download"></i> Backup Sekarang</button>
+                  <button class="btn-o amber" onclick="openModal('modCache')"><i class="bi bi-database-fill-x"></i> Hapus Cache</button>
+                  <button class="btn-o" onclick="showToast('Log lama berhasil dibersihkan.')"><i class="bi bi-trash3"></i> Bersihkan Log Lama</button>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- end panel sistem -->
+
+          <!-- ════ PANEL: DANGER ZONE ════ -->
+          <div class="set-panel" id="panel-danger">
+
+            <div class="alert-box ab-danger" style="border-radius:var(--r)">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <p>Tindakan di bawah ini bersifat <strong>destruktif dan permanen</strong>. Harap baca setiap deskripsi dengan saksama sebelum melanjutkan. Tidak ada konfirmasi ulang setelah proses dimulai.</p>
+            </div>
+
+            <div class="card" style="border-color:rgba(220,53,69,0.2);border-width:1.5px">
+              <div class="card-head" style="background:rgba(220,53,69,0.04)">
+                <i class="bi bi-exclamation-triangle-fill" style="color:#dc3545"></i>
+                <h6 style="color:#dc3545">Zona Bahaya</h6>
+              </div>
+              <div class="card-body">
+
+                <div class="dz-item">
+                  <div class="dz-info">
+                    <div class="dz-ttl">Reset Pengaturan ke Default</div>
+                    <div class="dz-desc">Kembalikan semua konfigurasi sistem ke nilai bawaan pabrik. Data pengguna dan konten tidak terpengaruh.</div>
+                  </div>
+                  <button class="btn-o amber" onclick="openModal('modReset')" style="flex-shrink:0"><i class="bi bi-arrow-counterclockwise"></i> Reset Pengaturan</button>
+                </div>
+
+                <div class="dz-item">
+                  <div class="dz-info">
+                    <div class="dz-ttl">Hapus Semua Data Log</div>
+                    <div class="dz-desc">Hapus permanen seluruh log aktivitas, log error, dan log akses pengguna dari database.</div>
+                  </div>
+                  <button class="btn-o red" onclick="showToast('Log berhasil dihapus.')" style="flex-shrink:0"><i class="bi bi-journal-x"></i> Hapus Log</button>
+                </div>
+
+                <div class="dz-item">
+                  <div class="dz-info">
+                    <div class="dz-ttl">Nonaktifkan Semua Pengguna</div>
+                    <div class="dz-desc">Blokir semua akun admin dan editor secara serentak. Hanya super admin yang tetap dapat masuk.</div>
+                  </div>
+                  <button class="btn-o red" onclick="showToast('Semua pengguna dinonaktifkan.')" style="flex-shrink:0"><i class="bi bi-people-fill"></i> Nonaktifkan</button>
+                </div>
+
+                <div class="dz-item" style="border-bottom:none;padding-bottom:0">
+                  <div class="dz-info">
+                    <div class="dz-ttl" style="color:#dc3545">Reset Penuh Sistem</div>
+                    <div class="dz-desc">Hapus <strong>semua data</strong>: pengguna, berita, permohonan, galeri, dan konfigurasi. Sistem akan kembali seperti instalasi baru. <strong>Tidak dapat dibatalkan.</strong></div>
+                  </div>
+                  <button class="btn-o red" onclick="openModal('modDanger')" style="flex-shrink:0;border-color:rgba(220,53,69,0.4)"><i class="bi bi-radioactive"></i> Reset Total</button>
+                </div>
+
+              </div>
+            </div>
+
+          </div><!-- end panel danger -->
+
+        </div><!-- end set-panels -->
+      </div><!-- end set-wrap -->
+
+    </main>
+
+    <!-- STICKY SAVE BAR -->
+    <div class="save-bar">
+      <div class="save-info"><i class="bi bi-cloud-check-fill"></i> Perubahan belum disimpan</div>
+      <div class="save-btns">
+        <button class="btn-o" onclick="openModal('modReset')"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+        <button class="btn-g" onclick="saveSettings()"><i class="bi bi-floppy-fill"></i> Simpan Pengaturan</button>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="foot-l">&copy; 2025 <strong>PPID Kota Pekalongan</strong> &mdash; Sistem Informasi Layanan Publik.</div>
+      <div class="foot-r">
+        <a class="foot-a" href="#">Bantuan</a><span class="foot-sep">&middot;</span>
+        <a class="foot-a" href="#">Dokumentasi API</a><span class="foot-sep">&middot;</span>
+        <a class="foot-a" href="#">Kontak</a>
+      </div>
+    </footer>
+
+  </div><!-- end .main -->
+</div><!-- end .shell -->
+
+<button class="fab" id="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="bi bi-arrow-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ── SIDEBAR ── */
+const sidebar=document.getElementById('sidebar'),mainEl=document.getElementById('main'),togBtn=document.getElementById('togBtn'),sbOv=document.getElementById('sbOv');
+let collapsed=false;
+const isMob=()=>window.innerWidth<=991;
+function toggleSB(){if(isMob()){const o=sidebar.classList.toggle('mobile-open');sbOv.classList.toggle('show',o);}else{collapsed=!collapsed;sidebar.classList.toggle('collapsed',collapsed);mainEl.classList.toggle('collapsed',collapsed);togBtn.classList.toggle('flip',collapsed);}}
+function closeMobile(){sidebar.classList.remove('mobile-open');sbOv.classList.remove('show');}
+window.addEventListener('resize',()=>{if(!isMob())closeMobile();});
+
+/* ── TOPBAR ── */
+const uTrig=document.getElementById('uTrig'),uDD=document.getElementById('uDD');
+function toggleUM(){const o=uDD.classList.toggle('open');uTrig.setAttribute('aria-expanded',o);}
+document.addEventListener('click',e=>{if(!uTrig.contains(e.target)&&!uDD.contains(e.target))uDD.classList.remove('open');});
+function toggleFS(){const ico=document.getElementById('fsIco');if(!document.fullscreenElement){document.documentElement.requestFullscreen();ico.className='bi bi-fullscreen-exit';}else{document.exitFullscreen();ico.className='bi bi-fullscreen';}}
+window.addEventListener('scroll',()=>document.getElementById('fab').classList.toggle('vis',scrollY>300));
+
+/* ── TAB SWITCH ── */
+function switchTab(panel,btn){
+  // deactivate all panels
+  document.querySelectorAll('.set-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+panel).classList.add('active');
+  // deactivate all buttons (both navs)
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  // activate all buttons matching this panel in BOTH navs
+  document.querySelectorAll('.tab-btn[data-panel="'+panel+'"]').forEach(b=>b.classList.add('active'));
+  // scroll to top of content
+  document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── COLOR PICKER ── */
+function pickColor(el,hex){
+  const parent=el.closest('.color-row');
+  parent.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById('colorPrimary')&&(document.getElementById('colorPrimary').value=hex);
+}
+function pickColorCustom(inp){
+  const parent=inp.closest('.color-row');
+  parent.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('picked'));
+}
+
+/* ── LOGO UPLOAD ── */
+function removeLogo(){
+  document.getElementById('logoPreview').classList.remove('show');
+  document.getElementById('logoUpload').style.display='';
+}
+function previewLogo(input){
+  if(!input.files||!input.files[0])return;
+  const r=new FileReader();
+  r.onload=e=>{
+    document.querySelector('#logoPreview img').src=e.target.result;
+    document.getElementById('logoPreview').classList.add('show');
+    document.getElementById('logoUpload').style.display='none';
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+/* ── CLOCK ── */
+function updateClock(){
+  const el=document.getElementById('srvTime');
+  if(el)el.textContent=new Date().toLocaleString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+updateClock();setInterval(updateClock,1000);
+
+/* ── MODALS ── */
+function openModal(id){document.getElementById(id).classList.add('show');document.body.style.overflow='hidden';}
+function closeModal(id){document.getElementById(id).classList.remove('show');document.body.style.overflow='';}
+document.querySelectorAll('.modal-ov').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m){closeModal(m.id);}});});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-ov.show').forEach(m=>closeModal(m.id));});
+
+/* ── DANGER CONFIRM ── */
+const ci=document.getElementById('confirmInput'),dOk=document.getElementById('btnDangerOk');
+if(ci)ci.addEventListener('input',()=>{const ok=ci.value.trim()==='RESET SISTEM';dOk.disabled=!ok;dOk.style.opacity=ok?'1':'0.5';dOk.style.cursor=ok?'pointer':'not-allowed';});
+
+/* ── ACTIONS ── */
+function doReset(){closeModal('modReset');showToast('\u2705 Pengaturan berhasil direset ke default.');}
+function doClearCache(){closeModal('modCache');showToast('\uD83D\uDDC4\uFE0F Cache sistem berhasil dihapus.');}
+function doDanger(){const ok=ci.value.trim()==='RESET SISTEM';if(!ok)return;closeModal('modDanger');showToast('\u26A0\uFE0F Sistem direset. Mengalihkan...');setTimeout(()=>window.location.reload(),2000);}
+function saveSettings(){const bar=document.querySelector('.save-info');bar.innerHTML='<i class="bi bi-arrow-repeat" style="animation:spin .7s linear infinite"></i> Menyimpan...';setTimeout(()=>{bar.innerHTML='<i class="bi bi-cloud-check-fill" style="color:var(--green)"></i> Pengaturan tersimpan';showToast('\u2705 Pengaturan berhasil disimpan!');},900);}
+function testEmail(){showToast('\uD83D\uDCE7 Email tes terkirim ke admin@pekalongan.go.id');const st=document.getElementById('smtpStatus');if(st){st.style.display='inline-flex';}}
+function doBackup(){showToast('\uD83D\uDCBE Backup sedang dibuat...');setTimeout(()=>showToast('\u2705 Backup selesai: backup-2025-02-25.zip'),2200);}
+
+/* ── TOAST ── */
+function showToast(msg){
+  const t=document.createElement('div');
+  t.textContent=msg;
+  Object.assign(t.style,{position:'fixed',bottom:'5.5rem',left:'50%',transform:'translateX(-50%) translateY(20px)',background:'#0f1c2e',color:'#fff',padding:'.6rem 1.2rem',borderRadius:'10px',fontSize:'.82rem',fontWeight:'600',zIndex:'9999',opacity:'0',transition:'all .3s',boxShadow:'0 8px 24px rgba(0,0,0,0.3)',whiteSpace:'nowrap'});
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>{t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(8px)';setTimeout(()=>t.remove(),400);},2400);
+}
+
+/* ── SPIN KEYFRAME ── */
+const st=document.createElement('style');st.textContent='@keyframes spin{to{transform:rotate(360deg)}}';document.head.appendChild(st);
+</script>
+</body>
+</html>

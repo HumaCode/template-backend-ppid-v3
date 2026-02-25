@@ -16,6 +16,9 @@
 
 <body>
 
+  <!-- ══ SIDEBAR MOBILE OVERLAY ══ -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
   <!-- ══ APP SHELL ══ -->
   <div class="app-shell">
 
