@@ -1,0 +1,3537 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Kelola Menu — PPID Kota Pekalongan</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* ═══════ ROOT ═══════ */
+      :root {
+        --blue: #0072c6;
+        --blue-dark: #005499;
+        --blue-deep: #003d70;
+        --blue-light: #1a8fe0;
+        --blue-soft: rgba(0, 114, 198, 0.08);
+        --sidebar-w: 260px;
+        --sidebar-col: 68px;
+        --topbar-h: 64px;
+        --sidebar-bg: #001f42;
+        --content-bg: #f0f4f9;
+        --card-bg: #fff;
+        --text-main: #0f1c2e;
+        --text-muted: #6b7a8d;
+        --border: rgba(0, 0, 0, 0.07);
+        --shadow: 0 2px 16px rgba(0, 50, 100, 0.08);
+        --ease: 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+        --r: 14px;
+        --inp-h: 42px;
+        --green: #10b964;
+        --amber: #f59e0b;
+        --red: #dc3545;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: var(--content-bg);
+        color: var(--text-main);
+        min-height: 100vh;
+      }
+
+      /* ─── SHELL ─── */
+      .shell {
+        display: flex;
+        min-height: 100vh;
+        width: 100%;
+        overflow-x: hidden;
+      }
+      .main {
+        flex: 1;
+        margin-left: var(--sidebar-w);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        min-width: 0;
+        max-width: calc(100vw - var(--sidebar-w));
+        transition:
+          margin-left var(--ease),
+          max-width var(--ease);
+      }
+      .main.collapsed {
+        margin-left: var(--sidebar-col);
+        max-width: calc(100vw - var(--sidebar-col));
+      }
+
+      /* ─── SIDEBAR ─── */
+      .sidebar {
+        width: var(--sidebar-w);
+        min-height: 100vh;
+        background: var(--sidebar-bg);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+        overflow: hidden;
+        transition: width var(--ease);
+        box-shadow: 4px 0 24px rgba(0, 18, 50, 0.18);
+      }
+      .sidebar.collapsed {
+        width: var(--sidebar-col);
+      }
+      .sb-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 1.3rem 1.1rem 1.2rem 1.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        min-height: var(--topbar-h);
+        text-decoration: none;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .sb-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, var(--blue), var(--blue-light));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 14px rgba(0, 114, 198, 0.45);
+        animation: iconPulse 3s ease-in-out infinite;
+      }
+      .sb-icon i {
+        font-size: 1.1rem;
+        color: #fff;
+      }
+      @keyframes iconPulse {
+        0%,
+        100% {
+          box-shadow: 0 4px 14px rgba(0, 114, 198, 0.45);
+        }
+        50% {
+          box-shadow: 0 6px 22px rgba(0, 114, 198, 0.7);
+        }
+      }
+      .sb-text {
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .sb-title {
+        font-family: "Playfair Display", serif;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.15;
+      }
+      .sb-sub {
+        font-size: 0.65rem;
+        color: rgba(255, 255, 255, 0.4);
+        letter-spacing: 0.04em;
+      }
+      .sb-scroll {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+        padding: 0.8rem 0;
+      }
+      .sb-scroll::-webkit-scrollbar {
+        width: 3px;
+      }
+      .sb-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+      }
+      .sb-sec {
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.28);
+        padding: 1rem 1.25rem 0.35rem;
+        white-space: nowrap;
+        overflow: hidden;
+        transition: opacity var(--ease);
+      }
+      .sidebar.collapsed .sb-sec {
+        opacity: 0;
+      }
+      .sb-iw {
+        padding: 0.08rem 0.7rem;
+      }
+      .sb-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem 0.75rem;
+        border-radius: 10px;
+        text-decoration: none;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.84rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        transition:
+          background var(--ease),
+          color var(--ease);
+        position: relative;
+      }
+      .sb-link .ico {
+        font-size: 1.05rem;
+        flex-shrink: 0;
+        width: 20px;
+        text-align: center;
+      }
+      .sb-link .lbl {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .sb-link:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: rgba(255, 255, 255, 0.88);
+      }
+      .sb-link.active {
+        background: linear-gradient(
+          90deg,
+          rgba(0, 114, 198, 0.35),
+          rgba(0, 114, 198, 0.1)
+        );
+        color: #fff;
+        box-shadow: inset 3px 0 0 var(--blue);
+      }
+      .sb-link.active .ico {
+        color: #7ecbff;
+      }
+      .sb-badge {
+        background: var(--blue);
+        color: #fff;
+        font-size: 0.6rem;
+        font-weight: 700;
+        padding: 0.1rem 0.42rem;
+        border-radius: 100px;
+        flex-shrink: 0;
+      }
+      .sidebar.collapsed .lbl,
+      .sidebar.collapsed .sb-badge {
+        opacity: 0;
+        max-width: 0;
+        overflow: hidden;
+      }
+      .sidebar.collapsed .sb-link {
+        justify-content: center;
+        padding: 0.65rem;
+      }
+      .sidebar.collapsed .sb-iw {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+      .sidebar.collapsed .sb-link[data-tip]::after {
+        content: attr(data-tip);
+        position: absolute;
+        left: calc(100% + 10px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: #0d2340;
+        color: #fff;
+        font-size: 0.74rem;
+        padding: 0.3rem 0.7rem;
+        border-radius: 7px;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+        z-index: 9999;
+      }
+      .sidebar.collapsed .sb-link[data-tip]:hover::after {
+        opacity: 1;
+      }
+      .sb-foot {
+        padding: 0.9rem 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+        flex-shrink: 0;
+      }
+      .sb-foot-inner {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        overflow: hidden;
+      }
+      .sb-ficon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.07);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .sb-ficon i {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.4);
+      }
+      .sb-ftext {
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .sb-fver {
+        font-size: 0.68rem;
+        color: rgba(255, 255, 255, 0.25);
+      }
+      .sb-fcopy {
+        font-size: 0.63rem;
+        color: rgba(255, 255, 255, 0.18);
+      }
+      .sidebar.collapsed .sb-ftext {
+        opacity: 0;
+        max-width: 0;
+      }
+
+      /* ─── TOPBAR ─── */
+      .topbar {
+        height: var(--topbar-h);
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 1.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 900;
+        box-shadow: 0 1px 12px rgba(0, 40, 100, 0.06);
+        gap: 1rem;
+      }
+      .tog-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-muted);
+        font-size: 1.05rem;
+        transition:
+          background 0.2s,
+          color 0.2s,
+          transform 0.3s;
+        flex-shrink: 0;
+      }
+      .tog-btn:hover {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+      .tog-btn.flip {
+        transform: rotate(180deg);
+      }
+      .tb-space {
+        flex: 1;
+      }
+      .tb-right {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .tb-ibtn {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-muted);
+        font-size: 1rem;
+        transition:
+          background 0.2s,
+          color 0.2s;
+        position: relative;
+      }
+      .tb-ibtn:hover {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+      .notif-dot {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #e84242;
+        border: 1.5px solid #fff;
+        animation: notifPulse 1.8s ease-in-out infinite;
+      }
+      @keyframes notifPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(232, 66, 66, 0.5);
+        }
+        50% {
+          box-shadow: 0 0 0 5px rgba(232, 66, 66, 0);
+        }
+      }
+      .user-menu {
+        position: relative;
+      }
+      .user-trig {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.35rem 0.65rem 0.35rem 0.45rem;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: transparent;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .user-trig:hover {
+        background: var(--blue-soft);
+      }
+      .user-av {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--blue), var(--blue-light));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 700;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(0, 114, 198, 0.4);
+      }
+      .user-info .uname {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-main);
+        line-height: 1.2;
+      }
+      .user-info .urole {
+        font-size: 0.68rem;
+        color: var(--text-muted);
+      }
+      .user-caret {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        transition: transform 0.25s;
+      }
+      .user-trig[aria-expanded="true"] .user-caret {
+        transform: rotate(180deg);
+      }
+      .user-dd {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 8px);
+        min-width: 190px;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 13px;
+        box-shadow: 0 10px 40px rgba(0, 40, 100, 0.13);
+        padding: 0.45rem;
+        display: none;
+        z-index: 999;
+        animation: dropIn 0.25s var(--ease);
+      }
+      .user-dd.open {
+        display: block;
+      }
+      @keyframes dropIn {
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .dd-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.55rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        color: var(--text-main);
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.18s;
+        font-weight: 500;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+      }
+      .dd-item i {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        width: 18px;
+      }
+      .dd-item:hover {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+      .dd-item.danger:hover {
+        background: rgba(220, 50, 50, 0.06);
+        color: #c0392b;
+      }
+      .dd-div {
+        height: 1px;
+        background: var(--border);
+        margin: 0.35rem 0;
+      }
+
+      /* ─── CONTENT ─── */
+      .content {
+        flex: 1;
+        padding: 1.6rem;
+        position: relative;
+        width: 100%;
+        overflow-x: hidden;
+      }
+      .content::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(
+          circle at 1px 1px,
+          rgba(0, 100, 200, 0.04) 1px,
+          transparent 0
+        );
+        background-size: 28px 28px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ─── BREADCRUMB BANNER ─── */
+      .bb {
+        background: linear-gradient(
+          120deg,
+          var(--blue-deep) 0%,
+          var(--blue) 55%,
+          var(--blue-light) 100%
+        );
+        border-radius: 16px;
+        padding: 1.3rem 1.6rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 28px rgba(0, 114, 198, 0.28);
+        z-index: 1;
+        width: 100%;
+      }
+      .bb::before {
+        content: "";
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        top: -60px;
+        right: 80px;
+      }
+      .bb::after {
+        content: "";
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        bottom: -40px;
+        right: 20px;
+      }
+      .bb-left {
+        position: relative;
+        z-index: 1;
+      }
+      .bb-title {
+        font-family: "Playfair Display", serif;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 0.18rem;
+      }
+      .bb-desc {
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 300;
+      }
+      .bb-right {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+      }
+      .bc {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 500;
+      }
+      .bc.cur {
+        color: #fff;
+        font-weight: 600;
+      }
+      .bc-sep {
+        color: rgba(255, 255, 255, 0.35);
+      }
+
+      /* ─── LAYOUT: 2 col ─── */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .km-wrap {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 1.2rem;
+        align-items: start;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ─── CARD BASE ─── */
+      .card {
+        background: var(--card-bg);
+        border-radius: var(--r);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        animation: fadeUp 0.4s var(--ease) both;
+        margin-bottom: 0;
+      }
+      .card:nth-child(2) {
+        animation-delay: 0.07s;
+      }
+      .card:nth-child(3) {
+        animation-delay: 0.12s;
+      }
+      .card-head {
+        padding: 0.95rem 1.3rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        flex-wrap: wrap;
+      }
+      .card-head i {
+        color: var(--blue);
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+      .card-head h6 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+        flex: 1;
+        min-width: 0;
+      }
+      .card-body {
+        padding: 1.3rem;
+      }
+
+      /* ─── TOOLBAR ─── */
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.1rem;
+      }
+      .search-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 160px;
+        max-width: 280px;
+      }
+      .search-wrap i {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.82rem;
+        pointer-events: none;
+      }
+      .search-inp {
+        width: 100%;
+        height: 38px;
+        border: 1.5px solid var(--border);
+        border-radius: 9px;
+        padding: 0 0.9rem 0 2.2rem;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 0.82rem;
+        color: var(--text-main);
+        background: #fff;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .search-inp:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(0, 114, 198, 0.1);
+      }
+      .search-inp::placeholder {
+        color: #b0bac7;
+      }
+      .fsel-sm {
+        height: 38px;
+        border: 1.5px solid var(--border);
+        border-radius: 9px;
+        padding: 0 0.8rem;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 0.8rem;
+        color: var(--text-main);
+        background: #fff;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+      .fsel-sm:focus {
+        border-color: var(--blue);
+      }
+
+      /* ─── BUTTONS ─── */
+      .btn-p {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.42rem;
+        padding: 0.5rem 1rem;
+        border-radius: 9px;
+        border: none;
+        background: linear-gradient(135deg, var(--blue), var(--blue-light));
+        color: #fff;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(0, 114, 198, 0.28);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      .btn-p:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 7px 20px rgba(0, 114, 198, 0.38);
+        color: #fff;
+      }
+      .btn-o {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.46rem 0.9rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: #fff;
+        color: var(--text-muted);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition:
+          background 0.2s,
+          color 0.2s,
+          border-color 0.2s;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      .btn-o:hover {
+        background: var(--blue-soft);
+        color: var(--blue);
+        border-color: rgba(0, 114, 198, 0.3);
+      }
+      .btn-o.danger:hover {
+        background: rgba(220, 53, 69, 0.07);
+        color: var(--red);
+        border-color: rgba(220, 53, 69, 0.28);
+      }
+      .btn-ico {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        background: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        transition:
+          background 0.18s,
+          color 0.18s,
+          border-color 0.18s;
+        flex-shrink: 0;
+      }
+      .btn-ico:hover {
+        background: var(--blue-soft);
+        color: var(--blue);
+        border-color: rgba(0, 114, 198, 0.28);
+      }
+      .btn-ico.red:hover {
+        background: rgba(220, 53, 69, 0.07);
+        color: var(--red);
+        border-color: rgba(220, 53, 69, 0.25);
+      }
+      .btn-ico.amber:hover {
+        background: rgba(245, 158, 11, 0.07);
+        color: #d97706;
+        border-color: rgba(245, 158, 11, 0.28);
+      }
+
+      /* ─── BADGE ─── */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.22rem;
+        padding: 0.18rem 0.58rem;
+        border-radius: 100px;
+        font-size: 0.67rem;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .badge .bdot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .b-blue {
+        background: rgba(0, 114, 198, 0.1);
+        color: var(--blue);
+      }
+      .b-blue .bdot {
+        background: var(--blue);
+      }
+      .b-green {
+        background: rgba(16, 185, 100, 0.1);
+        color: var(--green);
+      }
+      .b-green .bdot {
+        background: var(--green);
+      }
+      .b-amber {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+      }
+      .b-amber .bdot {
+        background: var(--amber);
+      }
+      .b-red {
+        background: rgba(220, 53, 69, 0.1);
+        color: var(--red);
+      }
+      .b-red .bdot {
+        background: var(--red);
+      }
+      .b-slate {
+        background: rgba(100, 116, 139, 0.1);
+        color: #64748b;
+      }
+      .b-slate .bdot {
+        background: #64748b;
+      }
+      .b-purple {
+        background: rgba(124, 58, 237, 0.1);
+        color: #7c3aed;
+      }
+      .b-purple .bdot {
+        background: #7c3aed;
+      }
+
+      /* ─── TOGGLE SWITCH ─── */
+      .tog {
+        position: relative;
+        display: inline-block;
+        width: 38px;
+        height: 22px;
+        flex-shrink: 0;
+      }
+      .tog input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .tog-slider {
+        position: absolute;
+        inset: 0;
+        background: #d1d9e6;
+        border-radius: 100px;
+        cursor: pointer;
+        transition: background 0.25s;
+      }
+      .tog-slider::before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: 3px;
+        top: 3px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.25s;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+      }
+      .tog input:checked + .tog-slider {
+        background: var(--green);
+      }
+      .tog input:checked + .tog-slider::before {
+        transform: translateX(16px);
+      }
+
+      /* ─── MENU TREE (kiri) ─── */
+      .menu-tree {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* group header */
+      .mt-group {
+        margin-bottom: 0.35rem;
+      }
+      .mt-group-head {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55rem 0.8rem;
+        border-radius: 9px;
+        background: linear-gradient(
+          to right,
+          rgba(0, 114, 198, 0.06),
+          transparent
+        );
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.18s;
+      }
+      .mt-group-head:hover {
+        background: rgba(0, 114, 198, 0.1);
+      }
+      .mt-group-arrow {
+        font-size: 0.68rem;
+        color: var(--text-muted);
+        transition: transform 0.22s;
+        flex-shrink: 0;
+      }
+      .mt-group-arrow.open {
+        transform: rotate(90deg);
+      }
+      .mt-group-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+      }
+      .mt-group-name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-main);
+        flex: 1;
+      }
+      .mt-group-count {
+        font-size: 0.67rem;
+        color: var(--text-muted);
+        background: rgba(0, 0, 0, 0.05);
+        padding: 0.1rem 0.45rem;
+        border-radius: 100px;
+      }
+
+      /* children */
+      .mt-children {
+        list-style: none;
+        margin: 0;
+        padding: 0 0 0.35rem 1rem;
+        display: none;
+      }
+      .mt-children.open {
+        display: block;
+      }
+
+      /* single menu item */
+      .mt-item {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.5rem 0.8rem;
+        border-radius: 9px;
+        cursor: pointer;
+        transition: background 0.18s;
+        border: 1.5px solid transparent;
+        margin-bottom: 0.22rem;
+        position: relative;
+      }
+      .mt-item:hover {
+        background: rgba(0, 114, 198, 0.05);
+      }
+      .mt-item.selected {
+        background: var(--blue-soft);
+        border-color: rgba(0, 114, 198, 0.22);
+      }
+      .mt-item.selected .mi-name {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      .mt-item.dragging {
+        opacity: 0.45;
+        background: #f0f4f9;
+      }
+      .mt-item.drag-over {
+        border-color: var(--blue);
+        background: rgba(0, 114, 198, 0.07);
+      }
+
+      /* drag handle */
+      .mi-drag {
+        color: #c8d0db;
+        font-size: 0.85rem;
+        cursor: grab;
+        flex-shrink: 0;
+        padding: 0.1rem 0.05rem;
+      }
+      .mi-drag:active {
+        cursor: grabbing;
+      }
+
+      /* icon box */
+      .mi-ico {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.78rem;
+        flex-shrink: 0;
+      }
+
+      /* name + path */
+      .mi-body {
+        flex: 1;
+        min-width: 0;
+      }
+      .mi-name {
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mi-path {
+        font-size: 0.67rem;
+        color: var(--text-muted);
+        font-family: monospace;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* order pill */
+      .mi-order {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+
+      /* quick actions on hover */
+      .mi-actions {
+        display: flex;
+        gap: 0.25rem;
+        opacity: 0;
+        transition: opacity 0.18s;
+        flex-shrink: 0;
+      }
+      .mt-item:hover .mi-actions,
+      .mt-item.selected .mi-actions {
+        opacity: 1;
+      }
+
+      /* ─── FORM PANEL (kanan) ─── */
+      .form-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        position: sticky;
+        top: calc(var(--topbar-h) + 1.4rem);
+      }
+
+      /* ─── FORM FIELDS ─── */
+      .fg {
+        margin-bottom: 0.9rem;
+      }
+      .fg:last-child {
+        margin-bottom: 0;
+      }
+      .fl {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 0.28rem;
+        margin-bottom: 0.32rem;
+      }
+      .fl .req {
+        color: var(--red);
+        font-size: 0.7rem;
+      }
+      .fl .tip {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: var(--blue-soft);
+        color: var(--blue);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.58rem;
+        cursor: help;
+      }
+      .fh {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin-top: 0.25rem;
+      }
+      .fi,
+      .fta,
+      .fsel {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: 9px;
+        background: #fff;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 0.83rem;
+        color: var(--text-main);
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .fi {
+        height: var(--inp-h);
+        padding: 0 0.9rem;
+      }
+      .fi.icon-l {
+        padding-left: 2.4rem;
+      }
+      .fi::placeholder,
+      .fta::placeholder {
+        color: #b0bac7;
+      }
+      .fi:focus,
+      .fta:focus,
+      .fsel:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3.5px rgba(0, 114, 198, 0.11);
+      }
+      .fta {
+        padding: 0.75rem 0.9rem;
+        resize: vertical;
+        min-height: 72px;
+        line-height: 1.65;
+      }
+      .fsel {
+        height: var(--inp-h);
+        padding: 0 0.9rem;
+        cursor: pointer;
+      }
+      .fiw {
+        position: relative;
+      }
+      .fii {
+        position: absolute;
+        left: 0.8rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.84rem;
+        pointer-events: none;
+      }
+      .fg-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+        margin-bottom: 0.9rem;
+      }
+
+      /* icon picker */
+      .icon-picker-wrap {
+        display: flex;
+        gap: 0.55rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .icon-preview {
+        width: 40px;
+        height: 40px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: var(--blue);
+        flex-shrink: 0;
+        transition: border-color 0.2s;
+      }
+      .icon-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+        margin-top: 0.5rem;
+        max-height: 140px;
+        overflow-y: auto;
+        padding: 0.4rem;
+        background: #f8fafc;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+      }
+      .icon-opt {
+        width: 32px;
+        height: 32px;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        transition:
+          background 0.15s,
+          color 0.15s;
+        border: 1.5px solid transparent;
+      }
+      .icon-opt:hover {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+      .icon-opt.picked {
+        background: var(--blue);
+        color: #fff;
+        border-color: var(--blue);
+      }
+
+      /* color picker row */
+      .color-row {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .color-dot {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2.5px solid transparent;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+        flex-shrink: 0;
+      }
+      .color-dot:hover {
+        transform: scale(1.15);
+      }
+      .color-dot.picked {
+        border-color: #fff;
+        box-shadow:
+          0 0 0 2.5px var(--blue),
+          0 3px 10px rgba(0, 0, 0, 0.18);
+      }
+
+      /* Select2 override */
+      .select2-container--default .select2-selection--single {
+        height: 42px;
+        border: 1.5px solid var(--border);
+        border-radius: 9px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+      }
+      .select2-container--default
+        .select2-selection--single
+        .select2-selection__rendered {
+        line-height: 42px;
+        padding-left: 0.9rem;
+        padding-right: 2.2rem;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 0.83rem;
+        color: var(--text-main);
+      }
+      .select2-container--default
+        .select2-selection--single
+        .select2-selection__arrow {
+        height: 40px;
+        right: 8px;
+      }
+      .select2-container--default.select2-container--open
+        .select2-selection--single {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3.5px rgba(0, 114, 198, 0.11);
+      }
+      .select2-dropdown {
+        border: 1.5px solid var(--blue);
+        border-radius: 10px;
+        box-shadow: 0 8px 28px rgba(0, 40, 100, 0.13);
+        overflow: hidden;
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+      .select2-search--dropdown .select2-search__field {
+        border: 1.5px solid var(--border);
+        border-radius: 7px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 0.8rem;
+        padding: 0.38rem 0.65rem;
+        outline: none;
+      }
+      .select2-search--dropdown .select2-search__field:focus {
+        border-color: var(--blue);
+      }
+      .select2-results__option {
+        font-size: 0.82rem;
+        padding: 0.5rem 0.85rem;
+        color: var(--text-main);
+      }
+      .select2-results__option--highlighted {
+        background: var(--blue-soft) !important;
+        color: var(--blue) !important;
+      }
+      .select2-results__option[aria-selected="true"] {
+        background: rgba(0, 114, 198, 0.06);
+        color: var(--blue);
+        font-weight: 600;
+      }
+
+      /* ─── INFO BOX ─── */
+      .info-box {
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+        border-radius: 10px;
+        padding: 0.8rem 0.9rem;
+        margin-bottom: 0.85rem;
+      }
+      .info-box i {
+        flex-shrink: 0;
+        font-size: 0.95rem;
+        margin-top: 0.05rem;
+      }
+      .info-box p {
+        font-size: 0.76rem;
+        line-height: 1.6;
+        margin: 0;
+        color: inherit;
+      }
+      .ib-info {
+        background: rgba(0, 114, 198, 0.07);
+        border: 1px solid rgba(0, 114, 198, 0.18);
+        color: var(--blue-dark);
+      }
+      .ib-warn {
+        background: rgba(245, 158, 11, 0.07);
+        border: 1px solid rgba(245, 158, 11, 0.22);
+        color: #92600a;
+      }
+      .ib-success {
+        background: rgba(16, 185, 100, 0.07);
+        border: 1px solid rgba(16, 185, 100, 0.2);
+        color: #0a7a42;
+      }
+
+      /* ─── STAT STRIP ─── */
+      .stat-strip {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 0.95rem;
+      }
+      .ss-item {
+        padding: 0.65rem 0.5rem;
+        text-align: center;
+        border-right: 1px solid var(--border);
+      }
+      .ss-item:last-child {
+        border-right: none;
+      }
+      .ss-val {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--blue);
+      }
+      .ss-lbl {
+        font-size: 0.62rem;
+        color: var(--text-muted);
+        margin-top: 0.1rem;
+      }
+
+      /* ─── DIVIDER ─── */
+      .fdiv {
+        height: 1px;
+        background: var(--border);
+        margin: 0.85rem 0;
+      }
+      .s-head {
+        font-size: 0.73rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--blue);
+        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .s-head::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(0, 114, 198, 0.15);
+      }
+
+      /* ─── EMPTY STATE ─── */
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem 1.5rem;
+        text-align: center;
+        gap: 0.6rem;
+      }
+      .es-ico {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: var(--blue-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--blue);
+      }
+      .es-title {
+        font-family: "Playfair Display", serif;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+      .es-desc {
+        font-size: 0.77rem;
+        color: var(--text-muted);
+        line-height: 1.65;
+        max-width: 240px;
+      }
+
+      /* ─── MODAL ─── */
+      .modal-ov {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 15, 40, 0.55);
+        backdrop-filter: blur(7px);
+        z-index: 9000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .modal-ov.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .modal-box {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 30px 80px rgba(0, 20, 60, 0.25);
+        width: 100%;
+        max-width: 420px;
+        transform: scale(0.88) translateY(18px);
+        transition: transform 0.38s var(--ease);
+      }
+      .modal-ov.show .modal-box {
+        transform: scale(1) translateY(0);
+      }
+      .confirm-dialog {
+        padding: 2rem 1.8rem 1.6rem;
+        text-align: center;
+      }
+      .confirm-ring {
+        width: 62px;
+        height: 62px;
+        border-radius: 50%;
+        margin: 0 auto 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+      }
+      .cr-red {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: var(--red);
+      }
+      .confirm-ttl {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 0.35rem;
+      }
+      .confirm-desc {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        line-height: 1.65;
+        margin-bottom: 1.4rem;
+      }
+      .confirm-btns {
+        display: flex;
+        gap: 0.6rem;
+      }
+      .mbtn-cancel {
+        flex: 1;
+        padding: 0.62rem;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #f8f9fb;
+        color: var(--text-muted);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 0.83rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .mbtn-cancel:hover {
+        background: #edf0f5;
+      }
+      .mbtn-ok {
+        flex: 1;
+        padding: 0.62rem;
+        border-radius: 10px;
+        border: none;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 0.83rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: #fff;
+        background: linear-gradient(135deg, var(--red), #c0392b);
+        box-shadow: 0 4px 14px rgba(220, 53, 69, 0.28);
+      }
+
+      /* ─── SAVE BAR ─── */
+      .save-bar {
+        background: #fff;
+        border-top: 1px solid var(--border);
+        padding: 0.85rem 1.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        box-shadow: 0 -4px 24px rgba(0, 40, 100, 0.08);
+        position: sticky;
+        bottom: 0;
+        z-index: 800;
+      }
+      .save-info {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+      .save-info i {
+        color: var(--blue);
+      }
+      .save-btns {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      /* ─── FAB ─── */
+      .fab {
+        position: fixed;
+        right: 1.6rem;
+        bottom: 5rem;
+        width: 44px;
+        height: 44px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, var(--blue), var(--blue-light));
+        border: none;
+        color: #fff;
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 22px rgba(0, 114, 198, 0.4);
+        z-index: 700;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(20px) scale(0.85);
+        transition:
+          opacity 0.35s var(--ease),
+          transform 0.35s var(--ease);
+      }
+      .fab.vis {
+        opacity: 1;
+        pointer-events: all;
+        transform: translateY(0) scale(1);
+      }
+      .fab:hover {
+        transform: translateY(-3px) scale(1.06) !important;
+      }
+
+      /* ─── FOOTER ─── */
+      .footer {
+        background: #fff;
+        border-top: 1px solid var(--border);
+        padding: 1rem 1.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .foot-l {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+      .foot-l strong {
+        color: var(--blue);
+      }
+      .foot-r {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .foot-a {
+        font-size: 0.73rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.18s;
+      }
+      .foot-a:hover {
+        color: var(--blue);
+      }
+      .foot-sep {
+        color: var(--border);
+      }
+
+      /* ─── OVERLAY ─── */
+      .sb-ov {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 15, 40, 0.5);
+        z-index: 999;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .sb-ov.show {
+        display: block;
+        opacity: 1;
+      }
+
+      /* ═══ RESPONSIVE ═══ */
+      @media (min-width: 1400px) {
+        .content {
+          padding: 1.8rem 2.2rem;
+        }
+        .km-wrap {
+          grid-template-columns: 1fr 360px;
+        }
+      }
+      @media (min-width: 1200px) and (max-width: 1399px) {
+        .content {
+          padding: 1.5rem 1.8rem;
+        }
+      }
+      @media (min-width: 992px) and (max-width: 1199px) {
+        .content {
+          padding: 1.2rem 1.4rem;
+        }
+        .km-wrap {
+          grid-template-columns: 1fr 300px;
+        }
+      }
+      @media (max-width: 991px) {
+        .sidebar {
+          transform: translateX(-100%);
+          width: var(--sidebar-w) !important;
+          transition: transform var(--ease);
+        }
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+        .main {
+          margin-left: 0 !important;
+          max-width: 100vw !important;
+        }
+        .topbar {
+          padding: 0 1rem;
+        }
+        .content {
+          padding: 1rem;
+        }
+        .bb-right {
+          display: none;
+        }
+        .km-wrap {
+          grid-template-columns: 1fr;
+        }
+        .form-panel {
+          position: static;
+          order: -1;
+        }
+        .save-bar {
+          padding: 0.85rem 1rem;
+        }
+      }
+      @media (min-width: 576px) and (max-width: 767px) {
+        .content {
+          padding: 0.85rem;
+        }
+        .bb {
+          padding: 0.9rem 1rem;
+          border-radius: 12px;
+          margin-bottom: 1rem;
+        }
+        .bb-title {
+          font-size: 1rem;
+        }
+        .user-info {
+          display: none;
+        }
+        .topbar {
+          padding: 0 0.85rem;
+        }
+        .fg-row {
+          grid-template-columns: 1fr;
+        }
+        .save-bar {
+          flex-direction: column-reverse;
+          gap: 0.5rem;
+          padding: 0.75rem 0.85rem;
+        }
+        .save-info,
+        .save-btns {
+          width: 100%;
+        }
+        .save-btns {
+          justify-content: flex-end;
+        }
+      }
+      @media (max-width: 575px) {
+        .content {
+          padding: 0.6rem;
+          padding-bottom: 8.5rem;
+        }
+        .bb {
+          padding: 0.75rem 0.9rem;
+          border-radius: 10px;
+          margin-bottom: 0.85rem;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.3rem;
+        }
+        .bb-title {
+          font-size: 0.92rem;
+        }
+        .user-info {
+          display: none;
+        }
+        .topbar {
+          padding: 0 0.7rem;
+          gap: 0.45rem;
+        }
+        .card-body {
+          padding: 1rem;
+        }
+        .fg-row {
+          grid-template-columns: 1fr;
+        }
+        .save-bar {
+          flex-direction: column-reverse;
+          gap: 0.5rem;
+          padding: 0.65rem 0.75rem;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+        }
+        .save-info,
+        .save-btns {
+          width: 100%;
+        }
+        .save-btns .btn-p {
+          flex: 1;
+          justify-content: center;
+        }
+        .fab {
+          bottom: 8rem;
+        }
+        .icon-grid {
+          max-height: 110px;
+        }
+      }
+      @media (max-width: 400px) {
+        .content {
+          padding: 0.45rem;
+          padding-bottom: 9rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sb-ov" id="sbOv" onclick="closeMobile()"></div>
+
+    <!-- MODAL HAPUS -->
+    <div class="modal-ov" id="modDel">
+      <div class="modal-box">
+        <div class="confirm-dialog">
+          <div class="confirm-ring cr-red">
+            <i class="bi bi-trash3-fill"></i>
+          </div>
+          <div class="confirm-ttl">Hapus Menu Ini?</div>
+          <p class="confirm-desc">
+            Menu <strong id="delMenuName">–</strong> akan dihapus permanen
+            beserta semua sub-menu di dalamnya. Tindakan ini tidak dapat
+            dibatalkan.
+          </p>
+          <div class="confirm-btns">
+            <button class="mbtn-cancel" onclick="closeModal('modDel')">
+              Batal
+            </button>
+            <button class="mbtn-ok" onclick="doDelete()">
+              <i class="bi bi-trash3"></i> Hapus
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="shell">
+      <!-- ═══ SIDEBAR ═══ -->
+      <aside class="sidebar" id="sidebar">
+        <a class="sb-brand" href="dashboard-ppid.html">
+          <div class="sb-icon"><i class="bi bi-shield-lock-fill"></i></div>
+          <div class="sb-text">
+            <div class="sb-title">PPID Pekalongan</div>
+            <div class="sb-sub">Kota Pekalongan · v2.0</div>
+          </div>
+        </a>
+        <nav class="sb-scroll">
+          <div class="sb-iw">
+            <a href="dashboard-ppid.html" class="sb-link" data-tip="Dashboard"
+              ><i class="bi bi-grid-1x2-fill ico"></i
+              ><span class="lbl">Dashboard</span></a
+            >
+          </div>
+          <div class="sb-sec">Master Data</div>
+          <div class="sb-iw">
+            <a
+              href="admin-pengelola-ppid.html"
+              class="sb-link"
+              data-tip="Admin Pengelola"
+              ><i class="bi bi-person-badge-fill ico"></i
+              ><span class="lbl">Admin Pengelola</span></a
+            >
+          </div>
+          <div class="sb-iw">
+            <a href="akses-role-ppid.html" class="sb-link" data-tip="Akses Role"
+              ><i class="bi bi-shield-fill-check ico"></i
+              ><span class="lbl">Akses Role</span></a
+            >
+          </div>
+          <div class="sb-iw">
+            <a href="#" class="sb-link" data-tip="Pemohon"
+              ><i class="bi bi-people-fill ico"></i
+              ><span class="lbl">Pemohon</span></a
+            >
+          </div>
+          <div class="sb-iw">
+            <a href="#" class="sb-link" data-tip="Instansi"
+              ><i class="bi bi-building ico"></i
+              ><span class="lbl">Instansi / OPD</span></a
+            >
+          </div>
+          <div class="sb-sec">Kelompok Informasi</div>
+          <div class="sb-iw">
+            <a href="#" class="sb-link" data-tip="DIP"
+              ><i class="bi bi-folder2-open ico"></i
+              ><span class="lbl">Kelinfo DIP</span></a
+            >
+          </div>
+          <div class="sb-iw">
+            <a href="#" class="sb-link" data-tip="DIB"
+              ><i class="bi bi-folder-fill ico"></i
+              ><span class="lbl">Kelinfo DIB</span></a
+            >
+          </div>
+          <div class="sb-iw">
+            <a href="#" class="sb-link" data-tip="DIBS"
+              ><i class="bi bi-folder-symlink-fill ico"></i
+              ><span class="lbl">Kelinfo DIBS</span></a
+            >
+          </div>
+          <div class="sb-iw">
+            <a href="#" class="sb-link" data-tip="DIU"
+              ><i class="bi bi-archive-fill ico"></i
+              ><span class="lbl">Kelinfo DIU</span></a
+            >
+          </div>
+          <div class="sb-sec">Permohonan</div>
+          <div class="sb-iw">
+            <a
+              href="permohonan-masuk-ppid.html"
+              class="sb-link"
+              data-tip="Permohonan Masuk"
+              ><i class="bi bi-inbox-fill ico"></i
+              ><span class="lbl">Permohonan Masuk</span
+              ><span class="sb-badge">7</span></a
+            >
+          </div>
+          <div class="sb-iw">
+            <a href="#" class="sb-link" data-tip="Riwayat"
+              ><i class="bi bi-clock-history ico"></i
+              ><span class="lbl">Riwayat Permohonan</span></a
+            >
+          </div>
+          <div class="sb-iw">
+            <a href="#" class="sb-link" data-tip="Laporan"
+              ><i class="bi bi-bar-chart-fill ico"></i
+              ><span class="lbl">Laporan & Statistik</span></a
+            >
+          </div>
+          <div class="sb-sec">Konten Website</div>
+          <div class="sb-iw">
+            <a href="berita-ppid.html" class="sb-link" data-tip="Berita"
+              ><i class="bi bi-newspaper ico"></i
+              ><span class="lbl">Berita</span></a
+            >
+          </div>
+          <div class="sb-iw">
+            <a href="galeri-ppid.html" class="sb-link" data-tip="Galeri"
+              ><i class="bi bi-images ico"></i
+              ><span class="lbl">Galeri</span></a
+            >
+          </div>
+          <div class="sb-iw">
+            <a href="#" class="sb-link" data-tip="Infografis"
+              ><i class="bi bi-pie-chart-fill ico"></i
+              ><span class="lbl">Infografis</span></a
+            >
+          </div>
+          <div class="sb-iw">
+            <a
+              href="kelola-menu-ppid.html"
+              class="sb-link active"
+              data-tip="Kelola Menu"
+              ><i class="bi bi-list-nested ico"></i
+              ><span class="lbl">Kelola Menu</span></a
+            >
+          </div>
+          <div class="sb-sec">Pengaturan</div>
+          <div class="sb-iw">
+            <a href="pengaturan-ppid.html" class="sb-link" data-tip="Pengaturan"
+              ><i class="bi bi-gear-fill ico"></i
+              ><span class="lbl">Pengaturan Sistem</span></a
+            >
+          </div>
+        </nav>
+        <div class="sb-foot">
+          <div class="sb-foot-inner">
+            <div class="sb-ficon"><i class="bi bi-info-circle"></i></div>
+            <div class="sb-ftext">
+              <div class="sb-fver">Versi 2.0.1 — Stabil</div>
+              <div class="sb-fcopy">© 2025 PPID Kota Pekalongan</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ═══ MAIN ═══ -->
+      <div class="main" id="main">
+        <header class="topbar">
+          <button class="tog-btn" id="togBtn" onclick="toggleSB()">
+            <i class="bi bi-arrow-bar-left"></i>
+          </button>
+          <div class="tb-space"></div>
+          <div class="tb-right">
+            <button class="tb-ibtn">
+              <i class="bi bi-bell"></i><span class="notif-dot"></span>
+            </button>
+            <button class="tb-ibtn" onclick="toggleFS()">
+              <i class="bi bi-fullscreen" id="fsIco"></i>
+            </button>
+            <div class="user-menu">
+              <button
+                class="user-trig"
+                id="uTrig"
+                onclick="toggleUM()"
+                aria-expanded="false"
+              >
+                <div class="user-av">AS</div>
+                <div class="user-info">
+                  <div class="uname">Admin Sistem</div>
+                  <div class="urole">@admin.ppid</div>
+                </div>
+                <i class="bi bi-chevron-down user-caret"></i>
+              </button>
+              <div class="user-dd" id="uDD">
+                <a class="dd-item" href="profile-ppid.html"
+                  ><i class="bi bi-person-circle"></i>Profil Saya</a
+                >
+                <a class="dd-item" href="pengaturan-ppid.html"
+                  ><i class="bi bi-gear"></i>Pengaturan</a
+                >
+                <div class="dd-div"></div>
+                <button class="dd-item danger">
+                  <i class="bi bi-box-arrow-right"></i>Keluar
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="content">
+          <!-- BB -->
+          <div class="bb">
+            <div class="bb-left">
+              <div class="bb-title">Kelola Menu</div>
+              <div class="bb-desc">
+                Atur struktur, urutan, ikon, dan visibilitas menu navigasi
+                portal PPID
+              </div>
+            </div>
+            <div class="bb-right">
+              <div class="bc"><i class="bi bi-house-fill"></i> Home</div>
+              <span class="bc-sep">/</span>
+              <div class="bc cur">
+                <i class="bi bi-list-nested"></i> Kelola Menu
+              </div>
+            </div>
+          </div>
+
+          <!-- 2-COLUMN LAYOUT -->
+          <div class="km-wrap">
+            <!-- ══ KIRI: DAFTAR MENU TREE ══ -->
+            <div>
+              <!-- Card: tree -->
+              <div class="card">
+                <div class="card-head">
+                  <i class="bi bi-list-nested"></i>
+                  <h6>Struktur Menu</h6>
+                  <span
+                    style="
+                      font-size: 0.71rem;
+                      color: var(--text-muted);
+                      margin-left: auto;
+                    "
+                    id="menuCountLabel"
+                    >24 item</span
+                  >
+                  <button
+                    class="btn-p"
+                    style="
+                      font-size: 0.75rem;
+                      padding: 0.38rem 0.8rem;
+                      margin-left: 0.5rem;
+                    "
+                    onclick="addNewMenu()"
+                  >
+                    <i class="bi bi-plus-lg"></i> Tambah Menu
+                  </button>
+                </div>
+                <div class="card-body">
+                  <!-- toolbar -->
+                  <div class="toolbar">
+                    <div class="search-wrap">
+                      <i class="bi bi-search"></i>
+                      <input
+                        type="text"
+                        class="search-inp"
+                        placeholder="Cari menu…"
+                        id="menuSearchInp"
+                        oninput="filterMenuTree(this.value)"
+                      />
+                    </div>
+                    <select
+                      class="fsel-sm"
+                      onchange="filterByStatus(this.value)"
+                    >
+                      <option value="">Semua Status</option>
+                      <option value="active">Aktif</option>
+                      <option value="inactive">Nonaktif</option>
+                    </select>
+                    <button
+                      class="btn-ico"
+                      title="Expand semua"
+                      onclick="expandAll()"
+                    >
+                      <i class="bi bi-arrows-expand-vertical"></i>
+                    </button>
+                    <button
+                      class="btn-ico"
+                      title="Collapse semua"
+                      onclick="collapseAll()"
+                    >
+                      <i class="bi bi-arrows-collapse-vertical"></i>
+                    </button>
+                    <button
+                      class="btn-ico"
+                      title="Refresh"
+                      onclick="showToast('Struktur menu diperbarui.')"
+                    >
+                      <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                  </div>
+
+                  <!-- TREE -->
+                  <ul class="menu-tree" id="menuTree"></ul>
+                </div>
+              </div>
+              <!-- end card tree -->
+            </div>
+            <!-- end kiri -->
+
+            <!-- ══ KANAN: FORM PANEL ══ -->
+            <div class="form-panel">
+              <!-- Stats -->
+              <div class="card">
+                <div class="card-body" style="padding: 1rem 1.2rem">
+                  <div class="stat-strip">
+                    <div class="ss-item">
+                      <div class="ss-val" id="statTotal">24</div>
+                      <div class="ss-lbl">Total Menu</div>
+                    </div>
+                    <div class="ss-item">
+                      <div class="ss-val" id="statActive">21</div>
+                      <div class="ss-lbl">Aktif</div>
+                    </div>
+                    <div class="ss-item">
+                      <div class="ss-val" id="statGroup">6</div>
+                      <div class="ss-lbl">Grup</div>
+                    </div>
+                  </div>
+                  <div class="info-box ib-info" style="margin-bottom: 0">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <p>
+                      Klik menu di kiri untuk mengedit. Drag &amp; drop untuk
+                      mengubah urutan. Perubahan disimpan otomatis ke preview.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Edit Menu -->
+              <div class="card" id="formCard">
+                <div class="card-head">
+                  <i class="bi bi-pencil-fill" id="formCardIco"></i>
+                  <h6 id="formCardTitle">Tambah / Edit Menu</h6>
+                </div>
+                <div class="card-body">
+                  <div class="s-head">
+                    <i class="bi bi-info-circle"></i> Info Dasar
+                  </div>
+
+                  <div class="fg">
+                    <label class="fl"
+                      >Nama Menu <span class="req">*</span></label
+                    >
+                    <input
+                      type="text"
+                      class="fi"
+                      id="fName"
+                      placeholder="cth. Permohonan Informasi"
+                      oninput="markChanged()"
+                    />
+                  </div>
+
+                  <div class="fg">
+                    <label class="fl"
+                      >Label Tampilan
+                      <span
+                        class="tip"
+                        title="Teks yang muncul di navigasi publik"
+                        >?</span
+                      ></label
+                    >
+                    <input
+                      type="text"
+                      class="fi"
+                      id="fLabel"
+                      placeholder="cth. Ajukan Permohonan"
+                    />
+                  </div>
+
+                  <div class="fg">
+                    <label class="fl"
+                      >URL / Path <span class="req">*</span></label
+                    >
+                    <div class="fiw">
+                      <i class="bi bi-link-45deg fii"></i>
+                      <input
+                        type="text"
+                        class="fi icon-l"
+                        id="fUrl"
+                        placeholder="/permohonan"
+                        oninput="markChanged()"
+                      />
+                    </div>
+                    <p class="fh">
+                      Gunakan path relatif (cth. <code>/berita</code>) atau URL
+                      penuh.
+                    </p>
+                  </div>
+
+                  <div class="fg-row">
+                    <div class="fg" style="margin-bottom: 0">
+                      <label class="fl">Parent Menu</label>
+                      <select id="fParent" style="width: 100%">
+                        <option value="">— Tidak ada (Root) —</option>
+                      </select>
+                    </div>
+                    <div class="fg" style="margin-bottom: 0">
+                      <label class="fl">Urutan</label>
+                      <input
+                        type="number"
+                        class="fi"
+                        id="fOrder"
+                        value="1"
+                        min="1"
+                        max="99"
+                        oninput="markChanged()"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="fdiv"></div>
+                  <div class="s-head">
+                    <i class="bi bi-palette"></i> Tampilan
+                  </div>
+
+                  <!-- Icon picker -->
+                  <div class="fg">
+                    <label class="fl">Ikon</label>
+                    <div class="icon-picker-wrap">
+                      <div class="icon-preview" id="iconPreview">
+                        <i class="bi bi-grid" id="iconPreviewIco"></i>
+                      </div>
+                      <input
+                        type="text"
+                        class="fi"
+                        id="fIcon"
+                        placeholder="bi-grid"
+                        style="flex: 1"
+                        oninput="updateIconPreview(this.value)"
+                      />
+                    </div>
+                    <div class="icon-grid" id="iconGrid"></div>
+                  </div>
+
+                  <!-- Color picker -->
+                  <div class="fg">
+                    <label class="fl">Warna Aksen</label>
+                    <div class="color-row" id="colorPicker"></div>
+                  </div>
+
+                  <div class="fg-row">
+                    <div class="fg" style="margin-bottom: 0">
+                      <label class="fl">Target</label>
+                      <select class="fsel" id="fTarget">
+                        <option value="_self">Halaman Ini</option>
+                        <option value="_blank">Tab Baru</option>
+                      </select>
+                    </div>
+                    <div class="fg" style="margin-bottom: 0">
+                      <label class="fl">Visibilitas</label>
+                      <select class="fsel" id="fVisibility">
+                        <option value="all">Semua Pengguna</option>
+                        <option value="auth">Login Saja</option>
+                        <option value="guest">Tamu Saja</option>
+                        <option value="admin">Admin Saja</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="fdiv"></div>
+                  <div class="s-head"><i class="bi bi-toggles"></i> Opsi</div>
+
+                  <div
+                    style="display: flex; flex-direction: column; gap: 0.6rem"
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 0.7rem;
+                      "
+                    >
+                      <div>
+                        <div style="font-size: 0.82rem; font-weight: 600">
+                          Tampilkan di Navigasi
+                        </div>
+                        <div
+                          style="font-size: 0.7rem; color: var(--text-muted)"
+                        >
+                          Menu terlihat di portal publik
+                        </div>
+                      </div>
+                      <label class="tog"
+                        ><input
+                          type="checkbox"
+                          id="fVisible"
+                          checked
+                          onchange="markChanged()" /><span
+                          class="tog-slider"
+                        ></span
+                      ></label>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 0.7rem;
+                      "
+                    >
+                      <div>
+                        <div style="font-size: 0.82rem; font-weight: 600">
+                          Tampilkan di Footer
+                        </div>
+                        <div
+                          style="font-size: 0.7rem; color: var(--text-muted)"
+                        >
+                          Sertakan di navigasi footer
+                        </div>
+                      </div>
+                      <label class="tog"
+                        ><input
+                          type="checkbox"
+                          id="fFooter"
+                          onchange="markChanged()" /><span
+                          class="tog-slider"
+                        ></span
+                      ></label>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 0.7rem;
+                      "
+                    >
+                      <div>
+                        <div style="font-size: 0.82rem; font-weight: 600">
+                          Sorot sebagai Baru
+                        </div>
+                        <div
+                          style="font-size: 0.7rem; color: var(--text-muted)"
+                        >
+                          Tampilkan badge "Baru" di samping nama
+                        </div>
+                      </div>
+                      <label class="tog"
+                        ><input
+                          type="checkbox"
+                          id="fBadgeNew"
+                          onchange="markChanged()" /><span
+                          class="tog-slider"
+                        ></span
+                      ></label>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 0.7rem;
+                      "
+                    >
+                      <div>
+                        <div style="font-size: 0.82rem; font-weight: 600">
+                          Buka di Tab Baru
+                        </div>
+                        <div
+                          style="font-size: 0.7rem; color: var(--text-muted)"
+                        >
+                          Paksa buka link di tab browser baru
+                        </div>
+                      </div>
+                      <label class="tog"
+                        ><input
+                          type="checkbox"
+                          id="fNewTab"
+                          onchange="markChanged()" /><span
+                          class="tog-slider"
+                        ></span
+                      ></label>
+                    </div>
+                  </div>
+
+                  <div class="fdiv"></div>
+
+                  <!-- Action buttons -->
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
+                    <button
+                      class="btn-p"
+                      style="flex: 1; justify-content: center"
+                      onclick="saveMenu()"
+                    >
+                      <i class="bi bi-floppy-fill"></i> Simpan
+                    </button>
+                    <button class="btn-o" onclick="clearForm()">
+                      <i class="bi bi-x"></i> Batal
+                    </button>
+                    <button
+                      class="btn-ico red"
+                      id="btnDeleteForm"
+                      title="Hapus menu"
+                      onclick="promptDelete()"
+                      style="display: none"
+                    >
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- end form card -->
+            </div>
+            <!-- end kanan -->
+          </div>
+          <!-- end km-wrap -->
+        </main>
+
+        <!-- SAVE BAR -->
+        <div class="save-bar">
+          <div class="save-info" id="saveInfo">
+            <i class="bi bi-cloud-check-fill"></i> Semua perubahan tersimpan
+          </div>
+          <div class="save-btns">
+            <button class="btn-o" onclick="resetAll()">
+              <i class="bi bi-arrow-counterclockwise"></i> Reset Semua
+            </button>
+            <button class="btn-o" onclick="previewPortal()">
+              <i class="bi bi-eye"></i> Preview Portal
+            </button>
+            <button class="btn-p" onclick="publishMenus()">
+              <i class="bi bi-send-fill"></i> Publikasikan Perubahan
+            </button>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <div class="foot-l">
+            © 2025 <strong>PPID Kota Pekalongan</strong> — Sistem Informasi
+            Layanan Publik.
+          </div>
+          <div class="foot-r">
+            <a class="foot-a" href="#">Bantuan</a
+            ><span class="foot-sep">·</span>
+            <a class="foot-a" href="#">Dokumentasi</a
+            ><span class="foot-sep">·</span>
+            <a class="foot-a" href="#">Kontak</a>
+          </div>
+        </footer>
+      </div>
+      <!-- end main -->
+    </div>
+    <!-- end shell -->
+
+    <button
+      class="fab"
+      id="fab"
+      onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+    >
+      <i class="bi bi-arrow-up"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+      /* ══════════════════════════════════════
+         DATA
+         ══════════════════════════════════════ */
+      const COLORS = [
+        { hex: "#0072c6", name: "Biru" },
+        { hex: "#10b964", name: "Hijau" },
+        { hex: "#f59e0b", name: "Amber" },
+        { hex: "#dc3545", name: "Merah" },
+        { hex: "#7c3aed", name: "Ungu" },
+        { hex: "#0d9488", name: "Teal" },
+        { hex: "#64748b", name: "Abu" },
+        { hex: "#0f1c2e", name: "Gelap" },
+      ];
+
+      const ICONS = [
+        "bi-house-fill",
+        "bi-grid-1x2-fill",
+        "bi-newspaper",
+        "bi-images",
+        "bi-inbox-fill",
+        "bi-folder2-open",
+        "bi-folder-fill",
+        "bi-archive-fill",
+        "bi-clock-history",
+        "bi-bar-chart-fill",
+        "bi-pie-chart-fill",
+        "bi-people-fill",
+        "bi-person-badge-fill",
+        "bi-building",
+        "bi-gear-fill",
+        "bi-shield-fill-check",
+        "bi-list-nested",
+        "bi-info-circle-fill",
+        "bi-question-circle-fill",
+        "bi-telephone-fill",
+        "bi-envelope-fill",
+        "bi-map-fill",
+        "bi-file-earmark-text-fill",
+        "bi-download",
+        "bi-upload",
+        "bi-search",
+        "bi-bell-fill",
+        "bi-star-fill",
+        "bi-bookmark-fill",
+        "bi-chat-fill",
+        "bi-megaphone-fill",
+        "bi-award-fill",
+        "bi-calendar-event-fill",
+        "bi-camera-fill",
+        "bi-globe",
+        "bi-link-45deg",
+      ];
+
+      // Menu tree data
+      let menus = [
+        {
+          id: 1,
+          parent: 0,
+          name: "Beranda",
+          label: "Beranda",
+          url: "/",
+          icon: "bi-house-fill",
+          color: "#0072c6",
+          order: 1,
+          visible: true,
+          footer: true,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 2,
+          parent: 0,
+          name: "Profil",
+          label: "Profil",
+          url: "/profil",
+          icon: "bi-building",
+          color: "#0072c6",
+          order: 2,
+          visible: true,
+          footer: true,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 3,
+          parent: 2,
+          name: "Visi & Misi",
+          label: "Visi & Misi",
+          url: "/profil/visi-misi",
+          icon: "bi-star-fill",
+          color: "#0072c6",
+          order: 1,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 4,
+          parent: 2,
+          name: "Struktur Organisasi",
+          label: "Struktur Org.",
+          url: "/profil/struktur",
+          icon: "bi-diagram-3-fill",
+          color: "#0072c6",
+          order: 2,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 5,
+          parent: 2,
+          name: "Tugas & Fungsi",
+          label: "Tupoksi",
+          url: "/profil/tupoksi",
+          icon: "bi-list-check",
+          color: "#0072c6",
+          order: 3,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 6,
+          parent: 0,
+          name: "Informasi Publik",
+          label: "Informasi",
+          url: "/informasi",
+          icon: "bi-folder2-open",
+          color: "#10b964",
+          order: 3,
+          visible: true,
+          footer: true,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 7,
+          parent: 6,
+          name: "DIP (Berkala)",
+          label: "Info Berkala",
+          url: "/informasi/dip",
+          icon: "bi-folder-fill",
+          color: "#10b964",
+          order: 1,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 8,
+          parent: 6,
+          name: "DIB (Serta Merta)",
+          label: "Info Serta Merta",
+          url: "/informasi/dib",
+          icon: "bi-folder-symlink-fill",
+          color: "#10b964",
+          order: 2,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 9,
+          parent: 6,
+          name: "DIBS (Setiap Saat)",
+          label: "Info Setiap Saat",
+          url: "/informasi/dibs",
+          icon: "bi-archive-fill",
+          color: "#10b964",
+          order: 3,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 10,
+          parent: 6,
+          name: "DIU (Dikecualikan)",
+          label: "Info Dikecualikan",
+          url: "/informasi/diu",
+          icon: "bi-file-earmark-lock-fill",
+          color: "#f59e0b",
+          order: 4,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 11,
+          parent: 0,
+          name: "Permohonan",
+          label: "Ajukan Permohonan",
+          url: "/permohonan",
+          icon: "bi-inbox-fill",
+          color: "#7c3aed",
+          order: 4,
+          visible: true,
+          footer: true,
+          badgeNew: true,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 12,
+          parent: 11,
+          name: "Ajukan Online",
+          label: "Ajukan Online",
+          url: "/permohonan/online",
+          icon: "bi-globe",
+          color: "#7c3aed",
+          order: 1,
+          visible: true,
+          footer: false,
+          badgeNew: true,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 13,
+          parent: 11,
+          name: "Status Permohonan",
+          label: "Cek Status",
+          url: "/permohonan/status",
+          icon: "bi-search",
+          color: "#7c3aed",
+          order: 2,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 14,
+          parent: 11,
+          name: "Unduh Formulir",
+          label: "Unduh Form",
+          url: "/permohonan/formulir",
+          icon: "bi-download",
+          color: "#7c3aed",
+          order: 3,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 15,
+          parent: 0,
+          name: "Berita & Kegiatan",
+          label: "Berita",
+          url: "/berita",
+          icon: "bi-newspaper",
+          color: "#dc3545",
+          order: 5,
+          visible: true,
+          footer: true,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 16,
+          parent: 15,
+          name: "Semua Berita",
+          label: "Semua Berita",
+          url: "/berita/semua",
+          icon: "bi-list-ul",
+          color: "#dc3545",
+          order: 1,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 17,
+          parent: 15,
+          name: "Galeri Foto",
+          label: "Galeri",
+          url: "/berita/galeri",
+          icon: "bi-images",
+          color: "#dc3545",
+          order: 2,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 18,
+          parent: 15,
+          name: "Infografis",
+          label: "Infografis",
+          url: "/berita/infografis",
+          icon: "bi-pie-chart-fill",
+          color: "#dc3545",
+          order: 3,
+          visible: false,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "inactive",
+        },
+        {
+          id: 19,
+          parent: 0,
+          name: "Regulasi",
+          label: "Regulasi",
+          url: "/regulasi",
+          icon: "bi-journal-text",
+          color: "#0d9488",
+          order: 6,
+          visible: true,
+          footer: true,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 20,
+          parent: 19,
+          name: "Undang-Undang",
+          label: "UU",
+          url: "/regulasi/uu",
+          icon: "bi-file-earmark-text-fill",
+          color: "#0d9488",
+          order: 1,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 21,
+          parent: 19,
+          name: "Peraturan Daerah",
+          label: "Perda",
+          url: "/regulasi/perda",
+          icon: "bi-file-earmark-ruled-fill",
+          color: "#0d9488",
+          order: 2,
+          visible: true,
+          footer: false,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 22,
+          parent: 0,
+          name: "Kontak",
+          label: "Kontak Kami",
+          url: "/kontak",
+          icon: "bi-telephone-fill",
+          color: "#64748b",
+          order: 7,
+          visible: true,
+          footer: true,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 23,
+          parent: 0,
+          name: "FAQ",
+          label: "FAQ",
+          url: "/faq",
+          icon: "bi-question-circle-fill",
+          color: "#64748b",
+          order: 8,
+          visible: true,
+          footer: true,
+          badgeNew: false,
+          newTab: false,
+          status: "active",
+        },
+        {
+          id: 24,
+          parent: 0,
+          name: "Tautan Eksternal",
+          label: "Link Penting",
+          url: "https://pekalongan.go.id",
+          icon: "bi-link-45deg",
+          color: "#64748b",
+          order: 9,
+          visible: false,
+          footer: false,
+          badgeNew: false,
+          newTab: true,
+          status: "inactive",
+        },
+      ];
+
+      let selectedId = null;
+      let hasChanges = false;
+      let deleteTarget = null;
+
+      /* ══════════════════════════════════════
+         SIDEBAR / TOPBAR
+         ══════════════════════════════════════ */
+      const sidebar = document.getElementById("sidebar"),
+        mainEl = document.getElementById("main"),
+        togBtn = document.getElementById("togBtn"),
+        sbOv = document.getElementById("sbOv");
+      let collapsed = false;
+      const isMob = () => window.innerWidth <= 991;
+      function toggleSB() {
+        if (isMob()) {
+          const o = sidebar.classList.toggle("mobile-open");
+          sbOv.classList.toggle("show", o);
+        } else {
+          collapsed = !collapsed;
+          sidebar.classList.toggle("collapsed", collapsed);
+          mainEl.classList.toggle("collapsed", collapsed);
+          togBtn.classList.toggle("flip", collapsed);
+        }
+      }
+      function closeMobile() {
+        sidebar.classList.remove("mobile-open");
+        sbOv.classList.remove("show");
+      }
+      window.addEventListener("resize", () => {
+        if (!isMob()) closeMobile();
+      });
+      const uTrig = document.getElementById("uTrig"),
+        uDD = document.getElementById("uDD");
+      function toggleUM() {
+        const o = uDD.classList.toggle("open");
+        uTrig.setAttribute("aria-expanded", o);
+      }
+      document.addEventListener("click", (e) => {
+        if (!uTrig.contains(e.target) && !uDD.contains(e.target))
+          uDD.classList.remove("open");
+      });
+      function toggleFS() {
+        const ico = document.getElementById("fsIco");
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+          ico.className = "bi bi-fullscreen-exit";
+        } else {
+          document.exitFullscreen();
+          ico.className = "bi bi-fullscreen";
+        }
+      }
+      window.addEventListener("scroll", () =>
+        document.getElementById("fab").classList.toggle("vis", scrollY > 300),
+      );
+
+      /* ══════════════════════════════════════
+         RENDER TREE
+         ══════════════════════════════════════ */
+      function getChildren(parentId) {
+        return menus
+          .filter((m) => m.parent === parentId)
+          .sort((a, b) => a.order - b.order);
+      }
+
+      function renderTree(filter = "", statusFilter = "") {
+        const ul = document.getElementById("menuTree");
+        ul.innerHTML = "";
+        const roots = getChildren(0);
+        let total = 0;
+
+        roots.forEach((root) => {
+          const children = getChildren(root.id);
+          const matchRoot =
+            !filter ||
+            root.name.toLowerCase().includes(filter) ||
+            root.url.toLowerCase().includes(filter);
+          const matchChildren = children.filter(
+            (c) =>
+              !filter ||
+              c.name.toLowerCase().includes(filter) ||
+              c.url.toLowerCase().includes(filter),
+          );
+
+          if (filter && !matchRoot && matchChildren.length === 0) return;
+          if (statusFilter && root.status !== statusFilter) return;
+
+          total++;
+          const li = document.createElement("li");
+          li.className = "mt-group";
+
+          const hasKids = children.length > 0;
+          const expanded = true;
+
+          li.innerHTML = `
+            <div class="mt-group-head" onclick="toggleGroupTree('grpChildren_${root.id}', this)">
+              <span class="mt-group-arrow ${expanded ?? "open"}"><i class="bi bi-chevron-right"></i></span>
+              <div class="mt-group-icon" style="background:${root.color}18;color:${root.color}"><i class="bi ${root.icon || "bi-circle"}"></i></div>
+              <span class="mt-group-name">${root.name}</span>
+              ${!root.visible ? '<span class="badge b-slate"><span class="bdot"></span>Tersembunyi</span>' : ""}
+              ${root.badgeNew ? '<span class="badge b-green" style="font-size:.6rem;padding:.1rem .4rem">Baru</span>' : ""}
+              <span class="mt-group-count">${children.length} sub</span>
+            </div>`;
+
+          if (hasKids) {
+            const childUl = document.createElement("ul");
+            childUl.className = "mt-children open";
+            childUl.id = "grpChildren_" + root.id;
+
+            (filter ? matchChildren : children).forEach((child) => {
+              if (statusFilter && child.status !== statusFilter) return;
+              total++;
+              const cLi = document.createElement("li");
+              cLi.className =
+                "mt-item" + (selectedId === child.id ? " selected" : "");
+              cLi.dataset.id = child.id;
+              cLi.innerHTML = buildItemHTML(child);
+              cLi.onclick = (e) => {
+                if (
+                  !e.target.closest(".mi-actions") &&
+                  !e.target.closest(".mi-drag")
+                )
+                  selectMenu(child.id);
+              };
+              childUl.appendChild(cLi);
+            });
+            li.appendChild(childUl);
+          }
+
+          // root item itself as clickable row too
+          const rootItem = document.createElement("li");
+          rootItem.className =
+            "mt-item" + (selectedId === root.id ? " selected" : "");
+          rootItem.dataset.id = root.id;
+          rootItem.style.cssText = "margin-top:.18rem;margin-bottom:.12rem";
+          rootItem.innerHTML = buildItemHTML(root, true);
+          rootItem.onclick = (e) => {
+            if (
+              !e.target.closest(".mi-actions") &&
+              !e.target.closest(".mt-group-head") &&
+              !e.target.closest(".mi-drag")
+            )
+              selectMenu(root.id);
+          };
+
+          // insert root item before group head (inside li.mt-group, after .mt-group-head)
+          li.insertBefore(rootItem, li.querySelector(".mt-children") || null);
+
+          ul.appendChild(li);
+        });
+
+        document.getElementById("menuCountLabel").textContent = total + " item";
+        updateStats();
+      }
+
+      function buildItemHTML(m, isRoot = false) {
+        const orderBg = isRoot ? "rgba(0,114,198,0.12)" : "rgba(0,0,0,0.05)";
+        return `
+          <span class="mi-drag" title="Drag untuk atur ulang"><i class="bi bi-grip-vertical"></i></span>
+          <div class="mi-ico" style="background:${m.color}15;color:${m.color}"><i class="bi ${m.icon || "bi-circle"}"></i></div>
+          <div class="mi-body">
+            <div class="mi-name">${m.name}${m.badgeNew ? '<span class="badge b-green" style="font-size:.58rem;padding:.08rem .38rem;margin-left:.35rem">Baru</span>' : ""}</div>
+            <div class="mi-path">${m.url}</div>
+          </div>
+          ${!m.visible ? '<span class="badge b-slate" style="font-size:.62rem"><span class="bdot"></span>Hidden</span>' : ""}
+          <span class="mi-order" style="background:${orderBg}">${m.order}</span>
+          <div class="mi-actions">
+            <button class="btn-ico" title="Edit" onclick="event.stopPropagation();selectMenu(${m.id})"><i class="bi bi-pencil"></i></button>
+            <button class="btn-ico red" title="Hapus" onclick="event.stopPropagation();promptDelete(${m.id})"><i class="bi bi-trash3"></i></button>
+          </div>`;
+      }
+
+      function toggleGroupTree(childrenId, headEl) {
+        const ul = document.getElementById(childrenId);
+        if (!ul) return;
+        const arrow = headEl.querySelector(".mt-group-arrow");
+        const isOpen = ul.classList.toggle("open");
+        if (arrow) arrow.classList.toggle("open", isOpen);
+      }
+      function expandAll() {
+        document.querySelectorAll(".mt-children").forEach((u) => {
+          u.classList.add("open");
+        });
+        document
+          .querySelectorAll(".mt-group-arrow")
+          .forEach((a) => a.classList.add("open"));
+      }
+      function collapseAll() {
+        document.querySelectorAll(".mt-children").forEach((u) => {
+          u.classList.remove("open");
+        });
+        document
+          .querySelectorAll(".mt-group-arrow")
+          .forEach((a) => a.classList.remove("open"));
+      }
+
+      function filterMenuTree(q) {
+        renderTree(
+          q.toLowerCase(),
+          document.querySelector(".fsel-sm")?.value || "",
+        );
+      }
+      function filterByStatus(s) {
+        renderTree(
+          document.getElementById("menuSearchInp").value.toLowerCase(),
+          s,
+        );
+      }
+
+      function updateStats() {
+        document.getElementById("statTotal").textContent = menus.length;
+        document.getElementById("statActive").textContent = menus.filter(
+          (m) => m.visible,
+        ).length;
+        document.getElementById("statGroup").textContent = menus.filter(
+          (m) => m.parent === 0,
+        ).length;
+      }
+
+      /* ══════════════════════════════════════
+         SELECT / FORM
+         ══════════════════════════════════════ */
+      function selectMenu(id) {
+        selectedId = id;
+        const m = menus.find((x) => x.id === id);
+        if (!m) return;
+
+        document.getElementById("formCardTitle").textContent =
+          "Edit: " + m.name;
+        document.getElementById("formCardIco").className = "bi bi-pencil-fill";
+        document.getElementById("btnDeleteForm").style.display = "";
+
+        document.getElementById("fName").value = m.name;
+        document.getElementById("fLabel").value = m.label;
+        document.getElementById("fUrl").value = m.url;
+        document.getElementById("fOrder").value = m.order;
+        document.getElementById("fTarget").value = m.newTab
+          ? "_blank"
+          : "_self";
+        document.getElementById("fVisibility").value = "all";
+        document.getElementById("fVisible").checked = m.visible;
+        document.getElementById("fFooter").checked = m.footer;
+        document.getElementById("fBadgeNew").checked = m.badgeNew;
+        document.getElementById("fNewTab").checked = m.newTab;
+
+        // icon
+        document.getElementById("fIcon").value = m.icon || "";
+        updateIconPreview(m.icon || "");
+        document
+          .querySelectorAll(".icon-opt")
+          .forEach((o) =>
+            o.classList.toggle("picked", o.dataset.icon === m.icon),
+          );
+
+        // color
+        document
+          .querySelectorAll(".color-dot")
+          .forEach((d) =>
+            d.classList.toggle("picked", d.dataset.color === m.color),
+          );
+
+        // parent select2
+        $("#fParent")
+          .val(m.parent || "")
+          .trigger("change");
+
+        // re-render tree to show selection
+        renderTree(
+          document.getElementById("menuSearchInp").value.toLowerCase(),
+        );
+      }
+
+      function addNewMenu() {
+        selectedId = null;
+        document.getElementById("formCardTitle").textContent =
+          "Tambah Menu Baru";
+        document.getElementById("formCardIco").className =
+          "bi bi-plus-circle-fill";
+        document.getElementById("btnDeleteForm").style.display = "none";
+
+        document.getElementById("fName").value = "";
+        document.getElementById("fLabel").value = "";
+        document.getElementById("fUrl").value = "/";
+        document.getElementById("fOrder").value = menus.length + 1;
+        document.getElementById("fTarget").value = "_self";
+        document.getElementById("fVisibility").value = "all";
+        document.getElementById("fVisible").checked = true;
+        document.getElementById("fFooter").checked = false;
+        document.getElementById("fBadgeNew").checked = false;
+        document.getElementById("fNewTab").checked = false;
+        document.getElementById("fIcon").value = "bi-circle";
+        updateIconPreview("bi-circle");
+        document
+          .querySelectorAll(".icon-opt")
+          .forEach((o) => o.classList.remove("picked"));
+        document
+          .querySelectorAll(".color-dot")
+          .forEach((d) =>
+            d.classList.toggle("picked", d.dataset.color === "#0072c6"),
+          );
+        $("#fParent").val("").trigger("change");
+
+        document.getElementById("fName").focus();
+        document
+          .getElementById("formCard")
+          .scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function clearForm() {
+        selectedId = null;
+        document.getElementById("formCardTitle").textContent =
+          "Tambah / Edit Menu";
+        document.getElementById("btnDeleteForm").style.display = "none";
+        document.getElementById("fName").value = "";
+        document.getElementById("fUrl").value = "";
+        renderTree();
+      }
+
+      function saveMenu() {
+        const name = document.getElementById("fName").value.trim();
+        const url = document.getElementById("fUrl").value.trim();
+        if (!name) {
+          showToast("Nama menu tidak boleh kosong.");
+          return;
+        }
+        if (!url) {
+          showToast("URL / Path tidak boleh kosong.");
+          return;
+        }
+
+        const pickedColor =
+          document.querySelector(".color-dot.picked")?.dataset.color ||
+          "#0072c6";
+        const pickedIcon =
+          document.getElementById("fIcon").value || "bi-circle";
+        const parentVal = $("#fParent").val();
+
+        if (selectedId) {
+          const m = menus.find((x) => x.id === selectedId);
+          if (m) {
+            m.name = name;
+            m.label = document.getElementById("fLabel").value || name;
+            m.url = url;
+            m.order = parseInt(document.getElementById("fOrder").value) || 1;
+            m.parent = parseInt(parentVal) || 0;
+            m.icon = pickedIcon;
+            m.color = pickedColor;
+            m.visible = document.getElementById("fVisible").checked;
+            m.footer = document.getElementById("fFooter").checked;
+            m.badgeNew = document.getElementById("fBadgeNew").checked;
+            m.newTab = document.getElementById("fNewTab").checked;
+            m.status = m.visible ? "active" : "inactive";
+          }
+          showToast('Menu "' + name + '" berhasil diperbarui.');
+        } else {
+          const newId = Math.max(...menus.map((x) => x.id)) + 1;
+          menus.push({
+            id: newId,
+            parent: parseInt(parentVal) || 0,
+            name,
+            label: document.getElementById("fLabel").value || name,
+            url,
+            icon: pickedIcon,
+            color: pickedColor,
+            order: parseInt(document.getElementById("fOrder").value) || 1,
+            visible: document.getElementById("fVisible").checked,
+            footer: document.getElementById("fFooter").checked,
+            badgeNew: document.getElementById("fBadgeNew").checked,
+            newTab: document.getElementById("fNewTab").checked,
+            status: document.getElementById("fVisible").checked
+              ? "active"
+              : "inactive",
+          });
+          selectedId = newId;
+          showToast('Menu "' + name + '" berhasil ditambahkan.');
+        }
+        markSaved();
+        renderTree(
+          document.getElementById("menuSearchInp").value.toLowerCase(),
+        );
+        buildParentSelect();
+      }
+
+      /* ══════════════════════════════════════
+        DELETE
+         ══════════════════════════════════════ */
+      function promptDelete(id) {
+        deleteTarget = id || selectedId;
+        if (!deleteTarget) return;
+        const m = menus.find((x) => x.id === deleteTarget);
+        if (!m) return;
+        const childCount = menus.filter(
+          (x) => x.parent === deleteTarget,
+        ).length;
+        document.getElementById("delMenuName").textContent =
+          m.name + (childCount ? " (dan " + childCount + " sub-menu)" : "");
+        document.getElementById("modDel").classList.add("show");
+        document.body.style.overflow = "hidden";
+      }
+      function doDelete() {
+        if (!deleteTarget) return;
+        // remove children recursively
+        const removeIds = [deleteTarget];
+        let i = 0;
+        while (i < removeIds.length) {
+          menus
+            .filter((m) => m.parent === removeIds[i])
+            .forEach((c) => removeIds.push(c.id));
+          i++;
+        }
+        menus = menus.filter((m) => !removeIds.includes(m.id));
+        if (removeIds.includes(selectedId)) {
+          selectedId = null;
+          clearForm();
+        }
+        closeModal("modDel");
+        showToast("Menu berhasil dihapus.");
+        renderTree();
+        buildParentSelect();
+      }
+
+      /* ══════════════════════════════════════
+        ICON & COLOR PICKERS
+         ══════════════════════════════════════ */
+      function buildIconGrid() {
+        const grid = document.getElementById("iconGrid");
+        grid.innerHTML = "";
+        ICONS.forEach((ico) => {
+          const d = document.createElement("div");
+          d.className = "icon-opt";
+          d.dataset.icon = ico;
+          d.title = ico;
+          d.innerHTML = `<i class="bi ${ico}"></i>`;
+          d.onclick = () => {
+            document
+              .querySelectorAll(".icon-opt")
+              .forEach((o) => o.classList.remove("picked"));
+            d.classList.add("picked");
+            document.getElementById("fIcon").value = ico;
+            updateIconPreview(ico);
+            markChanged();
+          };
+          grid.appendChild(d);
+        });
+      }
+      function updateIconPreview(val) {
+        const ico = document.getElementById("iconPreviewIco");
+        ico.className = "bi " + (val || "bi-circle");
+      }
+
+      function buildColorPicker() {
+        const row = document.getElementById("colorPicker");
+        row.innerHTML = "";
+        COLORS.forEach((c) => {
+          const d = document.createElement("div");
+          d.className = "color-dot" + (c.hex === "#0072c6" ? " picked" : "");
+          d.dataset.color = c.hex;
+          d.title = c.name;
+          d.style.background = c.hex;
+          d.onclick = () => {
+            document
+              .querySelectorAll(".color-dot")
+              .forEach((x) => x.classList.remove("picked"));
+            d.classList.add("picked");
+            // update icon preview color
+            document.getElementById("iconPreview").style.color = c.hex;
+            markChanged();
+          };
+          row.appendChild(d);
+        });
+      }
+
+      /* ══════════════════════════════════════
+         PARENT SELECT2
+         ══════════════════════════════════════ */
+      function buildParentSelect() {
+        const sel = document.getElementById("fParent");
+        const prevVal = $(sel).val();
+        $(sel).empty().append('<option value="">— Tidak ada (Root) —</option>');
+        menus
+          .filter((m) => m.parent === 0)
+          .forEach((m) => {
+            $(sel).append(`<option value="${m.id}">${m.name}</option>`);
+          });
+        $(sel).val(prevVal).trigger("change");
+      }
+
+      /* ══════════════════════════════════════
+         SAVE BAR
+         ══════════════════════════════════════ */
+      function markChanged() {
+        hasChanges = true;
+        document.getElementById("saveInfo").innerHTML =
+          '<i class="bi bi-exclamation-circle-fill" style="color:var(--amber)"></i> Ada perubahan belum disimpan';
+      }
+      function markSaved() {
+        hasChanges = false;
+        document.getElementById("saveInfo").innerHTML =
+          '<i class="bi bi-cloud-check-fill" style="color:var(--green)"></i> Semua perubahan tersimpan';
+      }
+      function resetAll() {
+        renderTree();
+        showToast("Struktur menu direset.");
+        markSaved();
+      }
+      function previewPortal() {
+        showToast("Preview portal dibuka di tab baru.");
+      }
+      function publishMenus() {
+        document.getElementById("saveInfo").innerHTML =
+          '<i class="bi bi-arrow-repeat" style="animation:spin .7s linear infinite"></i> Mempublikasikan...';
+        setTimeout(() => {
+          markSaved();
+          showToast("✅ Menu berhasil dipublikasikan ke portal.");
+        }, 900);
+      }
+      const spinStyle = document.createElement("style");
+      spinStyle.textContent = "@keyframes spin{to{transform:rotate(360deg)}}";
+      document.head.appendChild(spinStyle);
+
+      /* ══════════════════════════════════════
+         MODAL
+         ══════════════════════════════════════ */
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("show");
+        document.body.style.overflow = "";
+      }
+      document.querySelectorAll(".modal-ov").forEach((m) =>
+        m.addEventListener("click", (e) => {
+          if (e.target === m) closeModal(m.id);
+        }),
+      );
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape")
+          document
+            .querySelectorAll(".modal-ov.show")
+            .forEach((m) => closeModal(m.id));
+      });
+
+      /* ══════════════════════════════════════
+         TOAST
+         ══════════════════════════════════════ */
+      function showToast(msg) {
+        const t = document.createElement("div");
+        t.textContent = msg;
+        Object.assign(t.style, {
+          position: "fixed",
+          bottom: "1.5rem",
+          left: "50%",
+          transform: "translateX(-50%) translateY(20px)",
+          background: "#0f1c2e",
+          color: "#fff",
+          padding: ".6rem 1.2rem",
+          borderRadius: "10px",
+          fontSize: ".82rem",
+          fontWeight: "600",
+          zIndex: "9999",
+          opacity: "0",
+          transition: "all .3s",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.28)",
+          whiteSpace: "nowrap",
+        });
+        document.body.appendChild(t);
+        requestAnimationFrame(() => {
+          t.style.opacity = "1";
+          t.style.transform = "translateX(-50%) translateY(0)";
+        });
+        setTimeout(() => {
+          t.style.opacity = "0";
+          t.style.transform = "translateX(-50%) translateY(8px)";
+          setTimeout(() => t.remove(), 400);
+        }, 2400);
+      }
+
+      /* ══════════════════════════════════════
+         INIT
+         ══════════════════════════════════════ */
+      $(document).ready(function () {
+        buildIconGrid();
+        buildColorPicker();
+        renderTree();
+        buildParentSelect();
+        $("#fParent").select2({
+          placeholder: "— Tidak ada (Root) —",
+          allowClear: true,
+          width: "100%",
+          dropdownParent: document.getElementById("formCard"),
+        });
+      });
+    </script>
+  </body>
+</html>
