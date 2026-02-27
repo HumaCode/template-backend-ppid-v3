@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Kelola Role — PPID Kota Pekalongan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--blue:#0072c6;--blue-dark:#005499;--blue-deep:#003d70;--blue-light:#1a8fe0;--blue-soft:rgba(0,114,198,0.08);--sidebar-w:260px;--sidebar-col:68px;--topbar-h:64px;--sidebar-bg:#001f42;--content-bg:#f0f4f9;--card-bg:#fff;--text-main:#0f1c2e;--text-muted:#6b7a8d;--border:rgba(0,0,0,0.07);--shadow:0 2px 16px rgba(0,50,100,0.08);--shadow-lg:0 8px 32px rgba(0,30,100,0.13);--ease:.28s cubic-bezier(.22,1,.36,1);--r:14px;--inp-h:42px;--green:#10b964;--amber:#f59e0b;--red:#dc3545;--purple:#7c3aed;--teal:#0d9488;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--content-bg);color:var(--text-main);min-height:100vh}
+    .shell{display:flex;min-height:100vh;width:100%;overflow-x:hidden}
+    .main{flex:1;margin-left:var(--sidebar-w);display:flex;flex-direction:column;min-height:100vh;min-width:0;max-width:calc(100vw - var(--sidebar-w));transition:margin-left var(--ease),max-width var(--ease)}
+    .main.collapsed{margin-left:var(--sidebar-col);max-width:calc(100vw - var(--sidebar-col))}
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:1000;overflow:hidden;transition:width var(--ease);box-shadow:4px 0 24px rgba(0,18,50,0.18)}
+    .sidebar.collapsed{width:var(--sidebar-col)}
+    .sb-brand{display:flex;align-items:center;gap:.85rem;padding:1.3rem 1.1rem 1.2rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.07);min-height:var(--topbar-h);text-decoration:none;overflow:hidden;flex-shrink:0}
+    .sb-icon{width:38px;height:38px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,114,198,0.45);animation:iconPulse 3s ease-in-out infinite}
+    .sb-icon i{font-size:1.1rem;color:#fff}
+    @keyframes iconPulse{0%,100%{box-shadow:0 4px 14px rgba(0,114,198,0.45)}50%{box-shadow:0 6px 22px rgba(0,114,198,0.7)}}
+    .sb-text{overflow:hidden;white-space:nowrap}
+    .sb-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;line-height:1.15}
+    .sb-sub{font-size:.65rem;color:rgba(255,255,255,0.4);letter-spacing:.04em}
+    .sb-scroll{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;padding:.8rem 0}
+    .sb-scroll::-webkit-scrollbar{width:3px}
+    .sb-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+    .sb-sec{font-size:.6rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,0.28);padding:1rem 1.25rem .35rem;white-space:nowrap;overflow:hidden;transition:opacity var(--ease)}
+    .sidebar.collapsed .sb-sec{opacity:0}
+    .sb-iw{padding:.08rem .7rem}
+    .sb-link{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:10px;text-decoration:none;color:rgba(255,255,255,0.5);font-size:.84rem;font-weight:500;white-space:nowrap;overflow:hidden;transition:background var(--ease),color var(--ease);position:relative}
+    .sb-link .ico{font-size:1.05rem;flex-shrink:0;width:20px;text-align:center}
+    .sb-link .lbl{flex:1;overflow:hidden;text-overflow:ellipsis;transition:opacity var(--ease),max-width var(--ease)}
+    .sb-link:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.88)}
+    .sb-link.active{background:linear-gradient(90deg,rgba(0,114,198,0.35),rgba(0,114,198,0.1));color:#fff;box-shadow:inset 3px 0 0 var(--blue)}
+    .sb-link.active .ico{color:#7ecbff}
+    .sb-badge{background:var(--blue);color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .42rem;border-radius:100px;flex-shrink:0}
+    .sidebar.collapsed .lbl,.sidebar.collapsed .sb-badge{opacity:0;max-width:0;overflow:hidden}
+    .sidebar.collapsed .sb-link{justify-content:center;padding:.65rem}
+    .sidebar.collapsed .sb-iw{padding-left:.5rem;padding-right:.5rem}
+    .sidebar.collapsed .sb-link[data-tip]::after{content:attr(data-tip);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);background:#0d2340;color:#fff;font-size:.74rem;padding:.3rem .7rem;border-radius:7px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9999}
+    .sidebar.collapsed .sb-link[data-tip]:hover::after{opacity:1}
+    .sb-foot{padding:.9rem 1rem;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+    .sb-foot-inner{display:flex;align-items:center;gap:.7rem;overflow:hidden}
+    .sb-ficon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .sb-ficon i{font-size:.9rem;color:rgba(255,255,255,0.4)}
+    .sb-ftext{overflow:hidden;white-space:nowrap}
+    .sb-fver{font-size:.68rem;color:rgba(255,255,255,0.25)}
+    .sb-fcopy{font-size:.63rem;color:rgba(255,255,255,0.18)}
+    .sidebar.collapsed .sb-ftext{opacity:0;max-width:0}
+    .topbar{height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;position:sticky;top:0;z-index:900;box-shadow:0 1px 12px rgba(0,40,100,0.06);gap:1rem}
+    .tog-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:1.05rem;transition:background .2s,color .2s,transform .3s;flex-shrink:0}
+    .tog-btn:hover{background:var(--blue-soft);color:var(--blue)}
+    .tog-btn.flip{transform:rotate(180deg)}
+    .tb-space{flex:1}
+    .tb-right{display:flex;align-items:center;gap:.6rem}
+    .tb-ibtn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:1rem;transition:background .2s,color .2s;position:relative}
+    .tb-ibtn:hover{background:var(--blue-soft);color:var(--blue)}
+    .notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#e84242;border:1.5px solid #fff;animation:notifPulse 1.8s ease-in-out infinite}
+    @keyframes notifPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,66,66,.5)}50%{box-shadow:0 0 0 5px rgba(232,66,66,0)}}
+    .user-menu{position:relative}
+    .user-trig{display:flex;align-items:center;gap:.6rem;padding:.35rem .65rem .35rem .45rem;border-radius:10px;border:1px solid var(--border);background:transparent;cursor:pointer;transition:background .2s}
+    .user-trig:hover{background:var(--blue-soft)}
+    .user-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;font-weight:700;flex-shrink:0;box-shadow:0 2px 8px rgba(0,114,198,0.4)}
+    .user-info .uname{font-size:.8rem;font-weight:600;color:var(--text-main);line-height:1.2}
+    .user-info .urole{font-size:.68rem;color:var(--text-muted)}
+    .user-caret{font-size:.7rem;color:var(--text-muted);transition:transform .25s}
+    .user-trig[aria-expanded="true"] .user-caret{transform:rotate(180deg)}
+    .user-dd{position:absolute;right:0;top:calc(100% + 8px);min-width:190px;background:#fff;border:1px solid var(--border);border-radius:13px;box-shadow:0 10px 40px rgba(0,40,100,0.13);padding:.45rem;display:none;z-index:999;animation:dropIn .25s var(--ease)}
+    .user-dd.open{display:block}
+    @keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .dd-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;border-radius:8px;font-size:.82rem;color:var(--text-main);text-decoration:none;cursor:pointer;transition:background .18s;font-weight:500;border:none;background:none;width:100%;text-align:left}
+    .dd-item i{font-size:.95rem;color:var(--text-muted);width:18px}
+    .dd-item:hover{background:var(--blue-soft);color:var(--blue)}
+    .dd-item.danger:hover{background:rgba(220,50,50,0.06);color:#c0392b}
+    .dd-div{height:1px;background:var(--border);margin:.35rem 0}
+    .content{flex:1;padding:1.6rem;position:relative;width:100%;overflow-x:hidden}
+    .content::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(0,100,200,0.04) 1px,transparent 0);background-size:28px 28px;pointer-events:none;z-index:0}
+    .bb{background:linear-gradient(120deg,var(--blue-deep) 0%,var(--blue) 55%,var(--blue-light) 100%);border-radius:16px;padding:1.3rem 1.6rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:relative;overflow:hidden;box-shadow:0 8px 28px rgba(0,114,198,0.28);z-index:1}
+    .bb::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.06);top:-60px;right:80px}
+    .bb::after{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.06);bottom:-40px;right:20px}
+    .bb-left{position:relative;z-index:1}
+    .bb-title{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:#fff;margin-bottom:.18rem}
+    .bb-desc{font-size:.78rem;color:rgba(255,255,255,0.6);font-weight:300}
+    .bb-right{display:flex;align-items:center;gap:.35rem;position:relative;z-index:1;flex-wrap:wrap}
+    .bc{display:flex;align-items:center;gap:.3rem;font-size:.78rem;color:rgba(255,255,255,0.7);font-weight:500}
+    .bc.cur{color:#fff;font-weight:600}
+    .bc-sep{color:rgba(255,255,255,0.35)}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.3rem;position:relative;z-index:1}
+    .stat-card{background:var(--card-bg);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);padding:1.1rem 1.2rem;display:flex;align-items:center;gap:.9rem;animation:fadeUp .4s var(--ease) both;transition:transform .22s,box-shadow .22s}
+    .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+    .stat-card:nth-child(1){animation-delay:.04s}.stat-card:nth-child(2){animation-delay:.08s}.stat-card:nth-child(3){animation-delay:.12s}.stat-card:nth-child(4){animation-delay:.16s}
+    .sc-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+    .sc-body{flex:1;min-width:0}
+    .sc-val{font-size:1.55rem;font-weight:800;color:var(--text-main);line-height:1}
+    .sc-lbl{font-size:.73rem;color:var(--text-muted);margin-top:.18rem}
+    .card{background:var(--card-bg);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;position:relative;z-index:1;animation:fadeUp .4s var(--ease) .1s both;margin-bottom:1.3rem}
+    .card:last-child{margin-bottom:0}
+    .card-head{padding:.95rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+    .card-head i{color:var(--blue);font-size:1rem;flex-shrink:0}
+    .card-head h6{font-size:.9rem;font-weight:700;color:var(--text-main);margin:0;flex:1;min-width:0}
+    .btn-p{display:inline-flex;align-items:center;gap:.42rem;padding:.5rem 1rem;border-radius:9px;border:none;background:linear-gradient(135deg,var(--blue),var(--blue-light));color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(0,114,198,0.28);transition:transform .2s,box-shadow .2s;white-space:nowrap;text-decoration:none}
+    .btn-p:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(0,114,198,0.38);color:#fff}
+    .btn-o{display:inline-flex;align-items:center;gap:.4rem;padding:.46rem .9rem;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer;transition:background .2s,color .2s,border-color .2s;white-space:nowrap;text-decoration:none}
+    .btn-o:hover{background:var(--blue-soft);color:var(--blue);border-color:rgba(0,114,198,0.3)}
+    .btn-o.red:hover{background:rgba(220,53,69,0.07);color:var(--red);border-color:rgba(220,53,69,0.28)}
+    .btn-ico{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:.84rem;transition:background .18s,color .18s,border-color .18s;flex-shrink:0}
+    .btn-ico:hover{background:var(--blue-soft);color:var(--blue);border-color:rgba(0,114,198,0.28)}
+    .btn-ico.red:hover{background:rgba(220,53,69,0.07);color:var(--red);border-color:rgba(220,53,69,0.25)}
+    .btn-ico.amber:hover{background:rgba(245,158,11,0.07);color:#d97706;border-color:rgba(245,158,11,0.28)}
+    .btn-ico.green:hover{background:rgba(16,185,100,0.07);color:var(--green);border-color:rgba(16,185,100,0.25)}
+    .toolbar{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;padding:.95rem 1.3rem;border-bottom:1px solid var(--border)}
+    .search-wrap{position:relative;flex:1;min-width:180px;max-width:280px}
+    .search-wrap i{position:absolute;left:.78rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.84rem;pointer-events:none}
+    .search-inp{width:100%;height:38px;border:1.5px solid var(--border);border-radius:9px;padding:0 .9rem 0 2.25rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;color:var(--text-main);background:#fff;outline:none;transition:border-color .2s,box-shadow .2s}
+    .search-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,114,198,0.1)}
+    .search-inp::placeholder{color:#b0bac7}
+    .fsel-sm{height:38px;border:1.5px solid var(--border);border-radius:9px;padding:0 .75rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;color:var(--text-main);background:#fff;outline:none;cursor:pointer;transition:border-color .2s}
+    .fsel-sm:focus{border-color:var(--blue)}
+    .tb-ml{margin-left:auto;display:flex;align-items:center;gap:.5rem}
+    .badge{display:inline-flex;align-items:center;gap:.22rem;padding:.22rem .62rem;border-radius:100px;font-size:.68rem;font-weight:700;white-space:nowrap}
+    .badge .bdot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+    .b-blue{background:rgba(0,114,198,0.1);color:var(--blue)}.b-blue .bdot{background:var(--blue)}
+    .b-green{background:rgba(16,185,100,0.1);color:var(--green)}.b-green .bdot{background:var(--green)}
+    .b-amber{background:rgba(245,158,11,0.1);color:#d97706}.b-amber .bdot{background:var(--amber)}
+    .b-red{background:rgba(220,53,69,0.1);color:var(--red)}.b-red .bdot{background:var(--red)}
+    .b-purple{background:rgba(124,58,237,0.1);color:var(--purple)}.b-purple .bdot{background:var(--purple)}
+    .b-teal{background:rgba(13,148,136,0.1);color:var(--teal)}.b-teal .bdot{background:var(--teal)}
+    .b-slate{background:rgba(100,116,139,0.1);color:#64748b}.b-slate .bdot{background:#64748b}
+    /* PERM PILLS */
+    .pp{display:inline-flex;align-items:center;gap:.2rem;padding:.18rem .52rem;border-radius:100px;font-size:.63rem;font-weight:700;white-space:nowrap}
+    .pp-c{background:rgba(16,185,100,0.1);color:var(--green);border:1px solid rgba(16,185,100,0.18)}
+    .pp-r{background:rgba(0,114,198,0.1);color:var(--blue);border:1px solid rgba(0,114,198,0.18)}
+    .pp-u{background:rgba(245,158,11,0.1);color:#d97706;border:1px solid rgba(245,158,11,0.18)}
+    .pp-d{background:rgba(220,53,69,0.1);color:var(--red);border:1px solid rgba(220,53,69,0.18)}
+    .pp-e{background:rgba(124,58,237,0.1);color:var(--purple);border:1px solid rgba(124,58,237,0.18)}
+    /* ROLE ICON */
+    .rico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+    .ri-b{background:rgba(0,114,198,0.12);color:var(--blue)}
+    .ri-g{background:rgba(16,185,100,0.12);color:var(--green)}
+    .ri-a{background:rgba(245,158,11,0.12);color:#d97706}
+    .ri-r{background:rgba(220,53,69,0.12);color:var(--red)}
+    .ri-p{background:rgba(124,58,237,0.12);color:var(--purple)}
+    .ri-t{background:rgba(13,148,136,0.12);color:var(--teal)}
+    .ri-s{background:rgba(100,116,139,0.12);color:#64748b}
+    /* SYS TAG */
+    .stag{display:inline-flex;align-items:center;gap:.22rem;font-size:.62rem;font-weight:700;padding:.14rem .5rem;border-radius:100px}
+    .stag-sys{background:rgba(0,114,198,0.08);color:var(--blue);border:1px solid rgba(0,114,198,0.15)}
+    .stag-cust{background:rgba(13,148,136,0.08);color:var(--teal);border:1px solid rgba(13,148,136,0.15)}
+    /* TABLE */
+    .tbl-wrap{overflow-x:auto;scrollbar-width:thin;scrollbar-color:rgba(0,114,198,0.18) transparent}
+    .tbl-wrap::-webkit-scrollbar{height:4px}
+    .tbl-wrap::-webkit-scrollbar-thumb{background:rgba(0,114,198,0.2);border-radius:4px}
+    table.rt{width:100%;border-collapse:collapse;min-width:900px}
+    table.rt thead tr{background:#f8fafd;border-bottom:2px solid var(--border)}
+    table.rt thead th{padding:.75rem 1rem;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);white-space:nowrap;user-select:none}
+    table.rt thead th.sort{cursor:pointer}
+    table.rt thead th.sort:hover{color:var(--blue)}
+    table.rt thead th.sort::after{content:'\F287';font-family:'bootstrap-icons';font-size:.7rem;margin-left:.3rem;opacity:.35}
+    table.rt thead th.asc::after{content:'\F235';opacity:1;color:var(--blue)}
+    table.rt thead th.desc::after{content:'\F236';opacity:1;color:var(--blue)}
+    table.rt thead th:first-child{padding-left:1.3rem}
+    table.rt thead th:last-child{padding-right:1.3rem;text-align:center}
+    table.rt tbody tr{border-bottom:1px solid var(--border);transition:background .18s;animation:fadeUp .35s var(--ease) both}
+    table.rt tbody tr:last-child{border-bottom:none}
+    table.rt tbody tr:hover{background:#f5f9ff}
+    table.rt tbody td{padding:.88rem 1rem;font-size:.83rem;color:var(--text-main);vertical-align:middle}
+    table.rt tbody td:first-child{padding-left:1.3rem}
+    table.rt tbody td:last-child{padding-right:1.3rem}
+    .td-no{font-size:.72rem;color:var(--text-muted);font-weight:600;width:40px}
+    .role-cell{display:flex;align-items:center;gap:.65rem}
+    .role-name{font-size:.85rem;font-weight:700;color:var(--text-main)}
+    .role-slug{font-size:.68rem;font-family:monospace;color:var(--text-muted);margin-top:.06rem}
+    .td-desc{max-width:200px}
+    .td-desc-t{font-size:.79rem;color:var(--text-muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .perms-cell{display:flex;flex-wrap:wrap;gap:.28rem;min-width:160px}
+    .users-cell{display:flex;align-items:center;gap:.45rem}
+    .av-stack{display:flex}
+    .av-item{width:26px;height:26px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff;margin-left:-8px;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,0.12)}
+    .av-item:first-child{margin-left:0}
+    .av-more{background:#e2e8f0;color:#64748b!important;font-size:.58rem!important}
+    .uc-num{font-size:.9rem;font-weight:800;color:var(--text-main)}
+    .uc-lbl{font-size:.68rem;color:var(--text-muted)}
+    .td-actions{display:flex;align-items:center;gap:.35rem;white-space:nowrap}
+    .td-date{font-size:.75rem;color:var(--text-muted);white-space:nowrap}
+    /* empty row */
+    .empty-row td{text-align:center;padding:3rem 1rem!important}
+    .empty-inline{display:flex;flex-direction:column;align-items:center;gap:.55rem}
+    .es-ico-s{width:52px;height:52px;border-radius:14px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--blue)}
+    .es-ttl-s{font-size:.88rem;font-weight:700;color:var(--text-main)}
+    .es-dsc-s{font-size:.75rem;color:var(--text-muted)}
+    /* pager */
+    .pager{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.65rem;padding:.9rem 1.3rem;border-top:1px solid var(--border)}
+    .pager-info{font-size:.78rem;color:var(--text-muted)}
+    .pager-info strong{color:var(--text-main)}
+    .pager-btns{display:flex;align-items:center;gap:.3rem}
+    .pg-btn{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--text-muted);transition:background .18s,color .18s,border-color .18s}
+    .pg-btn:hover{background:var(--blue-soft);color:var(--blue);border-color:rgba(0,114,198,0.28)}
+    .pg-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue-light));color:#fff;border-color:var(--blue);box-shadow:0 3px 10px rgba(0,114,198,0.3)}
+    .pg-btn:disabled{opacity:.4;cursor:not-allowed}
+    /* modal */
+    .modal-ov{position:fixed;inset:0;background:rgba(0,15,40,0.55);backdrop-filter:blur(8px);z-index:9000;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .3s}
+    .modal-ov.show{opacity:1;pointer-events:all}
+    .modal-box{background:#fff;border-radius:18px;box-shadow:0 30px 80px rgba(0,20,60,0.28);width:100%;transform:scale(.88) translateY(20px);transition:transform .38s var(--ease);overflow:hidden;max-height:calc(100vh - 2rem);display:flex;flex-direction:column}
+    .modal-ov.show .modal-box{transform:scale(1) translateY(0)}
+    .modal-sm{max-width:420px}
+    .modal-md{max-width:560px}
+    .modal-lg{max-width:700px}
+    .modal-head{padding:1.2rem 1.5rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:.7rem;flex-shrink:0}
+    .mh-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+    .mhi-b{background:rgba(0,114,198,0.1);color:var(--blue)}
+    .mhi-r{background:rgba(220,53,69,0.1);color:var(--red)}
+    .mhi-g{background:rgba(16,185,100,0.1);color:var(--green)}
+    .mhi-a{background:rgba(245,158,11,0.1);color:#d97706}
+    .modal-head h4{font-size:.97rem;font-weight:700;color:var(--text-main);margin:0;flex:1}
+    .modal-head p{font-size:.73rem;color:var(--text-muted);margin:.1rem 0 0}
+    .modal-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:.88rem;transition:background .18s;flex-shrink:0}
+    .modal-close:hover{background:rgba(220,53,69,0.07);color:var(--red)}
+    .modal-body{padding:1.3rem 1.5rem;overflow-y:auto;flex:1}
+    .modal-foot{padding:.95rem 1.5rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:.55rem;flex-wrap:wrap;flex-shrink:0}
+    .fg{margin-bottom:.9rem}
+    .fg:last-child{margin-bottom:0}
+    .fl{font-size:.78rem;font-weight:700;color:var(--text-main);margin-bottom:.32rem;display:flex;align-items:center;gap:.28rem}
+    .fl .req{color:var(--red);font-size:.7rem}
+    .fh{font-size:.7rem;color:var(--text-muted);line-height:1.5;margin-top:.25rem}
+    .fi,.fsel,.fta{width:100%;border:1.5px solid var(--border);border-radius:9px;background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;color:var(--text-main);outline:none;transition:border-color .2s,box-shadow .2s}
+    .fi{height:var(--inp-h);padding:0 .9rem}
+    .fi::placeholder,.fta::placeholder{color:#b0bac7}
+    .fi:focus,.fsel:focus,.fta:focus{border-color:var(--blue);box-shadow:0 0 0 3.5px rgba(0,114,198,0.11)}
+    .fsel{height:var(--inp-h);padding:0 .9rem;cursor:pointer}
+    .fta{padding:.75rem .9rem;resize:vertical;min-height:80px;line-height:1.65}
+    .fg-row{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+    /* perm matrix */
+    .perm-matrix{border:1.5px solid var(--border);border-radius:10px;overflow:hidden}
+    .pm-row{display:flex;align-items:center;padding:.62rem .9rem;border-bottom:1px solid var(--border);gap:.75rem;transition:background .18s}
+    .pm-row:last-child{border-bottom:none}
+    .pm-row:hover{background:#f8fafd}
+    .pm-hd{background:#f8fafd!important}
+    .pm-mod{flex:1;font-size:.82rem;font-weight:600;color:var(--text-main);display:flex;align-items:center;gap:.45rem}
+    .pm-mod i{color:var(--blue);font-size:.88rem}
+    .pm-hd .pm-mod{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);font-weight:700}
+    .pm-checks{display:flex;align-items:center;gap:.7rem;flex-shrink:0}
+    .pm-col{display:flex;flex-direction:column;align-items:center;gap:.2rem;width:44px}
+    .pm-col input[type=checkbox]{width:16px;height:16px;cursor:pointer;border-radius:4px}
+    .pm-col-lbl{font-size:.58rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-muted)}
+    /* confirm */
+    .confirm-wrap{text-align:center;padding:1.8rem 1.6rem 1.4rem}
+    .confirm-ring{width:64px;height:64px;border-radius:50%;margin:0 auto .9rem;display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+    .cr-red{background:linear-gradient(135deg,#fee2e2,#fecaca);color:var(--red)}
+    .cr-amber{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#d97706}
+    .confirm-ttl{font-size:1rem;font-weight:700;color:var(--text-main);margin-bottom:.35rem}
+    .confirm-desc{font-size:.8rem;color:var(--text-muted);line-height:1.68;margin-bottom:1.4rem}
+    .confirm-btns{display:flex;gap:.6rem}
+    .mbtn-c{flex:1;padding:.62rem;border-radius:10px;border:1px solid var(--border);background:#f8f9fb;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer}
+    .mbtn-c:hover{background:#edf0f5}
+    .mbtn-ok{flex:1;padding:.62rem;border-radius:10px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:.83rem;font-weight:700;cursor:pointer;color:#fff;transition:transform .2s}
+    .mbtn-ok:hover{transform:translateY(-1px)}
+    .mbtn-red{background:linear-gradient(135deg,var(--red),#c0392b);box-shadow:0 4px 14px rgba(220,53,69,0.28)}
+    .mbtn-amber{background:linear-gradient(135deg,var(--amber),#b45309);box-shadow:0 4px 14px rgba(245,158,11,0.28)}
+    .mbtn-blue{background:linear-gradient(135deg,var(--blue),var(--blue-light));box-shadow:0 4px 14px rgba(0,114,198,0.28)}
+    /* misc */
+    .sb-ov{position:fixed;inset:0;background:rgba(0,15,40,0.5);z-index:999;display:none;opacity:0;transition:opacity .3s}
+    .sb-ov.show{display:block;opacity:1}
+    .fab{position:fixed;right:1.6rem;bottom:1.8rem;width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--blue-light));border:none;color:#fff;font-size:1.05rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(0,114,198,0.4);z-index:700;opacity:0;pointer-events:none;transform:translateY(20px) scale(.85);transition:opacity .35s var(--ease),transform .35s var(--ease)}
+    .fab.vis{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
+    .fab:hover{transform:translateY(-3px) scale(1.06)!important}
+    .footer{background:#fff;border-top:1px solid var(--border);padding:1rem 1.6rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+    .foot-l{font-size:.75rem;color:var(--text-muted)}
+    .foot-l strong{color:var(--blue)}
+    .foot-r{display:flex;align-items:center;gap:.5rem}
+    .foot-a{font-size:.73rem;color:var(--text-muted);text-decoration:none;transition:color .18s}
+    .foot-a:hover{color:var(--blue)}
+    .foot-sep{color:var(--border)}
+    @media(max-width:991px){.sidebar{transform:translateX(-100%);width:var(--sidebar-w)!important;transition:transform var(--ease)}.sidebar.mobile-open{transform:translateX(0)}.main{margin-left:0!important;max-width:100vw!important}.topbar{padding:0 1rem}.content{padding:1rem}.bb-right{display:none}.stats-row{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:767px){.content{padding:.9rem}.bb{padding:.9rem 1rem;border-radius:12px}.bb-title{font-size:1rem}.user-info{display:none}.stats-row{grid-template-columns:repeat(2,1fr)}.fg-row{grid-template-columns:1fr}}
+    @media(max-width:575px){.content{padding:.65rem}.bb{flex-direction:column;align-items:flex-start;gap:.3rem;padding:.75rem .9rem;border-radius:10px;margin-bottom:.9rem}.bb-title{font-size:.92rem}.user-info{display:none}.stats-row{grid-template-columns:1fr 1fr;gap:.65rem}.sc-val{font-size:1.3rem}.toolbar{gap:.45rem}.search-wrap{max-width:100%;flex:1;min-width:0}.pm-checks{gap:.35rem}}
+  </style>
+</head>
+<body>
+<div class="sb-ov" id="sbOv" onclick="closeMobile()"></div>
+
+<!-- MODAL: TAMBAH / EDIT ROLE -->
+<div class="modal-ov" id="mForm">
+  <div class="modal-box modal-lg">
+    <div class="modal-head">
+      <div class="mh-ico mhi-b" id="mhIco"><i class="bi bi-shield-fill-check"></i></div>
+      <div style="flex:1;min-width:0"><h4 id="mhTitle">Tambah Role Baru</h4><p id="mhDesc">Buat role dengan konfigurasi izin akses tersendiri</p></div>
+      <button class="modal-close" onclick="closeModal('mForm')"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="fg-row" style="margin-bottom:.9rem">
+        <div class="fg" style="margin-bottom:0"><label class="fl">Nama Role <span class="req">*</span></label><input type="text" class="fi" id="fNama" placeholder="cth. Editor Berita"/></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">Slug / Kode <span class="req">*</span></label><input type="text" class="fi" id="fSlug" placeholder="cth. editor-berita"/><p class="fh">Huruf kecil, tanpa spasi</p></div>
+      </div>
+      <div class="fg"><label class="fl">Deskripsi</label><textarea class="fta" id="fDesc" rows="2" placeholder="Jelaskan fungsi dan tanggung jawab role ini…"></textarea></div>
+      <div class="fg-row" style="margin-bottom:1rem">
+        <div class="fg" style="margin-bottom:0"><label class="fl">Tipe Role</label><select class="fsel" id="fTipe"><option value="custom">Custom Role</option><option value="system">System Role</option></select></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">Warna Ikon</label><select class="fsel" id="fWarna"><option value="b">Biru</option><option value="g">Hijau</option><option value="p">Ungu</option><option value="t">Teal</option><option value="a">Amber</option><option value="r">Merah</option><option value="s">Abu-abu</option></select></div>
+      </div>
+      <div class="fg">
+        <label class="fl"><i class="bi bi-key-fill" style="color:var(--blue)"></i> Konfigurasi Izin Akses</label>
+        <div class="perm-matrix">
+          <div class="pm-row pm-hd">
+            <div class="pm-mod">Modul</div>
+            <div class="pm-checks">
+              <div class="pm-col"><div class="pm-col-lbl" style="color:var(--green)">Create</div></div>
+              <div class="pm-col"><div class="pm-col-lbl" style="color:var(--blue)">Read</div></div>
+              <div class="pm-col"><div class="pm-col-lbl" style="color:#d97706">Update</div></div>
+              <div class="pm-col"><div class="pm-col-lbl" style="color:var(--red)">Delete</div></div>
+              <div class="pm-col"><div class="pm-col-lbl" style="color:var(--purple)">Export</div></div>
+            </div>
+          </div>
+          <div id="permRows"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-o" onclick="closeModal('mForm')"><i class="bi bi-x"></i> Batal</button>
+      <button class="btn-p" onclick="saveRole()"><i class="bi bi-check-lg"></i> Simpan Role</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: HAPUS -->
+<div class="modal-ov" id="mHapus">
+  <div class="modal-box modal-sm">
+    <div class="confirm-wrap">
+      <div class="confirm-ring cr-red"><i class="bi bi-trash3-fill"></i></div>
+      <div class="confirm-ttl">Hapus Role?</div>
+      <p class="confirm-desc">Role <strong id="hapusNama">—</strong> akan dihapus permanen. Pengguna dengan role ini akan kehilangan hak akses mereka.</p>
+      <div class="confirm-btns">
+        <button class="mbtn-c" onclick="closeModal('mHapus')">Batal</button>
+        <button class="mbtn-ok mbtn-red" onclick="doHapus()"><i class="bi bi-trash3"></i> Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TOGGLE STATUS -->
+<div class="modal-ov" id="mToggle">
+  <div class="modal-box modal-sm">
+    <div class="confirm-wrap">
+      <div class="confirm-ring cr-amber"><i class="bi bi-exclamation-triangle-fill"></i></div>
+      <div class="confirm-ttl" id="tglTtl">Nonaktifkan Role?</div>
+      <p class="confirm-desc" id="tglDesc">—</p>
+      <div class="confirm-btns">
+        <button class="mbtn-c" onclick="closeModal('mToggle')">Batal</button>
+        <button class="mbtn-ok mbtn-amber" onclick="doToggle()" id="tglOkBtn">Nonaktifkan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DETAIL -->
+<div class="modal-ov" id="mDetail">
+  <div class="modal-box modal-lg">
+    <div class="modal-head">
+      <div class="mh-ico mhi-b" id="dtlIco"><i class="bi bi-shield-fill-check"></i></div>
+      <div style="flex:1;min-width:0"><h4 id="dtlNama">—</h4><p id="dtlMeta">—</p></div>
+      <button class="modal-close" onclick="closeModal('mDetail')"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:1.1rem">
+        <div style="background:#f8fafd;border-radius:10px;padding:.85rem 1rem;border:1px solid var(--border)"><div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.3rem">Slug</div><div style="font-family:monospace;font-size:.85rem;font-weight:700" id="dtlSlug">—</div></div>
+        <div style="background:#f8fafd;border-radius:10px;padding:.85rem 1rem;border:1px solid var(--border)"><div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.3rem">Total Pengguna</div><div style="font-size:1.1rem;font-weight:800" id="dtlUsers">—</div></div>
+        <div style="background:#f8fafd;border-radius:10px;padding:.85rem 1rem;border:1px solid var(--border)"><div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.3rem">Tipe</div><div id="dtlTipe">—</div></div>
+        <div style="background:#f8fafd;border-radius:10px;padding:.85rem 1rem;border:1px solid var(--border)"><div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.3rem">Dibuat</div><div style="font-size:.82rem" id="dtlTgl">—</div></div>
+      </div>
+      <div style="margin-bottom:.65rem"><div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.5rem">Deskripsi</div><div style="font-size:.83rem;color:var(--text-muted);line-height:1.7" id="dtlDesc">—</div></div>
+      <div><div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.55rem">Izin Akses</div><div id="dtlPerms" style="display:flex;flex-wrap:wrap;gap:.4rem"></div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-o" onclick="closeModal('mDetail')"><i class="bi bi-x"></i> Tutup</button>
+      <button class="btn-p" id="dtlEditBtn"><i class="bi bi-pencil"></i> Edit Role</button>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="sb-brand" href="dashboard-ppid.html">
+      <div class="sb-icon"><i class="bi bi-shield-lock-fill"></i></div>
+      <div class="sb-text"><div class="sb-title">PPID Pekalongan</div><div class="sb-sub">Kota Pekalongan · v2.0</div></div>
+    </a>
+    <nav class="sb-scroll">
+      <div class="sb-iw"><a href="dashboard-ppid.html" class="sb-link" data-tip="Dashboard"><i class="bi bi-grid-1x2-fill ico"></i><span class="lbl">Dashboard</span></a></div>
+      <div class="sb-sec">Master Data</div>
+      <div class="sb-iw"><a href="admin-pengelola-ppid.html" class="sb-link" data-tip="Admin Pengelola"><i class="bi bi-person-badge-fill ico"></i><span class="lbl">Admin Pengelola</span></a></div>
+      <div class="sb-iw"><a href="role-ppid.html" class="sb-link active" data-tip="Kelola Role"><i class="bi bi-shield-fill-check ico"></i><span class="lbl">Kelola Role</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Pemohon"><i class="bi bi-people-fill ico"></i><span class="lbl">Pemohon</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Instansi"><i class="bi bi-building ico"></i><span class="lbl">Instansi / OPD</span></a></div>
+      <div class="sb-sec">Kelompok Informasi</div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIP"><i class="bi bi-folder2-open ico"></i><span class="lbl">Kelinfo DIP</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIB"><i class="bi bi-folder-fill ico"></i><span class="lbl">Kelinfo DIB</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIBS"><i class="bi bi-folder-symlink-fill ico"></i><span class="lbl">Kelinfo DIBS</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="DIU"><i class="bi bi-archive-fill ico"></i><span class="lbl">Kelinfo DIU</span></a></div>
+      <div class="sb-sec">Permohonan</div>
+      <div class="sb-iw"><a href="permohonan-masuk-ppid.html" class="sb-link" data-tip="Permohonan Masuk"><i class="bi bi-inbox-fill ico"></i><span class="lbl">Permohonan Masuk</span><span class="sb-badge">7</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Riwayat"><i class="bi bi-clock-history ico"></i><span class="lbl">Riwayat Permohonan</span></a></div>
+      <div class="sb-iw"><a href="#" class="sb-link" data-tip="Laporan"><i class="bi bi-bar-chart-fill ico"></i><span class="lbl">Laporan &amp; Statistik</span></a></div>
+      <div class="sb-sec">Konten Website</div>
+      <div class="sb-iw"><a href="berita-ppid.html" class="sb-link" data-tip="Berita"><i class="bi bi-newspaper ico"></i><span class="lbl">Berita</span></a></div>
+      <div class="sb-iw"><a href="galeri-ppid.html" class="sb-link" data-tip="Galeri"><i class="bi bi-images ico"></i><span class="lbl">Galeri</span></a></div>
+      <div class="sb-iw"><a href="infografis-ppid.html" class="sb-link" data-tip="Infografis"><i class="bi bi-pie-chart-fill ico"></i><span class="lbl">Infografis</span></a></div>
+      <div class="sb-iw"><a href="kelola-menu-ppid.html" class="sb-link" data-tip="Kelola Menu"><i class="bi bi-list-nested ico"></i><span class="lbl">Kelola Menu</span></a></div>
+      <div class="sb-sec">Pengaturan</div>
+      <div class="sb-iw"><a href="pengaturan-ppid.html" class="sb-link" data-tip="Pengaturan"><i class="bi bi-gear-fill ico"></i><span class="lbl">Pengaturan Sistem</span></a></div>
+    </nav>
+    <div class="sb-foot"><div class="sb-foot-inner"><div class="sb-ficon"><i class="bi bi-info-circle"></i></div><div class="sb-ftext"><div class="sb-fver">Versi 2.0.1 — Stabil</div><div class="sb-fcopy">© 2025 PPID Kota Pekalongan</div></div></div></div>
+  </aside>
+
+  <div class="main" id="main">
+    <header class="topbar">
+      <button class="tog-btn" id="togBtn" onclick="toggleSB()"><i class="bi bi-arrow-bar-left"></i></button>
+      <div class="tb-space"></div>
+      <div class="tb-right">
+        <button class="tb-ibtn"><i class="bi bi-bell"></i><span class="notif-dot"></span></button>
+        <button class="tb-ibtn" onclick="toggleFS()"><i class="bi bi-fullscreen" id="fsIco"></i></button>
+        <div class="user-menu">
+          <button class="user-trig" id="uTrig" onclick="toggleUM()" aria-expanded="false">
+            <div class="user-av">AS</div>
+            <div class="user-info"><div class="uname">Admin Sistem</div><div class="urole">@admin.ppid</div></div>
+            <i class="bi bi-chevron-down user-caret"></i>
+          </button>
+          <div class="user-dd" id="uDD">
+            <a class="dd-item" href="profile-ppid.html"><i class="bi bi-person-circle"></i>Profil Saya</a>
+            <a class="dd-item" href="pengaturan-ppid.html"><i class="bi bi-gear"></i>Pengaturan</a>
+            <div class="dd-div"></div>
+            <button class="dd-item danger"><i class="bi bi-box-arrow-right"></i>Keluar</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="bb">
+        <div class="bb-left">
+          <div class="bb-title">Kelola Role</div>
+          <div class="bb-desc">Manajemen role, hak akses, dan izin modul pengguna sistem PPID</div>
+        </div>
+        <div class="bb-right">
+          <div class="bc"><i class="bi bi-house-fill"></i> Home</div>
+          <span class="bc-sep">/</span>
+          <div class="bc">Master Data</div>
+          <span class="bc-sep">/</span>
+          <div class="bc cur"><i class="bi bi-shield-fill-check"></i> Kelola Role</div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(0,114,198,0.1);color:var(--blue)"><i class="bi bi-shield-fill-check"></i></div><div class="sc-body"><div class="sc-val" id="stTotal">7</div><div class="sc-lbl">Total Role</div></div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(16,185,100,0.1);color:var(--green)"><i class="bi bi-toggle-on"></i></div><div class="sc-body"><div class="sc-val" id="stAktif">6</div><div class="sc-lbl">Role Aktif</div></div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(124,58,237,0.1);color:var(--purple)"><i class="bi bi-lock-fill"></i></div><div class="sc-body"><div class="sc-val">2</div><div class="sc-lbl">System Role</div></div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(245,158,11,0.1);color:#d97706"><i class="bi bi-people-fill"></i></div><div class="sc-body"><div class="sc-val">47</div><div class="sc-lbl">Total Pengguna</div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <i class="bi bi-shield-fill-check"></i>
+          <h6>Daftar Role</h6>
+          <span class="badge b-blue" id="totalBadge" style="margin-left:auto"><span class="bdot"></span><span id="totalBadgeTxt">7 role</span></span>
+          <button class="btn-p" style="font-size:.78rem;padding:.42rem .9rem" onclick="openTambah()"><i class="bi bi-plus-lg"></i> Tambah Role</button>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-wrap"><i class="bi bi-search"></i><input type="text" class="search-inp" id="qInp" placeholder="Cari nama atau slug role…" oninput="doFilter()"/></div>
+          <select class="fsel-sm" id="fTipe2" onchange="doFilter()"><option value="">Semua Tipe</option><option value="system">System Role</option><option value="custom">Custom Role</option></select>
+          <select class="fsel-sm" id="fStat" onchange="doFilter()"><option value="">Semua Status</option><option value="aktif">Aktif</option><option value="nonaktif">Nonaktif</option></select>
+          <div class="tb-ml"><button class="btn-o" onclick="doExport()"><i class="bi bi-download"></i> Ekspor</button></div>
+        </div>
+
+        <div class="tbl-wrap">
+          <table class="rt">
+            <thead>
+              <tr>
+                <th class="td-no">#</th>
+                <th class="sort" id="sh-nama" onclick="doSort('nama')">Nama Role</th>
+                <th>Deskripsi</th>
+                <th>Tipe</th>
+                <th>Izin Akses</th>
+                <th class="sort" id="sh-users" onclick="doSort('users')">Pengguna</th>
+                <th>Status</th>
+                <th class="sort" id="sh-tgl" onclick="doSort('tgl')">Dibuat</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="rTbody"></tbody>
+          </table>
+        </div>
+
+        <div class="pager">
+          <div class="pager-info" id="pgInfo">Menampilkan <strong>1–7</strong> dari <strong>7</strong> role</div>
+          <div class="pager-btns" id="pgBtns"></div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="foot-l">© 2025 <strong>PPID Kota Pekalongan</strong> — Sistem Informasi Layanan Publik.</div>
+      <div class="foot-r"><a class="foot-a" href="#">Bantuan</a><span class="foot-sep">·</span><a class="foot-a" href="#">Kebijakan</a><span class="foot-sep">·</span><a class="foot-a" href="#">Kontak</a></div>
+    </footer>
+  </div>
+</div>
+<button class="fab" id="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="bi bi-arrow-up"></i></button>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const MODS=[{k:'dashboard',l:'Dashboard',i:'bi-grid-1x2-fill'},{k:'berita',l:'Berita',i:'bi-newspaper'},{k:'galeri',l:'Galeri',i:'bi-images'},{k:'infografis',l:'Infografis',i:'bi-pie-chart-fill'},{k:'permohonan',l:'Permohonan',i:'bi-inbox-fill'},{k:'pengelola',l:'Admin Pengelola',i:'bi-person-badge-fill'},{k:'role',l:'Kelola Role',i:'bi-shield-fill-check'},{k:'menu',l:'Kelola Menu',i:'bi-list-nested'},{k:'pengaturan',l:'Pengaturan Sistem',i:'bi-gear-fill'}];
+const PALL=['create','read','update','delete','export'];
+const PM={create:{cls:'pp-c',ico:'bi-plus-circle-fill'},read:{cls:'pp-r',ico:'bi-eye-fill'},update:{cls:'pp-u',ico:'bi-pencil-fill'},delete:{cls:'pp-d',ico:'bi-trash3-fill'},export:{cls:'pp-e',ico:'bi-download'}};
+const WC={b:'ri-b',g:'ri-g',a:'ri-a',r:'ri-r',p:'ri-p',t:'ri-t',s:'ri-s'};
+const WI={b:'bi-shield-fill-check',g:'bi-shield-fill-check',a:'bi-person-plus-fill',r:'bi-eye-fill',p:'bi-pen-fill',t:'bi-headset',s:'bi-person-check-fill'};
+const AV_COLORS=['#0072c6','#10b964','#7c3aed','#0d9488','#f59e0b','#dc3545','#64748b','#1a8fe0'];
+
+let roles=[
+  {id:1,nama:'Super Admin',slug:'super-admin',tipe:'system',w:'b',desc:'Akses penuh ke seluruh fitur dan pengaturan sistem tanpa batasan apapun.',perms:{dashboard:['read'],berita:['create','read','update','delete','export'],galeri:['create','read','update','delete','export'],infografis:['create','read','update','delete','export'],permohonan:['create','read','update','delete','export'],pengelola:['create','read','update','delete'],role:['create','read','update','delete'],menu:['create','read','update','delete'],pengaturan:['read','update']},users:3,status:'aktif',tgl:'01 Jan 2024'},
+  {id:2,nama:'Admin',slug:'admin',tipe:'system',w:'g',desc:'Pengelolaan konten, permohonan, dan pengguna — kecuali pengaturan sistem.',perms:{dashboard:['read'],berita:['create','read','update','delete'],galeri:['create','read','update','delete'],infografis:['create','read','update','delete'],permohonan:['create','read','update','delete','export'],pengelola:['create','read','update'],role:['read'],menu:['read','update'],pengaturan:[]},users:7,status:'aktif',tgl:'01 Jan 2024'},
+  {id:3,nama:'Editor',slug:'editor',tipe:'custom',w:'p',desc:'Membuat dan mengedit konten berita, galeri, dan infografis.',perms:{dashboard:['read'],berita:['create','read','update'],galeri:['create','read','update'],infografis:['create','read','update'],permohonan:['read'],pengelola:[],role:[],menu:['read'],pengaturan:[]},users:12,status:'aktif',tgl:'15 Mar 2024'},
+  {id:4,nama:'Operator',slug:'operator',tipe:'custom',w:'t',desc:'Pemrosesan dan respon permohonan informasi dari masyarakat.',perms:{dashboard:['read'],berita:['read'],galeri:['read'],infografis:['read'],permohonan:['read','update','export'],pengelola:[],role:[],menu:[],pengaturan:[]},users:8,status:'aktif',tgl:'10 Apr 2024'},
+  {id:5,nama:'Kontributor',slug:'kontributor',tipe:'custom',w:'a',desc:'Mengajukan draft konten untuk diperiksa dan disetujui editor.',perms:{dashboard:['read'],berita:['create','read'],galeri:['create','read'],infografis:['create','read'],permohonan:[],pengelola:[],role:[],menu:[],pengaturan:[]},users:5,status:'aktif',tgl:'22 Mei 2024'},
+  {id:6,nama:'Viewer',slug:'viewer',tipe:'custom',w:'r',desc:'Hanya dapat melihat data tanpa akses edit atau hapus apapun.',perms:{dashboard:['read'],berita:['read'],galeri:['read'],infografis:['read'],permohonan:['read'],pengelola:[],role:[],menu:[],pengaturan:[]},users:15,status:'aktif',tgl:'01 Jun 2024'},
+  {id:7,nama:'Auditor',slug:'auditor',tipe:'custom',w:'s',desc:'Akses baca dan ekspor laporan untuk kebutuhan audit dan evaluasi.',perms:{dashboard:['read'],berita:['read','export'],galeri:['read'],infografis:['read','export'],permohonan:['read','export'],pengelola:[],role:['read'],menu:[],pengaturan:[]},users:2,status:'nonaktif',tgl:'14 Ags 2024'},
+];
+
+let filtered=[...roles],curPage=1,PER=10,sortCol=null,sortDir=1,delId=null,tglId=null,editId=null;
+
+function flatPerms(r){const s=new Set();Object.values(r.perms).forEach(a=>a.forEach(p=>s.add(p)));return[...s];}
+
+function renderTable(){
+  const tbody=document.getElementById('rTbody');
+  tbody.innerHTML='';
+  const start=(curPage-1)*PER, slice=filtered.slice(start,start+PER);
+  if(!filtered.length){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="9"><div class="empty-inline"><div class="es-ico-s"><i class="bi bi-shield-slash"></i></div><div class="es-ttl-s">Role Tidak Ditemukan</div><div class="es-dsc-s">Tidak ada role yang cocok dengan filter.</div></div></td></tr>';
+    updatePager(0);return;
+  }
+  slice.forEach((r,i)=>{
+    const no=start+i+1, fps=flatPerms(r);
+    const PO=['create','read','update','delete','export'];
+    const sp=fps.sort((a,b)=>PO.indexOf(a)-PO.indexOf(b));
+    const MAX=3;
+    let pills=sp.slice(0,MAX).map(p=>`<span class="pp ${PM[p].cls}"><i class="bi ${PM[p].ico}"></i>${p}</span>`).join('');
+    if(sp.length>MAX)pills+=`<span class="pp pp-r">+${sp.length-MAX}</span>`;
+    if(!pills)pills='<span style="font-size:.72rem;color:var(--text-muted)">—</span>';
+
+    // avatar stack (use deterministic colors from id)
+    const cnt=Math.min(r.users,4);
+    let av='<div class="av-stack">';
+    for(let j=0;j<Math.min(cnt,3);j++){const c=AV_COLORS[(r.id*3+j)%AV_COLORS.length];av+=`<div class="av-item" style="background:${c}">${String.fromCharCode(65+j)}</div>`;}
+    if(r.users>3)av+=`<div class="av-item av-more">+${r.users-3}</div>`;
+    av+='</div>';
+
+    const tipe=r.tipe==='system'?`<span class="stag stag-sys"><i class="bi bi-lock-fill"></i>System</span>`:`<span class="stag stag-cust"><i class="bi bi-pencil-fill"></i>Custom</span>`;
+    const stat=r.status==='aktif'?`<span class="badge b-green"><span class="bdot"></span>Aktif</span>`:`<span class="badge b-slate"><span class="bdot"></span>Nonaktif</span>`;
+    const sysDis=r.tipe==='system'?'disabled style="opacity:.4;cursor:not-allowed"':'';
+
+    const tr=document.createElement('tr');
+    tr.style.animationDelay=(i*0.04)+'s';
+    tr.innerHTML=`
+      <td class="td-no">${no}</td>
+      <td><div class="role-cell"><div class="rico ${WC[r.w]||'ri-b'}"><i class="bi ${WI[r.w]||'bi-shield-fill-check'}"></i></div><div><div class="role-name">${r.nama}</div><div class="role-slug">${r.slug}</div></div></div></td>
+      <td class="td-desc"><div class="td-desc-t">${r.desc}</div></td>
+      <td>${tipe}</td>
+      <td><div class="perms-cell">${pills}</div></td>
+      <td><div class="users-cell">${av}<div><div class="uc-num">${r.users}</div><div class="uc-lbl">pengguna</div></div></div></td>
+      <td>${stat}</td>
+      <td class="td-date">${r.tgl}</td>
+      <td><div class="td-actions">
+        <button class="btn-ico" title="Detail" onclick="openDetail(${r.id})"><i class="bi bi-eye"></i></button>
+        <button class="btn-ico amber" title="Edit" onclick="openEdit(${r.id})" ${sysDis}><i class="bi bi-pencil"></i></button>
+        <button class="btn-ico" title="${r.status==='aktif'?'Nonaktifkan':'Aktifkan'}" onclick="promptToggle(${r.id})" style="color:${r.status==='aktif'?'var(--green)':'#64748b'};border-color:${r.status==='aktif'?'rgba(16,185,100,0.25)':'var(--border)'}"><i class="bi bi-toggle-${r.status==='aktif'?'on':'off'}"></i></button>
+        <button class="btn-ico red" title="Hapus" onclick="promptHapus(${r.id})" ${sysDis}><i class="bi bi-trash3"></i></button>
+      </div></td>`;
+    tbody.appendChild(tr);
+  });
+  updatePager(filtered.length);
+  document.getElementById('stTotal').textContent=roles.length;
+  document.getElementById('stAktif').textContent=roles.filter(r=>r.status==='aktif').length;
+}
+
+function updatePager(total){
+  const pages=Math.max(1,Math.ceil(total/PER)),s=total?((curPage-1)*PER+1):0,e=Math.min(curPage*PER,total);
+  document.getElementById('pgInfo').innerHTML=`Menampilkan <strong>${s}–${e}</strong> dari <strong>${total}</strong> role`;
+  document.getElementById('totalBadgeTxt').textContent=total+' role';
+  const c=document.getElementById('pgBtns');c.innerHTML='';
+  const mk=(html,pg,act,dis)=>{const b=document.createElement('button');b.className='pg-btn'+(act?' active':'');b.innerHTML=html;b.disabled=dis;b.onclick=()=>{curPage=pg;renderTable()};return b;};
+  c.appendChild(mk('<i class="bi bi-chevron-left"></i>',curPage-1,false,curPage<=1));
+  for(let p=1;p<=pages;p++)c.appendChild(mk(p,p,p===curPage,false));
+  c.appendChild(mk('<i class="bi bi-chevron-right"></i>',curPage+1,false,curPage>=pages));
+}
+
+function doFilter(){
+  const q=document.getElementById('qInp').value.toLowerCase(),t=document.getElementById('fTipe2').value,s=document.getElementById('fStat').value;
+  filtered=roles.filter(r=>(!q||r.nama.toLowerCase().includes(q)||r.slug.includes(q)||r.desc.toLowerCase().includes(q))&&(!t||r.tipe===t)&&(!s||r.status===s));
+  curPage=1;renderTable();
+}
+
+function doSort(col){
+  const el=document.getElementById('sh-'+col);
+  document.querySelectorAll('th.sort').forEach(th=>{th.classList.remove('asc','desc')});
+  if(sortCol===col){sortDir*=-1;}else{sortCol=col;sortDir=1;}
+  el.classList.add(sortDir===1?'asc':'desc');
+  filtered.sort((a,b)=>{let va,vb;if(col==='nama'){va=a.nama.toLowerCase();vb=b.nama.toLowerCase();}else if(col==='users'){va=a.users;vb=b.users;}else{va=a.id;vb=b.id;}return va<vb?-sortDir:va>vb?sortDir:0;});
+  renderTable();
+}
+
+function buildPermRows(perms){
+  const wrap=document.getElementById('permRows');wrap.innerHTML='';
+  MODS.forEach(m=>{
+    const cur=perms[m.k]||[];
+    const row=document.createElement('div');row.className='pm-row';
+    row.innerHTML=`<div class="pm-mod"><i class="bi ${m.i}"></i>${m.l}</div><div class="pm-checks">${PALL.map(p=>`<div class="pm-col"><input type="checkbox" id="p_${m.k}_${p}" ${cur.includes(p)?'checked':''} style="accent-color:${p==='create'?'var(--green)':p==='read'?'var(--blue)':p==='update'?'#d97706':p==='delete'?'var(--red)':'var(--purple)'}" title="${p}"/></div>`).join('')}</div>`;
+    wrap.appendChild(row);
+  });
+}
+
+function openTambah(){
+  editId=null;
+  document.getElementById('mhTitle').textContent='Tambah Role Baru';
+  document.getElementById('mhDesc').textContent='Buat role dengan konfigurasi izin akses tersendiri';
+  document.getElementById('mhIco').className='mh-ico mhi-b';
+  ['fNama','fSlug','fDesc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fTipe').value='custom';document.getElementById('fWarna').value='b';
+  buildPermRows({});openModal('mForm');
+}
+
+document.getElementById('fNama').addEventListener('input',function(){if(!editId)document.getElementById('fSlug').value=this.value.toLowerCase().replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');});
+
+function openEdit(id){
+  const r=roles.find(x=>x.id===id);if(!r||r.tipe==='system')return;
+  editId=id;
+  document.getElementById('mhTitle').textContent='Edit Role: '+r.nama;
+  document.getElementById('mhDesc').textContent='ID #'+id+' · Perbarui konfigurasi';
+  document.getElementById('mhIco').className='mh-ico mhi-a';
+  document.getElementById('fNama').value=r.nama;document.getElementById('fSlug').value=r.slug;
+  document.getElementById('fDesc').value=r.desc;document.getElementById('fTipe').value=r.tipe;
+  document.getElementById('fWarna').value=r.w;
+  buildPermRows(r.perms);openModal('mForm');
+}
+
+function saveRole(){
+  const nama=document.getElementById('fNama').value.trim(),slug=document.getElementById('fSlug').value.trim();
+  const desc=document.getElementById('fDesc').value.trim(),tipe=document.getElementById('fTipe').value,w=document.getElementById('fWarna').value;
+  if(!nama||!slug){showToast('⚠️ Nama dan Slug wajib diisi.');return;}
+  const newPerms={};
+  MODS.forEach(m=>{newPerms[m.k]=PALL.filter(p=>{const el=document.getElementById(`p_${m.k}_${p}`);return el&&el.checked;});});
+  if(editId){
+    const idx=roles.findIndex(r=>r.id===editId);
+    if(idx>-1)roles[idx]={...roles[idx],nama,slug,desc,tipe,w,perms:newPerms};
+    showToast('✅ Role berhasil diperbarui.');
+  }else{
+    const nid=Math.max(...roles.map(r=>r.id))+1;
+    const now=new Date();const tgl=now.getDate()+' '+['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][now.getMonth()]+' '+now.getFullYear();
+    roles.push({id:nid,nama,slug,tipe,w,desc,perms:newPerms,users:0,status:'aktif',tgl});
+    showToast('✅ Role baru ditambahkan.');
+  }
+  closeModal('mForm');doFilter();
+}
+
+function promptHapus(id){const r=roles.find(x=>x.id===id);if(!r||r.tipe==='system')return;delId=id;document.getElementById('hapusNama').textContent='"'+r.nama+'"';openModal('mHapus');}
+function doHapus(){roles=roles.filter(r=>r.id!==delId);filtered=filtered.filter(r=>r.id!==delId);closeModal('mHapus');if((curPage-1)*PER>=filtered.length&&curPage>1)curPage--;renderTable();showToast('🗑️ Role berhasil dihapus.');}
+
+function promptToggle(id){const r=roles.find(x=>x.id===id);if(!r)return;tglId=id;const a=r.status==='aktif';document.getElementById('tglTtl').textContent=a?'Nonaktifkan Role?':'Aktifkan Role?';document.getElementById('tglDesc').textContent=a?`Role "${r.nama}" akan dinonaktifkan. Pengguna tidak dapat login.`:`Role "${r.nama}" akan diaktifkan kembali.`;document.getElementById('tglOkBtn').textContent=a?'Nonaktifkan':'Aktifkan';openModal('mToggle');}
+function doToggle(){const r=roles.find(x=>x.id===tglId);if(r)r.status=r.status==='aktif'?'nonaktif':'aktif';closeModal('mToggle');doFilter();showToast(r.status==='aktif'?'✅ Role diaktifkan.':'🔕 Role dinonaktifkan.');}
+
+function openDetail(id){
+  const r=roles.find(x=>x.id===id);if(!r)return;
+  document.getElementById('dtlNama').textContent=r.nama;
+  document.getElementById('dtlMeta').textContent=r.slug+' · '+r.users+' pengguna';
+  document.getElementById('dtlIco').className='mh-ico '+(r.w==='g'?'mhi-g':r.w==='a'?'mhi-a':r.w==='r'?'mhi-r':'mhi-b');
+  document.getElementById('dtlSlug').textContent=r.slug;
+  document.getElementById('dtlUsers').textContent=r.users+' pengguna';
+  document.getElementById('dtlTipe').innerHTML=r.tipe==='system'?`<span class="stag stag-sys"><i class="bi bi-lock-fill"></i>System Role</span>`:`<span class="stag stag-cust"><i class="bi bi-pencil-fill"></i>Custom Role</span>`;
+  document.getElementById('dtlTgl').textContent=r.tgl;
+  document.getElementById('dtlDesc').textContent=r.desc||'—';
+  const fps=flatPerms(r).sort((a,b)=>['create','read','update','delete','export'].indexOf(a)-['create','read','update','delete','export'].indexOf(b));
+  document.getElementById('dtlPerms').innerHTML=fps.length?fps.map(p=>`<span class="pp ${PM[p].cls}"><i class="bi ${PM[p].ico}"></i>${p}</span>`).join(''):'<span style="font-size:.78rem;color:var(--text-muted)">Tidak ada izin akses</span>';
+  const eb=document.getElementById('dtlEditBtn');
+  if(r.tipe==='system'){eb.disabled=true;eb.style.opacity='.45';eb.style.cursor='not-allowed';}
+  else{eb.disabled=false;eb.style.opacity='';eb.style.cursor='';eb.onclick=()=>{closeModal('mDetail');openEdit(r.id);};}
+  openModal('mDetail');
+}
+
+function doExport(){
+  const rows=[['#','Nama','Slug','Tipe','Pengguna','Status','Dibuat']];
+  filtered.forEach((r,i)=>rows.push([i+1,r.nama,r.slug,r.tipe,r.users,r.status,r.tgl]));
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='role-ppid.csv';a.click();
+  showToast('📊 Data role diekspor.');
+}
+
+function openModal(id){document.getElementById(id).classList.add('show');document.body.style.overflow='hidden';}
+function closeModal(id){document.getElementById(id).classList.remove('show');document.body.style.overflow='';}
+document.querySelectorAll('.modal-ov').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id);});});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-ov.show').forEach(m=>closeModal(m.id));});
+
+const sidebar=document.getElementById('sidebar'),mainEl=document.getElementById('main'),togBtn=document.getElementById('togBtn'),sbOv=document.getElementById('sbOv');
+let collapsed=false;const isMob=()=>window.innerWidth<=991;
+function toggleSB(){if(isMob()){const o=sidebar.classList.toggle('mobile-open');sbOv.classList.toggle('show',o);}else{collapsed=!collapsed;sidebar.classList.toggle('collapsed',collapsed);mainEl.classList.toggle('collapsed',collapsed);togBtn.classList.toggle('flip',collapsed);}}
+function closeMobile(){sidebar.classList.remove('mobile-open');sbOv.classList.remove('show');}
+window.addEventListener('resize',()=>{if(!isMob())closeMobile();});
+const uTrig=document.getElementById('uTrig'),uDD=document.getElementById('uDD');
+function toggleUM(){const o=uDD.classList.toggle('open');uTrig.setAttribute('aria-expanded',o);}
+document.addEventListener('click',e=>{if(!uTrig.contains(e.target)&&!uDD.contains(e.target))uDD.classList.remove('open');});
+function toggleFS(){const ico=document.getElementById('fsIco');if(!document.fullscreenElement){document.documentElement.requestFullscreen();ico.className='bi bi-fullscreen-exit';}else{document.exitFullscreen();ico.className='bi bi-fullscreen';}}
+window.addEventListener('scroll',()=>document.getElementById('fab').classList.toggle('vis',scrollY>300));
+
+function showToast(msg){const t=document.createElement('div');t.textContent=msg;Object.assign(t.style,{position:'fixed',bottom:'1.5rem',left:'50%',transform:'translateX(-50%) translateY(20px)',background:'#0f1c2e',color:'#fff',padding:'.6rem 1.2rem',borderRadius:'10px',fontSize:'.82rem',fontWeight:'600',zIndex:'9999',opacity:'0',transition:'all .3s',boxShadow:'0 8px 24px rgba(0,0,0,0.28)',whiteSpace:'nowrap'});document.body.appendChild(t);requestAnimationFrame(()=>{t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(8px)';setTimeout(()=>t.remove(),400);},2400);}
+
+renderTable();
+</script>
+</body>
+</html>
