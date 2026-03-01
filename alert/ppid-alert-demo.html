@@ -1,0 +1,1262 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PPID Alert — Demo & Dokumentasi</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="ppid-alert.css" />
+
+    <style>
+      :root {
+        --blue: #0072c6;
+        --blue-soft: #e8f2fb;
+        --text: #0d1f35;
+        --muted: #5a7089;
+        --border: rgba(0, 40, 100, 0.1);
+        --bg: #f0f5fc;
+        --card: #ffffff;
+        --radius: 14px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      /* ── Hero ── */
+      .hero {
+        background: linear-gradient(
+          140deg,
+          #001533 0%,
+          #003070 45%,
+          #0055b0 100%
+        );
+        padding: 3.8rem 1.5rem 3.2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse at 15% 60%,
+            rgba(0, 114, 198, 0.35) 0%,
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse at 85% 25%,
+            rgba(56, 189, 248, 0.18) 0%,
+            transparent 50%
+          );
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.28rem 0.8rem;
+        border-radius: 100px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+        position: relative;
+      }
+      .hero h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.6rem;
+        position: relative;
+      }
+      .hero h1 em {
+        color: #7dcfff;
+        font-style: normal;
+      }
+      .hero p {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.6);
+        max-width: 480px;
+        margin: 0 auto 1.8rem;
+        position: relative;
+      }
+      .hero-pills {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.45rem;
+        position: relative;
+      }
+      .hero-pill {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.2rem 0.65rem;
+        border-radius: 100px;
+      }
+
+      /* ── Layout ── */
+      .wrap {
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 2.5rem 1.2rem 4rem;
+      }
+
+      /* ── Section label ── */
+      .sec-lbl {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-top: 2.4rem;
+        margin-bottom: 1rem;
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+      }
+      .sec-lbl i {
+        color: var(--blue);
+        font-size: 0.85rem;
+      }
+      .sec-lbl::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      /* ── Card ── */
+      .demo-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        margin-bottom: 1.1rem;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 30, 80, 0.06);
+      }
+      .demo-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        padding: 0.95rem 1.4rem 0.85rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .demo-card-ttl {
+        font-size: 0.88rem;
+        font-weight: 800;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .demo-card-ttl i {
+        color: var(--blue);
+      }
+      .demo-card-sub {
+        font-size: 0.74rem;
+        color: var(--muted);
+        margin-top: 0.08rem;
+      }
+      .demo-card-body {
+        padding: 1.2rem 1.4rem;
+      }
+
+      /* ── Buttons ── */
+      .btn-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(152px, 1fr));
+        gap: 0.55rem;
+      }
+      .db {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.32rem;
+        padding: 0.58rem 0.95rem;
+        border-radius: 9px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 0.79rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1.5px solid;
+        transition: all 0.2s;
+        white-space: nowrap;
+        width: 100%;
+      }
+      .db:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      }
+      .db:active {
+        transform: translateY(0);
+      }
+      .db-success {
+        background: rgba(16, 185, 100, 0.08);
+        color: #0a7a3c;
+        border-color: rgba(16, 185, 100, 0.28);
+      }
+      .db-danger {
+        background: rgba(224, 53, 73, 0.08);
+        color: #9e1a2a;
+        border-color: rgba(224, 53, 73, 0.28);
+      }
+      .db-warning {
+        background: rgba(245, 158, 11, 0.08);
+        color: #92610a;
+        border-color: rgba(245, 158, 11, 0.28);
+      }
+      .db-info {
+        background: rgba(0, 114, 198, 0.08);
+        color: #004d8c;
+        border-color: rgba(0, 114, 198, 0.28);
+      }
+      .db-purple {
+        background: rgba(124, 58, 237, 0.08);
+        color: #4b1fac;
+        border-color: rgba(124, 58, 237, 0.28);
+      }
+      .db-gray {
+        background: #f1f5f9;
+        color: var(--muted);
+        border-color: var(--border);
+      }
+
+      /* ── Code block ── */
+      .code-block {
+        background: #0a1628;
+        border-radius: 9px;
+        padding: 0.9rem 1.1rem;
+        font-family: "Fira Code", monospace;
+        font-size: 0.74rem;
+        color: #7ecbff;
+        line-height: 1.7;
+        overflow-x: auto;
+        margin-top: 0.85rem;
+        border: 1px solid rgba(126, 203, 255, 0.07);
+      }
+      .kw {
+        color: #c792ea;
+      }
+      .fn {
+        color: #82aaff;
+      }
+      .str {
+        color: #c3e88d;
+      }
+      .cm {
+        color: rgba(255, 255, 255, 0.28);
+        font-style: italic;
+      }
+      .ob {
+        color: #ffcb6b;
+      }
+      .nu {
+        color: #f78c6c;
+      }
+
+      /* ── Result box ── */
+      .result-box {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 0.9rem;
+        border-radius: 8px;
+        font-size: 0.79rem;
+        font-weight: 600;
+        background: #f0f5fc;
+        color: var(--muted);
+        border: 1px solid var(--border);
+        margin-top: 0.75rem;
+        min-height: 40px;
+      }
+      .result-box.r-yes {
+        background: rgba(16, 185, 100, 0.08);
+        color: #0a7a3c;
+        border-color: rgba(16, 185, 100, 0.25);
+      }
+      .result-box.r-no {
+        background: rgba(224, 53, 73, 0.08);
+        color: #9e1a2a;
+        border-color: rgba(224, 53, 73, 0.25);
+      }
+
+      /* ── Position grid ── */
+      .pos-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.38rem;
+        max-width: 320px;
+      }
+      .pos-btn {
+        padding: 0.4rem;
+        border-radius: 7px;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        font-size: 0.68rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--muted);
+        text-align: center;
+        transition: all 0.18s;
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+      .pos-btn:hover,
+      .pos-btn.active {
+        border-color: var(--blue);
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      /* ── Inline alert target ── */
+      #alertTarget {
+        min-height: 4px;
+      }
+
+      /* ── Install snippet ── */
+      .install-box {
+        background: #0a1628;
+        border-radius: var(--radius);
+        padding: 1.4rem 1.6rem;
+        font-family: "Fira Code", monospace;
+        font-size: 0.77rem;
+        line-height: 2.1;
+        color: rgba(255, 255, 255, 0.75);
+        border: 1px solid rgba(126, 203, 255, 0.08);
+      }
+      .ic {
+        color: rgba(255, 255, 255, 0.28);
+      }
+      .it {
+        color: #82aaff;
+      }
+      .ia {
+        color: #c792ea;
+      }
+      .iv {
+        color: #c3e88d;
+      }
+
+      /* ── API Table ── */
+      .api-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.79rem;
+      }
+      .api-tbl th {
+        background: #f0f5fc;
+        padding: 0.58rem 0.9rem;
+        text-align: left;
+        font-size: 0.66rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        border-bottom: 2px solid var(--border);
+      }
+      .api-tbl td {
+        padding: 0.58rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      .api-tbl tr:last-child td {
+        border-bottom: none;
+      }
+      .api-tbl tr:hover td {
+        background: #fafcff;
+      }
+      .api-tbl code {
+        font-family: "Fira Code", monospace;
+        font-size: 0.73rem;
+        background: var(--blue-soft);
+        padding: 0.08rem 0.38rem;
+        border-radius: 4px;
+        color: var(--blue);
+        border: 1px solid rgba(0, 114, 198, 0.15);
+      }
+      .api-tbl .mc {
+        color: var(--blue);
+        font-family: "Fira Code", monospace;
+        font-weight: 700;
+        font-size: 0.8rem;
+      }
+      .api-tbl .dm {
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+
+      /* ── Badge ── */
+      .badge-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.28rem;
+        background: var(--blue-soft);
+        color: var(--blue);
+        border: 1px solid rgba(0, 114, 198, 0.2);
+        font-size: 0.67rem;
+        font-weight: 700;
+        padding: 0.18rem 0.6rem;
+        border-radius: 100px;
+      }
+
+      @media (max-width: 540px) {
+        .btn-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .pos-grid {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-badge">
+        <i class="bi bi-bell-fill"></i> PPID Alert v1.0.0
+      </div>
+      <h1>PPID <em>Alert</em></h1>
+      <p>
+        Custom JavaScript alert library — ringan, tanpa dependensi, tema
+        konsisten PPID Kota Pekalongan.
+      </p>
+      <div class="hero-pills">
+        <span class="hero-pill"
+          ><i class="bi bi-lightning-charge-fill"></i> Zero Dependencies</span
+        >
+        <span class="hero-pill"><i class="bi bi-phone"></i> Responsive</span>
+        <span class="hero-pill"
+          ><i class="bi bi-palette-fill"></i> PPID Themed</span
+        >
+        <span class="hero-pill"
+          ><i class="bi bi-universal-access"></i> Accessible</span
+        >
+        <span class="hero-pill"
+          ><i class="bi bi-code-slash"></i> ES5 Compatible</span
+        >
+      </div>
+    </div>
+
+    <div class="wrap">
+      <!-- INSTALL -->
+      <div class="sec-lbl"><i class="bi bi-download"></i> Instalasi</div>
+      <div class="demo-card">
+        <div class="demo-card-body">
+          <div class="install-box">
+            <span class="ic">&lt;!-- 1. Tambahkan di &lt;head&gt; --&gt;</span
+            ><br />
+            <span class="it">&lt;link</span> <span class="ia">rel</span>=<span
+              class="iv"
+              >"stylesheet"</span
+            >
+            <span class="ia">href</span>=<span class="iv">"ppid-alert.css"</span
+            ><span class="it">&gt;</span><br /><br />
+            <span class="ic"
+              >&lt;!-- 2. Tambahkan sebelum &lt;/body&gt; --&gt;</span
+            ><br />
+            <span class="it">&lt;script</span> <span class="ia">src</span>=<span
+              class="iv"
+              >"ppid-alert.js"</span
+            ><span class="it">&gt;&lt;/script&gt;</span>
+          </div>
+          <div
+            style="margin-top: 0.7rem; font-size: 0.77rem; color: var(--muted)"
+          >
+            <i class="bi bi-info-circle" style="color: var(--blue)"></i>
+            Library menggunakan ikon dari <strong>Bootstrap Icons</strong>.
+            Pastikan sudah di-include.
+          </div>
+        </div>
+      </div>
+
+      <!-- DIALOG -->
+      <div class="sec-lbl">
+        <i class="bi bi-window"></i> 1. Dialog — Konfirmasi
+      </div>
+      <div class="demo-card">
+        <div class="demo-card-head">
+          <div>
+            <div class="demo-card-ttl">
+              <i class="bi bi-window-stack"></i> PA.dialog()
+            </div>
+            <div class="demo-card-sub">
+              Modal konfirmasi berbasis Promise — menunggu keputusan user
+            </div>
+          </div>
+          <span class="badge-info"
+            ><i class="bi bi-arrow-return-right"></i>
+            Promise&lt;boolean&gt;</span
+          >
+        </div>
+        <div class="demo-card-body">
+          <div class="btn-grid">
+            <button class="db db-info" onclick="demoDialog('info')">
+              <i class="bi bi-info-circle-fill"></i> Info
+            </button>
+            <button class="db db-success" onclick="demoDialog('success')">
+              <i class="bi bi-check-circle-fill"></i> Success
+            </button>
+            <button class="db db-warning" onclick="demoDialog('warning')">
+              <i class="bi bi-exclamation-triangle-fill"></i> Warning
+            </button>
+            <button class="db db-danger" onclick="demoDialog('danger')">
+              <i class="bi bi-x-circle-fill"></i> Danger
+            </button>
+            <button class="db db-purple" onclick="demoDialog('question')">
+              <i class="bi bi-question-circle-fill"></i> Question
+            </button>
+            <button class="db db-gray" onclick="demoDialogNoBatal()">
+              <i class="bi bi-shield-exclamation"></i> Tanpa Batal
+            </button>
+          </div>
+          <div class="result-box" id="dlgResult">
+            <i class="bi bi-arrow-left-circle"></i> Klik tombol untuk mencoba...
+          </div>
+          <div class="code-block">
+            <span class="cm">// Contoh penggunaan</span><br />
+            <span class="fn">PA</span>.<span class="fn">dialog</span>({<br />
+            &nbsp;&nbsp;<span class="ob">type</span> :
+            <span class="str">'danger'</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="cm"
+              >// 'info' | 'success' | 'warning' | 'danger' | 'question'</span
+            ><br />
+            &nbsp;&nbsp;<span class="ob">title</span> :
+            <span class="str">'Hapus Berita?'</span>,<br />
+            &nbsp;&nbsp;<span class="ob">message</span>:
+            <span class="str"
+              >'Data akan dihapus &lt;strong&gt;permanen&lt;/strong&gt;.'</span
+            >,<br />
+            &nbsp;&nbsp;<span class="ob">confirm</span>:
+            <span class="str">'Ya, Hapus'</span>,&nbsp;&nbsp;<span class="cm"
+              >// opsional — default per tipe</span
+            ><br />
+            &nbsp;&nbsp;<span class="ob">cancel</span> :
+            <span class="str">'Batal'</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="cm"
+              >// false = tanpa tombol batal</span
+            ><br />
+            }).<span class="fn">then</span>(<span class="kw">result</span> =&gt;
+            {<br />
+            &nbsp;&nbsp;<span class="kw">if</span> (result) {
+            <span class="cm">/* konfirm */</span> }<br />
+            &nbsp;&nbsp;<span class="kw">else</span> {
+            <span class="cm">/* batal / ESC / klik luar */</span> }<br />
+            });
+          </div>
+        </div>
+      </div>
+
+      <!-- TOAST -->
+      <div class="sec-lbl">
+        <i class="bi bi-bell"></i> 2. Toast — Notifikasi Sudut
+      </div>
+      <div class="demo-card">
+        <div class="demo-card-head">
+          <div>
+            <div class="demo-card-ttl">
+              <i class="bi bi-chat-square-text-fill"></i> PA.toast()
+            </div>
+            <div class="demo-card-sub">
+              Notifikasi kecil dengan progress bar, 6 pilihan posisi, pause on
+              hover
+            </div>
+          </div>
+        </div>
+        <div class="demo-card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <div
+                style="
+                  font-size: 0.72rem;
+                  font-weight: 700;
+                  color: var(--muted);
+                  text-transform: uppercase;
+                  letter-spacing: 0.06em;
+                  margin-bottom: 0.5rem;
+                "
+              >
+                Tipe
+              </div>
+              <div class="btn-grid">
+                <button class="db db-success" onclick="demoToast('success')">
+                  <i class="bi bi-check-circle-fill"></i> Success
+                </button>
+                <button class="db db-danger" onclick="demoToast('danger')">
+                  <i class="bi bi-x-circle-fill"></i> Danger
+                </button>
+                <button class="db db-warning" onclick="demoToast('warning')">
+                  <i class="bi bi-exclamation-triangle-fill"></i> Warning
+                </button>
+                <button class="db db-info" onclick="demoToast('info')">
+                  <i class="bi bi-info-circle-fill"></i> Info
+                </button>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div
+                style="
+                  font-size: 0.72rem;
+                  font-weight: 700;
+                  color: var(--muted);
+                  text-transform: uppercase;
+                  letter-spacing: 0.06em;
+                  margin-bottom: 0.5rem;
+                "
+              >
+                Posisi
+              </div>
+              <div class="pos-grid">
+                <button
+                  class="pos-btn"
+                  data-p="top-left"
+                  onclick="setPos(this)"
+                >
+                  ↖ Kiri
+                </button>
+                <button
+                  class="pos-btn"
+                  data-p="top-center"
+                  onclick="setPos(this)"
+                >
+                  ↑ Tengah
+                </button>
+                <button
+                  class="pos-btn active"
+                  data-p="top-right"
+                  onclick="setPos(this)"
+                >
+                  ↗ Kanan
+                </button>
+                <button
+                  class="pos-btn"
+                  data-p="bottom-left"
+                  onclick="setPos(this)"
+                >
+                  ↙ Kiri
+                </button>
+                <button
+                  class="pos-btn"
+                  data-p="bottom-center"
+                  onclick="setPos(this)"
+                >
+                  ↓ Tengah
+                </button>
+                <button
+                  class="pos-btn"
+                  data-p="bottom-right"
+                  onclick="setPos(this)"
+                >
+                  ↘ Kanan
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="code-block" style="margin-top: 1rem">
+            <span class="fn">PA</span>.<span class="fn">toast</span>({<br />
+            &nbsp;&nbsp;<span class="ob">type</span> :
+            <span class="str">'success'</span>,<br />
+            &nbsp;&nbsp;<span class="ob">title</span> :
+            <span class="str">'Berhasil Disimpan!'</span>,<br />
+            &nbsp;&nbsp;<span class="ob">message</span> :
+            <span class="str">'Perubahan tersimpan ke database.'</span>,<br />
+            &nbsp;&nbsp;<span class="ob">duration</span>:
+            <span class="nu">4000</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="cm"
+              >// ms — default 4000</span
+            ><br />
+            &nbsp;&nbsp;<span class="ob">position</span>:
+            <span class="str">'top-right'</span>&nbsp;<span class="cm"
+              >// 6 posisi</span
+            ><br />
+            });
+          </div>
+        </div>
+      </div>
+
+      <!-- INLINE ALERT -->
+      <div class="sec-lbl">
+        <i class="bi bi-card-text"></i> 3. Alert — Inline di Halaman
+      </div>
+      <div class="demo-card">
+        <div class="demo-card-head">
+          <div>
+            <div class="demo-card-ttl">
+              <i class="bi bi-exclamation-circle-fill"></i> PA.alert()
+            </div>
+            <div class="demo-card-sub">
+              Alert yang diinjeksikan langsung ke elemen target, dapat
+              di-dismiss
+            </div>
+          </div>
+        </div>
+        <div class="demo-card-body">
+          <div id="alertTarget"></div>
+          <div class="btn-grid">
+            <button class="db db-success" onclick="demoAlert('success')">
+              <i class="bi bi-check-circle-fill"></i> Success
+            </button>
+            <button class="db db-danger" onclick="demoAlert('danger')">
+              <i class="bi bi-x-circle-fill"></i> Danger
+            </button>
+            <button class="db db-warning" onclick="demoAlert('warning')">
+              <i class="bi bi-exclamation-triangle-fill"></i> Warning
+            </button>
+            <button class="db db-info" onclick="demoAlert('info')">
+              <i class="bi bi-info-circle-fill"></i> Info
+            </button>
+            <button class="db db-gray" onclick="demoAlert('info', false)">
+              <i class="bi bi-pin-angle-fill"></i> Permanen
+            </button>
+            <button
+              class="db db-gray"
+              onclick="document.getElementById('alertTarget').innerHTML = ''"
+            >
+              <i class="bi bi-x"></i> Hapus Semua
+            </button>
+          </div>
+          <div class="code-block" style="margin-top: 0.85rem">
+            <span class="fn">PA</span>.<span class="fn">alert</span>({<br />
+            &nbsp;&nbsp;<span class="ob">type</span> :
+            <span class="str">'warning'</span>,<br />
+            &nbsp;&nbsp;<span class="ob">title</span> :
+            <span class="str">'Sesi Hampir Berakhir'</span>,<br />
+            &nbsp;&nbsp;<span class="ob">message</span> :
+            <span class="str">'Sesi Anda berakhir dalam 5 menit.'</span>,<br />
+            &nbsp;&nbsp;<span class="ob">closable</span>:
+            <span class="kw">true</span>&nbsp;&nbsp;<span class="cm"
+              >// default true</span
+            ><br />
+            }, <span class="str">'#alertTarget'</span>);&nbsp;<span class="cm"
+              >// selector CSS atau DOM element</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFY -->
+      <div class="sec-lbl">
+        <i class="bi bi-bell-fill"></i> 4. Notify — Panel Notifikasi Besar
+      </div>
+      <div class="demo-card">
+        <div class="demo-card-head">
+          <div>
+            <div class="demo-card-ttl">
+              <i class="bi bi-card-heading"></i> PA.notify()
+            </div>
+            <div class="demo-card-sub">
+              Panel geser dari kanan — cocok untuk notif sistem & permohonan
+              masuk
+            </div>
+          </div>
+        </div>
+        <div class="demo-card-body">
+          <div class="btn-grid">
+            <button class="db db-success" onclick="demoNotify('success')">
+              <i class="bi bi-check-circle-fill"></i> Success
+            </button>
+            <button class="db db-danger" onclick="demoNotify('danger')">
+              <i class="bi bi-x-circle-fill"></i> Danger
+            </button>
+            <button class="db db-warning" onclick="demoNotify('warning')">
+              <i class="bi bi-exclamation-triangle-fill"></i> Warning
+            </button>
+            <button class="db db-info" onclick="demoNotify('info')">
+              <i class="bi bi-info-circle-fill"></i> Info
+            </button>
+          </div>
+          <div class="code-block" style="margin-top: 0.85rem">
+            <span class="fn">PA</span>.<span class="fn">notify</span>({<br />
+            &nbsp;&nbsp;<span class="ob">type</span> :
+            <span class="str">'info'</span>,<br />
+            &nbsp;&nbsp;<span class="ob">title</span> :
+            <span class="str">'Permohonan Baru Masuk'</span>,<br />
+            &nbsp;&nbsp;<span class="ob">message</span> :
+            <span class="str"
+              >'Ahmad Fauzi mengajukan permohonan #PKL-2025-042.'</span
+            >,<br />
+            &nbsp;&nbsp;<span class="ob">duration</span>:
+            <span class="nu">6000</span>&nbsp;<span class="cm">// ms</span
+            ><br />
+            });
+          </div>
+        </div>
+      </div>
+
+      <!-- LOADING -->
+      <div class="sec-lbl">
+        <i class="bi bi-hourglass-split"></i> 5. Loading — Overlay Proses
+      </div>
+      <div class="demo-card">
+        <div class="demo-card-head">
+          <div>
+            <div class="demo-card-ttl">
+              <i class="bi bi-arrow-repeat"></i> PA.loading()
+            </div>
+            <div class="demo-card-sub">
+              Overlay loading — tutup manual lewat
+              <code
+                style="
+                  font-family: &quot;Fira Code&quot;;
+                  font-size: 0.73rem;
+                  background: #f0f5fc;
+                  padding: 1px 5px;
+                  border-radius: 4px;
+                  color: var(--blue);
+                "
+                >loader.close()</code
+              >
+              atau
+              <code
+                style="
+                  font-family: &quot;Fira Code&quot;;
+                  font-size: 0.73rem;
+                  background: #f0f5fc;
+                  padding: 1px 5px;
+                  border-radius: 4px;
+                  color: var(--blue);
+                "
+                >PA.close()</code
+              >
+            </div>
+          </div>
+        </div>
+        <div class="demo-card-body">
+          <div class="row g-2">
+            <div class="col-6">
+              <button class="db db-info w-100" onclick="demoLoading(false)">
+                <i class="bi bi-arrow-repeat"></i> Ring Spinner
+              </button>
+            </div>
+            <div class="col-6">
+              <button class="db db-purple w-100" onclick="demoLoading(true)">
+                <i class="bi bi-three-dots"></i> Dot Pulse
+              </button>
+            </div>
+          </div>
+          <div class="code-block" style="margin-top: 0.85rem">
+            <span class="cm">// Tampilkan</span><br />
+            <span class="kw">const</span> <span class="ob">loader</span> =
+            <span class="fn">PA</span>.<span class="fn">loading</span>({<br />
+            &nbsp;&nbsp;<span class="ob">title</span> :
+            <span class="str">'Menyimpan Data...'</span>,<br />
+            &nbsp;&nbsp;<span class="ob">message</span>:
+            <span class="str">'Mohon tunggu sebentar.'</span>,<br />
+            &nbsp;&nbsp;<span class="ob">dots</span> :
+            <span class="kw">false</span>&nbsp;&nbsp;<span class="cm"
+              >// true = dot pulse</span
+            ><br />
+            });<br />
+            <span class="ob">loader</span>.<span class="fn">update</span>(<span
+              class="str"
+              >'Mengunggah file...'</span
+            >);&nbsp;<span class="cm">// update pesan</span><br />
+            <span class="ob">loader</span>.<span class="fn">close</span
+            >();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="cm"
+              >// tutup</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- UTILITY -->
+      <div class="sec-lbl"><i class="bi bi-tools"></i> Utility</div>
+      <div class="demo-card">
+        <div class="demo-card-body">
+          <div class="row g-2">
+            <div class="col-12 col-sm-6">
+              <button class="db db-gray w-100" onclick="PA.close()">
+                <i class="bi bi-x-circle"></i> PA.close() — Tutup Dialog /
+                Loading aktif
+              </button>
+            </div>
+            <div class="col-12 col-sm-6">
+              <button class="db db-danger w-100" onclick="PA.closeAll()">
+                <i class="bi bi-slash-circle"></i> PA.closeAll() — Tutup Semua
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API TABLE -->
+      <div class="sec-lbl"><i class="bi bi-book"></i> API Reference</div>
+      <div class="demo-card" style="overflow: hidden">
+        <div class="demo-card-head">
+          <div class="demo-card-ttl">
+            <i class="bi bi-table"></i> Parameter Lengkap
+          </div>
+        </div>
+        <div style="overflow-x: auto">
+          <table class="api-tbl">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Parameter</th>
+                <th>Tipe</th>
+                <th>Default</th>
+                <th>Keterangan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td rowspan="5" class="mc">PA.dialog()</td>
+                <td><code>type</code></td>
+                <td class="dm">string</td>
+                <td><code>'info'</code></td>
+                <td class="dm">success · danger · warning · info · question</td>
+              </tr>
+              <tr>
+                <td><code>title</code></td>
+                <td class="dm">string</td>
+                <td><code>'Konfirmasi'</code></td>
+                <td class="dm">Judul dialog</td>
+              </tr>
+              <tr>
+                <td><code>message</code></td>
+                <td class="dm">string</td>
+                <td>—</td>
+                <td class="dm">Isi pesan, mendukung HTML</td>
+              </tr>
+              <tr>
+                <td><code>confirm</code></td>
+                <td class="dm">string</td>
+                <td><em>per tipe</em></td>
+                <td class="dm">Label tombol konfirm</td>
+              </tr>
+              <tr>
+                <td><code>cancel</code></td>
+                <td class="dm">string|false</td>
+                <td><code>'Batal'</code></td>
+                <td class="dm"><code>false</code> = tanpa tombol batal</td>
+              </tr>
+
+              <tr>
+                <td rowspan="4" class="mc">PA.toast()</td>
+                <td><code>type</code></td>
+                <td class="dm">string</td>
+                <td><code>'info'</code></td>
+                <td class="dm">success · danger · warning · info</td>
+              </tr>
+              <tr>
+                <td><code>title</code></td>
+                <td class="dm">string</td>
+                <td>—</td>
+                <td class="dm">Judul (opsional)</td>
+              </tr>
+              <tr>
+                <td><code>duration</code></td>
+                <td class="dm">number</td>
+                <td><code>4000</code></td>
+                <td class="dm">Auto-dismiss dalam ms</td>
+              </tr>
+              <tr>
+                <td><code>position</code></td>
+                <td class="dm">string</td>
+                <td><code>'top-right'</code></td>
+                <td class="dm">top/bottom + left/center/right</td>
+              </tr>
+
+              <tr>
+                <td rowspan="3" class="mc">PA.alert()</td>
+                <td><code>type</code></td>
+                <td class="dm">string</td>
+                <td><code>'info'</code></td>
+                <td class="dm">success · danger · warning · info</td>
+              </tr>
+              <tr>
+                <td><code>closable</code></td>
+                <td class="dm">boolean</td>
+                <td><code>true</code></td>
+                <td class="dm">Tampilkan tombol tutup ×</td>
+              </tr>
+              <tr>
+                <td><em>arg 2</em></td>
+                <td class="dm">string|Element</td>
+                <td>—</td>
+                <td class="dm">Target inject: CSS selector atau DOM element</td>
+              </tr>
+
+              <tr>
+                <td rowspan="3" class="mc">PA.loading()</td>
+                <td><code>title</code></td>
+                <td class="dm">string</td>
+                <td><code>'Memproses...'</code></td>
+                <td class="dm">Judul overlay</td>
+              </tr>
+              <tr>
+                <td><code>message</code></td>
+                <td class="dm">string</td>
+                <td>—</td>
+                <td class="dm">Pesan pendukung (bisa di-update)</td>
+              </tr>
+              <tr>
+                <td><code>dots</code></td>
+                <td class="dm">boolean</td>
+                <td><code>false</code></td>
+                <td class="dm">
+                  <code>true</code> = dot pulse, <code>false</code> = ring
+                  spinner
+                </td>
+              </tr>
+
+              <tr>
+                <td rowspan="3" class="mc">PA.notify()</td>
+                <td><code>type</code></td>
+                <td class="dm">string</td>
+                <td><code>'info'</code></td>
+                <td class="dm">success · danger · warning · info</td>
+              </tr>
+              <tr>
+                <td><code>title</code></td>
+                <td class="dm">string</td>
+                <td><code>'Notifikasi'</code></td>
+                <td class="dm">Judul panel</td>
+              </tr>
+              <tr>
+                <td><code>duration</code></td>
+                <td class="dm">number</td>
+                <td><code>6000</code></td>
+                <td class="dm">Auto-dismiss dalam ms</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div
+        style="
+          text-align: center;
+          margin-top: 2.5rem;
+          font-size: 0.74rem;
+          color: var(--muted);
+        "
+      >
+        <strong style="color: var(--blue)">PPID Alert</strong> v1.0.0
+        &nbsp;·&nbsp; PPID Kota Pekalongan &nbsp;·&nbsp; Tema
+        <code style="font-family: &quot;Fira Code&quot;; font-size: 0.7rem"
+          >#0072c6</code
+        >
+      </div>
+    </div>
+
+    <script src="ppid-alert.js"></script>
+    <script>
+      /* ── Konten demo ── */
+      const DEMO = {
+        success: {
+          dialog: {
+            title: "Data Berhasil Disimpan!",
+            message: "Perubahan telah tersimpan ke database dengan sukses.",
+          },
+          toast: {
+            title: "Berhasil!",
+            message: "Foto berhasil diunggah ke galeri.",
+          },
+          alert: {
+            title: "Aksi Berhasil",
+            message: "Data pengelola berhasil diperbarui.",
+          },
+          notify: {
+            title: "Permohonan Disetujui",
+            message:
+              "Permohonan informasi <strong>#PKL-2025-041</strong> dari Budi Santoso telah disetujui dan notifikasi dikirim ke pemohon.",
+          },
+        },
+        danger: {
+          dialog: {
+            title: "Hapus Berita?",
+            message:
+              'Berita <strong>"Kegiatan Bimtek PPID 2024"</strong> akan dihapus permanen dan tidak dapat dikembalikan.',
+          },
+          toast: {
+            title: "Upload Gagal!",
+            message: "Koneksi ke server terputus. Coba lagi.",
+          },
+          alert: {
+            title: "Terjadi Kesalahan",
+            message:
+              "Upload gagal — ukuran file melebihi batas 5MB yang diizinkan.",
+          },
+          notify: {
+            title: "Upload Gagal",
+            message:
+              'File <strong>"laporan-2024.pdf"</strong> tidak dapat diunggah. Format tidak didukung atau ukuran melebihi batas 10MB.',
+          },
+        },
+        warning: {
+          dialog: {
+            title: "Komentar Belum Dimoderasi",
+            message:
+              "Terdapat <strong>2 komentar</strong> menunggu moderasi. Tinjau sebelum mempublikasikan berita ini.",
+          },
+          toast: {
+            title: "Perhatian",
+            message: "Sesi Anda akan berakhir dalam 5 menit.",
+          },
+          alert: {
+            title: "Data Belum Lengkap",
+            message:
+              "Beberapa field wajib belum diisi. Periksa kembali form Anda.",
+          },
+          notify: {
+            title: "Sesi Hampir Habis",
+            message:
+              "Sesi login Anda akan berakhir dalam <strong>10 menit</strong>. Simpan pekerjaan atau klik perpanjang sesi.",
+          },
+        },
+        info: {
+          dialog: {
+            title: "Pemeliharaan Terjadwal",
+            message:
+              "Sistem akan offline pada <strong>Minggu, 22 Des 2024 pukul 01.00–03.00 WIB</strong> untuk pemeliharaan rutin.",
+          },
+          toast: {
+            title: "Info Sistem",
+            message: "Versi baru tersedia. Refresh halaman untuk update.",
+          },
+          alert: {
+            title: "Pemeliharaan Terjadwal",
+            message:
+              "Sistem akan offline Minggu, 22 Des 2024 pukul 01.00–03.00 WIB.",
+          },
+          notify: {
+            title: "Permohonan Baru Masuk",
+            message:
+              "Ahmad Fauzi mengajukan permohonan informasi <strong>#PKL-2025-042</strong>. Harap ditindaklanjuti dalam 10 hari kerja.",
+          },
+        },
+        question: {
+          dialog: {
+            title: "Nonaktifkan Komentar?",
+            message:
+              "Komentar publik pada berita ini akan disembunyikan. Anda dapat mengaktifkannya kembali kapan saja.",
+          },
+        },
+      };
+
+      let pos = "top-right";
+
+      /* Dialog */
+      function demoDialog(type) {
+        const d = DEMO[type]?.dialog || {
+          title: "Dialog",
+          message: "Ini adalah pesan dialog.",
+        };
+        PA.dialog({ type, ...d }).then((r) => {
+          const el = document.getElementById("dlgResult");
+          el.className = "result-box " + (r ? "r-yes" : "r-no");
+          el.innerHTML = r
+            ? '<i class="bi bi-check-circle-fill" style="color:#0a7a3c"></i> User klik <strong>Konfirm</strong> → result: <code style="background:#e6faf2;color:#0a7a3c;padding:1px 5px;border-radius:4px;font-family:\'Fira Code\'">true</code>'
+            : '<i class="bi bi-x-circle-fill" style="color:#9e1a2a"></i> User klik <strong>Batal / ESC</strong> → result: <code style="background:#fde8eb;color:#9e1a2a;padding:1px 5px;border-radius:4px;font-family:\'Fira Code\'">false</code>';
+        });
+      }
+      function demoDialogNoBatal() {
+        PA.dialog({
+          type: "warning",
+          title: "Setujui Ketentuan",
+          message:
+            "Anda harus menyetujui syarat dan ketentuan penggunaan sistem PPID sebelum melanjutkan.",
+          confirm: "Saya Setuju",
+          cancel: false,
+        }).then((r) => {
+          if (r)
+            PA.toast({
+              type: "success",
+              title: "Disetujui!",
+              message: "Terima kasih.",
+              position: "top-center",
+            });
+        });
+      }
+
+      /* Toast */
+      function demoToast(type) {
+        // const d = DEMO[type]?.toast || { title:type, message:'Pesan toast.' };
+        PA.toast({ type, ...d, position: pos });
+      }
+      function setPos(btn) {
+        document
+          .querySelectorAll(".pos-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        pos = btn.dataset.p;
+        PA.toast({
+          type: "info",
+          title: "Posisi Diubah",
+          message: "Toast: " + pos,
+          position: pos,
+          duration: 2200,
+        });
+      }
+
+      /* Alert */
+      function demoAlert(type, closable = true) {
+        const d = DEMO[type]?.alert || {
+          title: "Alert",
+          message: "Inline alert.",
+        };
+        PA.alert({ type, closable, ...d }, "#alertTarget");
+      }
+
+      /* Loading */
+      function demoLoading(dots) {
+        const loader = PA.loading({
+          title: dots ? "Mengirim Data..." : "Memuat Data...",
+          message: "Mohon tunggu sebentar.",
+          dots,
+        });
+        setTimeout(() => {
+          loader.update("Hampir selesai...");
+        }, 1800);
+        setTimeout(() => {
+          loader.close();
+          PA.toast({
+            type: "success",
+            title: "Selesai!",
+            message: "Proses berhasil.",
+            position: "top-center",
+          });
+        }, 3200);
+      }
+
+      /* Notify */
+      function demoNotify(type) {
+        const d = DEMO[type]?.notify || {
+          title: "Notifikasi",
+          message: "Ini panel notifikasi.",
+        };
+        PA.notify({ type, duration: 7000, ...d });
+      }
+    </script>
+  </body>
+</html>
