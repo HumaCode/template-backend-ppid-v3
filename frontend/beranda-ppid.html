@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PPID Kota Pekalongan — Portal Keterbukaan Informasi Publik</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ════════════════════════════════════════
+   THEME TOKENS — ubah dari backend via CSS vars
+════════════════════════════════════════ */
+:root {
+  --p          : #0072c6;
+  --p-dk       : #004f9e;
+  --p-xdk      : #002f6c;
+  --p-lt       : #1a8fe0;
+  --p-soft     : rgba(0,114,198,0.09);
+  --p-glow     : rgba(0,114,198,0.18);
+  --accent     : #f59e0b;
+  --accent-dk  : #b07309;
+  --dark       : #080f1e;
+  --text       : #1a2b45;
+  --text-sub   : #4e6278;
+  --text-muted : #8fa3bb;
+  --border     : rgba(0,40,100,0.09);
+  --surface    : #ffffff;
+  --bg         : #f2f6fc;
+  --bg-alt     : #e8eef7;
+  --radius     : 14px;
+  --radius-sm  : 9px;
+  --shadow     : 0 4px 24px rgba(0,30,80,0.09);
+  --shadow-h   : 0 12px 40px rgba(0,30,80,0.16);
+  --ease       : cubic-bezier(0.22,1,0.36,1);
+  --font-d     : 'Playfair Display',Georgia,serif;
+  --font-b     : 'Plus Jakarta Sans','Segoe UI',sans-serif;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { font-family:var(--font-b); color:var(--text); background:var(--bg); overflow-x:hidden; }
+a { text-decoration:none; color:inherit; }
+img { max-width:100%; display:block; }
+
+/* ── Particle canvas ── */
+#bgCanvas { position:fixed; inset:0; z-index:-1; opacity:.28; pointer-events:none; }
+
+/* ════════════════════════════════════════
+   INFOBAR
+════════════════════════════════════════ */
+.infobar {
+  background:var(--p-xdk);
+  padding:.35rem 0;
+  font-size:.71rem;
+  color:rgba(255,255,255,.6);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.infobar a { color:rgba(255,255,255,.72); transition:color .15s; }
+.infobar a:hover { color:#fff; }
+.marquee-wrap { overflow:hidden; flex:1; position:relative; }
+.marquee-wrap::before,.marquee-wrap::after {
+  content:''; position:absolute; top:0; bottom:0; width:48px; z-index:2; pointer-events:none;
+}
+.marquee-wrap::before { left:0; background:linear-gradient(90deg,var(--p-xdk),transparent); }
+.marquee-wrap::after  { right:0; background:linear-gradient(-90deg,var(--p-xdk),transparent); }
+.marquee-track {
+  display:flex; gap:2.8rem; white-space:nowrap;
+  animation:marquee 38s linear infinite;
+}
+.marquee-track:hover { animation-play-state:paused; }
+.marquee-item { display:flex; align-items:center; gap:.4rem; }
+.marquee-dot  { width:5px; height:5px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ════════════════════════════════════════
+   NAVBAR
+════════════════════════════════════════ */
+.main-nav {
+  background:var(--surface);
+  position:sticky; top:0; z-index:1050;
+  box-shadow:0 2px 20px rgba(0,30,100,.1);
+  border-bottom:3px solid var(--p);
+  transition:box-shadow .3s;
+}
+.main-nav.scrolled { box-shadow:0 6px 32px rgba(0,30,100,.18); }
+.nav-inner { display:flex; align-items:center; gap:1rem; min-height:64px; }
+
+/* Logo */
+.nav-logo { display:flex; align-items:center; gap:.65rem; flex-shrink:0; }
+.nav-logo-icon {
+  width:44px; height:44px; border-radius:11px; flex-shrink:0;
+  background:linear-gradient(135deg,var(--p),var(--p-dk));
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:1.2rem;
+  box-shadow:0 4px 14px rgba(0,114,198,.28);
+}
+.nav-logo-title { font-size:.9rem; font-weight:800; color:var(--text); line-height:1.2; }
+.nav-logo-sub   { font-size:.62rem; color:var(--text-muted); }
+
+/* Nav links */
+.nav-menu { display:flex; align-items:center; list-style:none; gap:0; flex-grow:1; }
+.nav-menu > li { position:relative; }
+.nav-menu > li > a {
+  display:flex; align-items:center; gap:.2rem;
+  font-size:.82rem; font-weight:700; color:var(--text);
+  padding:1.25rem .85rem; position:relative;
+  white-space:nowrap; transition:color .2s;
+}
+.nav-menu > li > a::after {
+  content:''; position:absolute; bottom:0; left:.85rem; right:.85rem;
+  height:3px; background:var(--p); border-radius:2px 2px 0 0;
+  transform:scaleX(0); transition:transform .28s var(--ease);
+}
+.nav-menu > li > a:hover,
+.nav-menu > li > a.active { color:var(--p); }
+.nav-menu > li > a:hover::after,
+.nav-menu > li > a.active::after { transform:scaleX(1); }
+.nav-caret { font-size:.62rem; transition:transform .2s; }
+.nav-menu > li:hover > a .nav-caret { transform:rotate(180deg); }
+
+/* Mega dropdown */
+.mega-drop {
+  position:absolute; top:100%; left:0;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:0 0 var(--radius) var(--radius);
+  box-shadow:0 20px 60px rgba(0,30,100,.14);
+  padding:1.4rem; min-width:540px;
+  opacity:0; visibility:hidden; transform:translateY(14px);
+  transition:all .28s var(--ease); z-index:1060;
+}
+.nav-menu > li:hover > .mega-drop {
+  opacity:1; visibility:visible; transform:translateY(0);
+}
+.mega-sec-title {
+  font-size:.6rem; font-weight:800; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--p); margin-bottom:.6rem;
+  padding-bottom:.4rem; border-bottom:1px solid var(--border);
+}
+.mega-link {
+  display:flex; align-items:center; gap:.6rem;
+  padding:.45rem .5rem; border-radius:8px;
+  font-size:.8rem; font-weight:600; color:var(--text);
+  transition:all .16s; position:relative;
+}
+.mega-link:hover { background:var(--p-soft); color:var(--p); padding-left:.75rem; }
+.mega-link i { font-size:.82rem; color:var(--p); width:16px; flex-shrink:0; }
+.mega-link-sub { font-size:.69rem; color:var(--text-muted); font-weight:400; }
+
+/* Simple dropdown */
+.simple-drop {
+  position:absolute; top:100%; left:0;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:0 var(--radius) var(--radius) var(--radius);
+  box-shadow:0 16px 48px rgba(0,30,100,.13);
+  padding:.5rem; min-width:210px;
+  opacity:0; visibility:hidden; transform:translateY(10px);
+  transition:all .24s var(--ease); z-index:1060;
+}
+.nav-menu > li:hover > .simple-drop {
+  opacity:1; visibility:visible; transform:translateY(0);
+}
+.simple-link {
+  display:flex; align-items:center; gap:.5rem;
+  padding:.48rem .75rem; border-radius:7px;
+  font-size:.8rem; font-weight:600; color:var(--text);
+  transition:all .15s;
+}
+.simple-link:hover { background:var(--p-soft); color:var(--p); }
+.simple-link i { font-size:.78rem; color:var(--p); width:14px; }
+
+/* Child submenu */
+.has-child { position:relative; }
+.child-drop {
+  position:absolute; left:100%; top:-.5rem;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); box-shadow:0 12px 40px rgba(0,30,100,.13);
+  padding:.5rem; min-width:190px;
+  opacity:0; visibility:hidden; transform:translateX(8px);
+  transition:all .22s var(--ease); z-index:1070;
+}
+.has-child:hover > .child-drop {
+  opacity:1; visibility:visible; transform:translateX(0);
+}
+.child-arr { margin-left:auto; font-size:.6rem; opacity:.45; }
+
+/* Nav right */
+.nav-right { display:flex; align-items:center; gap:.5rem; margin-left:auto; flex-shrink:0; }
+.nav-search-btn {
+  width:36px; height:36px; border-radius:9px;
+  border:1.5px solid var(--border); background:transparent;
+  color:var(--text-sub); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.9rem; transition:all .18s;
+}
+.nav-search-btn:hover { background:var(--p-soft); color:var(--p); border-color:rgba(0,114,198,.3); }
+.nav-cta {
+  display:inline-flex; align-items:center; gap:.35rem;
+  background:linear-gradient(135deg,var(--p),var(--p-dk));
+  color:#fff; padding:.5rem 1rem; border-radius:var(--radius-sm);
+  font-size:.78rem; font-weight:700; border:none; cursor:pointer;
+  transition:all .2s; white-space:nowrap;
+  box-shadow:0 4px 14px rgba(0,114,198,.28);
+}
+.nav-cta:hover { transform:translateY(-1px); box-shadow:0 8px 22px rgba(0,114,198,.38); color:#fff; }
+.navbar-toggler-x {
+  border:1.5px solid var(--border); border-radius:var(--radius-sm);
+  padding:.35rem .55rem; background:transparent; cursor:pointer;
+  color:var(--text); font-size:1.2rem; line-height:1;
+}
+.navbar-toggler-x:focus { outline:none; box-shadow:0 0 0 3px var(--p-glow); }
+
+/* Mobile menu */
+@media (max-width:991px) {
+  .mega-drop,.simple-drop,.child-drop {
+    position:static; opacity:1; visibility:visible; transform:none;
+    box-shadow:none; border:none; padding:0 0 0 .85rem;
+    background:transparent; min-width:0; display:none;
+    border-radius:0;
+  }
+  .mega-drop.mob-open,.simple-drop.mob-open { display:block; }
+  .nav-menu > li > a { padding:.65rem 0; border-bottom:1px solid var(--border); }
+  .nav-menu > li > a::after { display:none; }
+  .mob-nav-wrap { padding:.75rem 0 1rem; border-top:1px solid var(--border); }
+}
+
+/* ════════════════════════════════════════
+   HERO JUMBOTRON
+════════════════════════════════════════ */
+.hero-section { background:var(--dark); }
+.hero-main { position:relative; height:520px; overflow:hidden; }
+@media(max-width:767px) { .hero-main { height:360px; } }
+.hero-slide {
+  position:absolute; inset:0;
+  background-size:cover; background-position:center;
+  opacity:0; transition:opacity .9s ease;
+}
+.hero-slide.active { opacity:1; }
+.hero-slide::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(0,20,70,.85) 0%,rgba(0,15,45,.55) 50%,rgba(0,5,20,.22) 100%);
+}
+.hero-content {
+  position:absolute; bottom:2.2rem; left:0; right:0;
+  padding:0 2rem; z-index:2;
+}
+.hero-cat {
+  display:inline-flex; align-items:center; gap:.35rem;
+  background:var(--accent); color:#fff;
+  font-size:.62rem; font-weight:800; padding:.2rem .7rem;
+  border-radius:100px; letter-spacing:.07em; text-transform:uppercase;
+  margin-bottom:.7rem;
+}
+.hero-title {
+  font-family:var(--font-d);
+  font-size:clamp(1.3rem,3.2vw,2rem); font-weight:700;
+  color:#fff; line-height:1.32; margin-bottom:.55rem;
+  max-width:620px; text-shadow:0 2px 16px rgba(0,0,0,.4);
+}
+.hero-meta { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; font-size:.73rem; color:rgba(255,255,255,.65); }
+.hero-meta i { color:var(--accent); }
+.hero-read-more {
+  display:inline-flex; align-items:center; gap:.35rem;
+  margin-top:.85rem;
+  background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.3);
+  color:#fff; font-size:.76rem; font-weight:700;
+  padding:.42rem .9rem; border-radius:100px;
+  backdrop-filter:blur(4px); transition:all .2s;
+}
+.hero-read-more:hover { background:rgba(255,255,255,.22); color:#fff; }
+
+/* Dots */
+.hero-dots {
+  position:absolute; bottom:.9rem; right:2rem;
+  display:flex; gap:.4rem; z-index:3;
+}
+.hero-dot {
+  width:22px; height:4px; border-radius:2px;
+  background:rgba(255,255,255,.3); cursor:pointer;
+  border:none; padding:0; transition:all .28s;
+}
+.hero-dot.active { background:var(--accent); width:34px; }
+
+/* Progress bar */
+.hero-prog {
+  position:absolute; bottom:0; left:0; height:3px;
+  background:var(--accent); z-index:3; transition:none;
+  animation:hero-prog 6s linear infinite;
+}
+@keyframes hero-prog { from{width:0} to{width:100%} }
+
+/* Aside list */
+.hero-aside { height:520px; display:flex; flex-direction:column; background:rgba(0,10,35,.92); }
+@media(max-width:991px) { .hero-aside { height:auto; max-height:280px; } }
+.hero-aside-ttl {
+  padding:.85rem 1.1rem .65rem; flex-shrink:0;
+  font-size:.62rem; font-weight:800; text-transform:uppercase;
+  letter-spacing:.1em; color:rgba(255,255,255,.4);
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.hero-aside-list { flex:1; overflow-y:auto; scrollbar-width:none; }
+.hero-aside-list::-webkit-scrollbar { display:none; }
+.hero-aside-item {
+  display:flex; gap:.7rem; align-items:flex-start;
+  padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.05);
+  cursor:pointer; transition:background .18s;
+}
+.hero-aside-item:hover { background:rgba(255,255,255,.05); }
+.hero-aside-item.active { background:rgba(0,114,198,.22); border-left:3px solid var(--p-lt); }
+.hero-aside-thumb { width:60px; height:46px; border-radius:6px; object-fit:cover; flex-shrink:0; filter:brightness(.85); transition:filter .18s; }
+.hero-aside-item:hover .hero-aside-thumb,.hero-aside-item.active .hero-aside-thumb { filter:brightness(1); }
+.hero-aside-num { font-size:.6rem; font-weight:800; color:var(--accent); font-family:var(--font-d); }
+.hero-aside-ttl-txt {
+  font-size:.74rem; font-weight:600; color:rgba(255,255,255,.85); line-height:1.43;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.hero-aside-date { font-size:.63rem; color:rgba(255,255,255,.38); margin-top:.22rem; }
+
+/* ── Ticker ── */
+.ticker-bar { background:var(--p); padding:.58rem 0; }
+.ticker-lbl {
+  background:var(--accent); color:#fff; font-size:.66rem; font-weight:800;
+  padding:.2rem .7rem; border-radius:4px; letter-spacing:.06em;
+  text-transform:uppercase; white-space:nowrap; flex-shrink:0;
+}
+.ticker-wrap { overflow:hidden; flex:1; }
+.ticker-track { display:flex; gap:3rem; white-space:nowrap; animation:marquee 30s linear infinite; }
+.ticker-item { display:flex; align-items:center; gap:.4rem; font-size:.78rem; color:rgba(255,255,255,.88); }
+.ticker-sep { color:rgba(255,255,255,.3); font-size:.8rem; }
+
+/* ════════════════════════════════════════
+   SECTION COMMONS
+════════════════════════════════════════ */
+.sec-py  { padding:4.5rem 0; }
+.sec-py-sm { padding:3rem 0; }
+.sec-bg-alt  { background:var(--bg-alt); }
+.sec-bg-dark { background:var(--p-xdk); }
+
+.sec-tag {
+  display:inline-flex; align-items:center; gap:.4rem;
+  font-size:.64rem; font-weight:800; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--p); margin-bottom:.5rem;
+}
+.sec-tag::before { content:''; width:22px; height:3px; background:var(--p); border-radius:2px; }
+.sec-title {
+  font-family:var(--font-d);
+  font-size:clamp(1.45rem,2.8vw,1.9rem); font-weight:700;
+  color:var(--text); line-height:1.25; letter-spacing:-.02em;
+}
+.sec-title-lt { color:#fff; }
+.sec-desc  { font-size:.86rem; color:var(--text-sub); line-height:1.75; margin-top:.45rem; }
+.sec-line  { width:44px; height:4px; background:linear-gradient(90deg,var(--p),var(--p-lt)); border-radius:2px; margin-top:.7rem; }
+.view-all {
+  display:inline-flex; align-items:center; gap:.32rem;
+  font-size:.78rem; font-weight:700; color:var(--p);
+  border:1.5px solid var(--p); padding:.42rem .95rem;
+  border-radius:100px; transition:all .2s;
+}
+.view-all:hover { background:var(--p); color:#fff; }
+.view-all-lt { color:rgba(255,255,255,.8); border-color:rgba(255,255,255,.35); }
+.view-all-lt:hover { background:rgba(255,255,255,.12); color:#fff; border-color:rgba(255,255,255,.6); }
+
+/* ════════════════════════════════════════
+   NEWS CARDS
+════════════════════════════════════════ */
+.news-card {
+  background:var(--surface); border-radius:var(--radius);
+  border:1px solid var(--border); overflow:hidden;
+  transition:transform .32s var(--ease),box-shadow .32s var(--ease);
+  height:100%; display:flex; flex-direction:column;
+}
+.news-card:hover { transform:translateY(-5px); box-shadow:var(--shadow-h); }
+.nc-thumb-wrap { overflow:hidden; flex-shrink:0; }
+.nc-thumb { width:100%; height:185px; object-fit:cover; transition:transform .5s var(--ease); display:block; }
+.nc-thumb-lg { height:255px; }
+.news-card:hover .nc-thumb { transform:scale(1.05); }
+.nc-body { padding:1.05rem 1.15rem; flex:1; display:flex; flex-direction:column; }
+.nc-cat {
+  display:inline-block; font-size:.62rem; font-weight:800;
+  letter-spacing:.07em; text-transform:uppercase;
+  color:var(--p); background:var(--p-soft);
+  padding:.16rem .6rem; border-radius:100px; margin-bottom:.45rem;
+}
+.nc-title {
+  font-family:var(--font-d); font-size:.93rem; font-weight:600;
+  color:var(--text); line-height:1.45; margin-bottom:.5rem; flex:1;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+  transition:color .2s;
+}
+.nc-title-lg { font-size:1.07rem; -webkit-line-clamp:4; }
+.news-card:hover .nc-title { color:var(--p); }
+.nc-excerpt {
+  font-size:.77rem; color:var(--text-sub); line-height:1.65;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  margin-bottom:.8rem;
+}
+.nc-meta {
+  display:flex; align-items:center; gap:.7rem; flex-wrap:wrap;
+  font-size:.69rem; color:var(--text-muted);
+  padding-top:.72rem; border-top:1px solid var(--border);
+}
+.nc-meta i { color:var(--p); font-size:.7rem; }
+
+/* Horizontal card */
+.nc-h {
+  display:flex; background:var(--surface); border-radius:var(--radius);
+  border:1px solid var(--border); overflow:hidden;
+  transition:transform .28s var(--ease),box-shadow .28s var(--ease);
+}
+.nc-h:hover { transform:translateY(-3px); box-shadow:var(--shadow-h); }
+.nc-h-thumb { width:105px; object-fit:cover; flex-shrink:0; transition:transform .4s var(--ease); }
+.nc-h:hover .nc-h-thumb { transform:scale(1.06); }
+.nc-h-body { padding:.82rem .95rem; flex:1; display:flex; flex-direction:column; justify-content:center; }
+.nc-h-title {
+  font-size:.82rem; font-weight:700; color:var(--text); line-height:1.45;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  transition:color .2s;
+}
+.nc-h:hover .nc-h-title { color:var(--p); }
+
+/* ════════════════════════════════════════
+   STATS
+════════════════════════════════════════ */
+.stats-box {
+  background:linear-gradient(135deg,var(--p-xdk) 0%,var(--p-dk) 55%,var(--p) 100%);
+  border-radius:var(--radius); padding:2.5rem;
+  position:relative; overflow:hidden;
+}
+.stats-box::before,.stats-box::after {
+  content:''; position:absolute; border-radius:50%;
+}
+.stats-box::before { width:300px; height:300px; top:-40%; right:-5%; background:rgba(255,255,255,.06); }
+.stats-box::after  { width:220px; height:220px; bottom:-45%; left:3%; background:rgba(255,255,255,.03); }
+.stat-item { text-align:center; position:relative; z-index:1; }
+.stat-ico {
+  width:48px; height:48px; border-radius:12px; margin:0 auto .65rem;
+  background:rgba(255,255,255,.1);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.18rem; color:var(--accent);
+}
+.stat-num {
+  font-family:var(--font-d); font-size:clamp(1.9rem,4vw,2.7rem);
+  font-weight:800; color:#fff; line-height:1; letter-spacing:-.02em;
+}
+.stat-sfx { font-size:.58em; color:var(--accent); }
+.stat-lbl { font-size:.76rem; color:rgba(255,255,255,.62); margin-top:.32rem; }
+.stat-divider { width:1px; background:rgba(255,255,255,.1); }
+
+/* ════════════════════════════════════════
+   SERVICE CARDS
+════════════════════════════════════════ */
+.svc-card {
+  background:var(--surface); border-radius:var(--radius);
+  border:1px solid var(--border); padding:1.6rem 1.35rem;
+  text-align:center; transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .3s;
+  height:100%; cursor:pointer;
+}
+.svc-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-h); border-color:rgba(0,114,198,.22); }
+.svc-ico {
+  width:62px; height:62px; border-radius:15px; margin:0 auto .95rem;
+  background:linear-gradient(135deg,var(--p-soft),rgba(0,114,198,.14));
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.5rem; color:var(--p); transition:transform .3s var(--ease);
+}
+.svc-card:hover .svc-ico { transform:scale(1.1) rotate(-6deg); }
+.svc-title { font-size:.86rem; font-weight:800; color:var(--text); margin-bottom:.35rem; }
+.svc-desc  { font-size:.74rem; color:var(--text-sub); line-height:1.6; }
+.svc-link  {
+  display:inline-flex; align-items:center; gap:.25rem;
+  font-size:.7rem; font-weight:700; color:var(--p);
+  margin-top:.8rem; opacity:0; transition:opacity .2s,gap .2s;
+}
+.svc-card:hover .svc-link { opacity:1; gap:.45rem; }
+
+/* ════════════════════════════════════════
+   PERMOHONAN BANNER
+════════════════════════════════════════ */
+.perm-banner {
+  background:linear-gradient(135deg,var(--p-xdk),var(--p-dk) 60%,var(--p));
+  border-radius:var(--radius); padding:2.4rem 2rem;
+  position:relative; overflow:hidden;
+}
+.perm-banner::before,.perm-banner::after { content:''; position:absolute; border-radius:50%; }
+.perm-banner::before { width:280px; height:280px; right:-4rem; top:-4rem; border:55px solid rgba(255,255,255,.05); }
+.perm-banner::after  { width:180px; height:180px; right:4rem; bottom:-6rem; background:rgba(255,255,255,.04); }
+.perm-banner-ttl { font-family:var(--font-d); font-size:clamp(1.25rem,2.8vw,1.62rem); font-weight:700; color:#fff; line-height:1.3; margin-bottom:.55rem; }
+.perm-banner-desc { font-size:.83rem; color:rgba(255,255,255,.7); line-height:1.7; margin-bottom:1.3rem; }
+.perm-step { display:flex; align-items:flex-start; gap:.7rem; margin-bottom:.8rem; }
+.perm-step-n { width:27px; height:27px; border-radius:50%; flex-shrink:0; background:var(--accent); color:#fff; font-size:.7rem; font-weight:800; display:flex; align-items:center; justify-content:center; }
+.perm-step-ttl { color:#fff; font-weight:700; font-size:.81rem; }
+.perm-step-txt { font-size:.77rem; color:rgba(255,255,255,.75); line-height:1.5; }
+.btn-perm {
+  display:inline-flex; align-items:center; gap:.38rem;
+  background:var(--accent); color:#fff; padding:.62rem 1.35rem;
+  border-radius:var(--radius-sm); font-size:.8rem; font-weight:700;
+  border:none; cursor:pointer; transition:all .2s;
+  box-shadow:0 4px 14px rgba(245,158,11,.35);
+}
+.btn-perm:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(245,158,11,.45); color:#fff; }
+.btn-perm-ghost { background:transparent; border:1.5px solid rgba(255,255,255,.38); box-shadow:none; }
+.btn-perm-ghost:hover { background:rgba(255,255,255,.1); box-shadow:none; }
+
+/* ════════════════════════════════════════
+   PENGUMUMAN
+════════════════════════════════════════ */
+.peng-item {
+  display:flex; align-items:flex-start; gap:.8rem;
+  padding:.88rem 0; border-bottom:1px solid var(--border);
+}
+.peng-item:last-child { border-bottom:none; }
+.peng-num {
+  width:28px; height:28px; border-radius:7px; flex-shrink:0;
+  background:var(--p-soft); color:var(--p);
+  font-size:.72rem; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.peng-ttl { font-size:.82rem; font-weight:600; color:var(--text); line-height:1.45; }
+.peng-date { font-size:.69rem; color:var(--text-muted); margin-top:.15rem; }
+
+/* ════════════════════════════════════════
+   AGENDA
+════════════════════════════════════════ */
+.agenda-card {
+  background:var(--surface); border-radius:var(--radius);
+  border:1px solid var(--border); padding:1rem 1.15rem;
+  display:flex; gap:.95rem; align-items:flex-start;
+  transition:all .22s;
+}
+.agenda-card:hover { box-shadow:var(--shadow-h); border-color:rgba(0,114,198,.2); }
+.agenda-date {
+  background:linear-gradient(135deg,var(--p),var(--p-dk));
+  border-radius:10px; padding:.58rem .75rem;
+  text-align:center; flex-shrink:0; min-width:52px;
+  box-shadow:0 4px 12px rgba(0,114,198,.25);
+}
+.agenda-day { font-size:1.35rem; font-weight:800; color:#fff; line-height:1; font-family:var(--font-d); }
+.agenda-mon { font-size:.6rem; font-weight:700; color:rgba(255,255,255,.72); text-transform:uppercase; letter-spacing:.06em; }
+.agenda-ttl  { font-size:.83rem; font-weight:700; color:var(--text); line-height:1.42; margin-bottom:.22rem; }
+.agenda-info { font-size:.72rem; color:var(--text-sub); display:flex; align-items:center; gap:.38rem; }
+
+/* ════════════════════════════════════════
+   INFOGRAFIS
+════════════════════════════════════════ */
+.infog-card {
+  border-radius:var(--radius); overflow:hidden;
+  position:relative; aspect-ratio:3/4; cursor:pointer;
+}
+.infog-card img { width:100%; height:100%; object-fit:cover; transition:transform .5s var(--ease); }
+.infog-card:hover img { transform:scale(1.08); }
+.infog-ov {
+  position:absolute; inset:0;
+  background:linear-gradient(0deg,rgba(0,15,50,.88) 0%,transparent 55%);
+  display:flex; flex-direction:column; justify-content:flex-end; padding:.9rem;
+}
+.infog-cat   { font-size:.6rem; color:var(--accent); font-weight:700; margin-bottom:.25rem; }
+.infog-title { font-size:.78rem; font-weight:700; color:#fff; line-height:1.42; }
+
+/* ════════════════════════════════════════
+   GALLERY
+════════════════════════════════════════ */
+.gallery-grid {
+  display:grid; gap:.55rem;
+  grid-template-columns:repeat(4,1fr);
+  grid-template-rows:repeat(2,190px);
+  border-radius:var(--radius); overflow:hidden;
+}
+.gallery-grid .gi:first-child { grid-column:span 2; grid-row:span 2; }
+@media(max-width:767px) {
+  .gallery-grid { grid-template-columns:repeat(2,1fr); grid-template-rows:repeat(4,140px); }
+}
+.gi { position:relative; overflow:hidden; cursor:pointer; }
+.gi img { width:100%; height:100%; object-fit:cover; transition:transform .5s var(--ease); }
+.gi:hover img { transform:scale(1.08); }
+.gi-ov {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:rgba(0,114,198,0); transition:background .3s;
+}
+.gi:hover .gi-ov { background:rgba(0,114,198,.32); }
+.gi-zoom {
+  width:40px; height:40px; border-radius:50%;
+  background:rgba(255,255,255,.9); display:flex; align-items:center;
+  justify-content:center; color:var(--p); font-size:1rem;
+  opacity:0; transform:scale(.7); transition:all .28s var(--ease);
+}
+.gi:hover .gi-zoom { opacity:1; transform:scale(1); }
+
+/* ════════════════════════════════════════
+   SOSMED
+════════════════════════════════════════ */
+.sosmed-btn {
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.58rem .95rem; border-radius:var(--radius-sm);
+  font-size:.77rem; font-weight:700;
+  border:1.5px solid var(--border); color:var(--text);
+  background:transparent; transition:all .2s; cursor:pointer;
+}
+.sosmed-btn:hover { color:#fff; border-color:transparent; transform:translateY(-2px); }
+.sosmed-fb:hover  { background:#1877f2; }
+.sosmed-ig:hover  { background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }
+.sosmed-tw:hover  { background:#000; }
+.sosmed-yt:hover  { background:#ff0000; }
+
+.sosmed-card {
+  background:var(--surface); border-radius:var(--radius);
+  border:1px solid var(--border); padding:1.4rem;
+}
+
+/* ════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════ */
+.site-footer { background:var(--dark); padding:4rem 0 0; color:rgba(255,255,255,.58); font-size:.81rem; }
+.footer-logo-ico {
+  width:46px; height:46px; border-radius:11px; flex-shrink:0;
+  background:linear-gradient(135deg,var(--p),var(--p-dk));
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:1.25rem;
+}
+.footer-logo-title { font-size:.95rem; font-weight:800; color:#fff; line-height:1.2; }
+.footer-logo-sub   { font-size:.66rem; color:rgba(255,255,255,.42); }
+.footer-desc  { font-size:.78rem; line-height:1.75; color:rgba(255,255,255,.48); margin-bottom:1.1rem; }
+.footer-head  { font-size:.74rem; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:.08em; margin-bottom:.95rem; }
+.footer-link  { display:flex; align-items:center; gap:.4rem; padding:.28rem 0; color:rgba(255,255,255,.52); transition:color .18s,gap .18s; font-size:.79rem; }
+.footer-link:hover { color:var(--accent); gap:.6rem; }
+.footer-link i { font-size:.62rem; opacity:.55; }
+.footer-kontak { display:flex; gap:.62rem; align-items:flex-start; padding:.42rem 0; color:rgba(255,255,255,.52); font-size:.78rem; }
+.footer-kontak i { color:var(--accent); margin-top:2px; flex-shrink:0; }
+.footer-sosmed-btn {
+  width:34px; height:34px; border-radius:8px;
+  background:rgba(255,255,255,.07); display:flex; align-items:center;
+  justify-content:center; color:rgba(255,255,255,.52); font-size:.88rem;
+  transition:all .18s;
+}
+.footer-sosmed-btn:hover { background:var(--p); color:#fff; transform:translateY(-2px); }
+.footer-bottom {
+  border-top:1px solid rgba(255,255,255,.06);
+  padding:1.1rem 0; margin-top:3rem;
+  font-size:.72rem; color:rgba(255,255,255,.3);
+}
+.newsletter-wrap {
+  background:rgba(0,114,198,.1); border:1px solid rgba(0,114,198,.18);
+  border-radius:var(--radius-sm); padding:1rem 1.1rem; margin-top:1rem;
+}
+.newsletter-inp {
+  width:100%; background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1); border-radius:7px;
+  padding:.48rem .72rem; color:#fff; font-family:var(--font-b);
+  font-size:.78rem; outline:none; transition:border .2s; margin-bottom:.5rem;
+}
+.newsletter-inp::placeholder { color:rgba(255,255,255,.3); }
+.newsletter-inp:focus { border-color:rgba(0,114,198,.5); }
+.btn-nl {
+  width:100%; background:var(--p); color:#fff; border:none;
+  border-radius:7px; padding:.48rem; cursor:pointer;
+  font-family:var(--font-b); font-size:.76rem; font-weight:700; transition:background .2s;
+}
+.btn-nl:hover { background:var(--p-lt); }
+
+/* ════════════════════════════════════════
+   BTT & SEARCH MODAL
+════════════════════════════════════════ */
+.btt {
+  position:fixed; bottom:1.5rem; right:1.5rem;
+  width:42px; height:42px; border-radius:50%;
+  background:var(--p); color:#fff; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1rem; z-index:999;
+  box-shadow:0 4px 16px rgba(0,114,198,.35);
+  opacity:0; transform:translateY(12px); transition:all .3s var(--ease);
+}
+.btt.vis { opacity:1; transform:translateY(0); }
+.btt:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,114,198,.45); }
+
+.search-ov {
+  position:fixed; inset:0; z-index:2000;
+  background:rgba(0,15,50,.65); backdrop-filter:blur(8px);
+  display:flex; align-items:flex-start; justify-content:center;
+  padding-top:5.5rem;
+  opacity:0; pointer-events:none; transition:opacity .28s;
+}
+.search-ov.open { opacity:1; pointer-events:all; }
+.search-box {
+  background:var(--surface); border-radius:var(--radius);
+  padding:1.5rem; width:100%; max-width:580px;
+  box-shadow:0 24px 72px rgba(0,15,50,.28);
+  transform:translateY(-20px); transition:transform .32s var(--ease);
+  position:relative;
+}
+.search-ov.open .search-box { transform:translateY(0); }
+.search-inp-main {
+  width:100%; border:2px solid var(--border); border-radius:var(--radius-sm);
+  padding:.82rem 1rem .82rem 2.75rem; font-family:var(--font-b);
+  font-size:.97rem; color:var(--text); outline:none; transition:border .2s; background:transparent;
+}
+.search-inp-main:focus { border-color:var(--p); }
+
+</style>
+</head>
+<body>
+<!-- ═══ PARTICLE CANVAS ═══ -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- ═══ SEARCH MODAL ═══ -->
+<div class="search-ov" id="searchOv">
+  <div class="search-box">
+    <div style="position:relative;margin-bottom:.85rem">
+      <i class="bi bi-search" style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:1rem;pointer-events:none"></i>
+      <input type="text" class="search-inp-main" id="searchInput" placeholder="Cari berita, pengumuman, informasi publik..."/>
+    </div>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span style="font-size:.7rem;color:var(--text-muted)">Populer:</span>
+      <a href="#" style="font-size:.72rem;color:var(--p);font-weight:600">Permohonan Informasi</a>
+      <a href="#" style="font-size:.72rem;color:var(--p);font-weight:600">Transparansi Anggaran</a>
+      <a href="#" style="font-size:.72rem;color:var(--p);font-weight:600">PPID 2024</a>
+    </div>
+    <button onclick="closeSearch()" style="position:absolute;top:1.2rem;right:1.2rem;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem"><i class="bi bi-x-lg"></i></button>
+  </div>
+</div>
+
+<!-- ═══ INFOBAR ═══ -->
+<div class="infobar">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="d-flex align-items-center gap-3">
+      <span class="d-none d-md-flex align-items-center gap-2" style="font-size:.69rem;white-space:nowrap">
+        <i class="bi bi-calendar3" style="color:var(--accent)"></i>
+        <span id="currentDate"></span>
+      </span>
+      <span class="d-none d-md-block" style="opacity:.2;font-size:.8rem">|</span>
+      <div class="marquee-wrap">
+        <div class="marquee-track" id="marqueeTrack"></div>
+      </div>
+      <div class="d-flex align-items-center gap-3 ms-2 flex-shrink-0">
+        <a href="#" class="d-none d-sm-inline"><i class="bi bi-facebook"></i></a>
+        <a href="#"><i class="bi bi-instagram"></i></a>
+        <a href="#" class="d-none d-sm-inline"><i class="bi bi-youtube"></i></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MAIN NAVBAR ═══ -->
+<nav class="main-nav" id="mainNav">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="nav-inner">
+
+      <!-- Logo -->
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-icon"><i class="bi bi-shield-fill-check"></i></div>
+        <div class="d-none d-sm-block">
+          <div class="nav-logo-title">PPID Pekalongan</div>
+          <div class="nav-logo-sub">Kota Pekalongan</div>
+        </div>
+      </a>
+
+      <!-- Desktop menu -->
+      <ul class="nav-menu d-none d-lg-flex ms-3" id="desktopMenu">
+
+        <li><a href="#" class="active">Beranda</a></li>
+
+        <!-- Profil (mega) -->
+        <li>
+          <a href="#">Profil <i class="bi bi-chevron-down nav-caret"></i></a>
+          <div class="mega-drop" style="min-width:520px">
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="mega-sec-title">Tentang Kami</div>
+                <a href="#" class="mega-link"><i class="bi bi-building"></i><div><div>Sejarah Instansi</div><div class="mega-link-sub">Latar belakang pendirian</div></div></a>
+                <a href="#" class="mega-link"><i class="bi bi-person-badge-fill"></i><div><div>Visi &amp; Misi</div><div class="mega-link-sub">Arah kebijakan organisasi</div></div></a>
+                <a href="#" class="mega-link"><i class="bi bi-diagram-3-fill"></i><div><div>Struktur Organisasi</div><div class="mega-link-sub">Susunan jabatan &amp; tugas</div></div></a>
+                <a href="#" class="mega-link"><i class="bi bi-geo-alt-fill"></i><div><div>Kontak &amp; Lokasi</div><div class="mega-link-sub">Alamat &amp; jam pelayanan</div></div></a>
+              </div>
+              <div class="col-6">
+                <div class="mega-sec-title">Regulasi &amp; Legalitas</div>
+                <a href="#" class="mega-link"><i class="bi bi-file-earmark-text-fill"></i><div><div>Dasar Hukum</div><div class="mega-link-sub">UU &amp; PP Keterbukaan Informasi</div></div></a>
+                <a href="#" class="mega-link"><i class="bi bi-journal-bookmark-fill"></i><div><div>Peraturan Daerah</div><div class="mega-link-sub">Perda terkait PPID</div></div></a>
+                <a href="#" class="mega-link"><i class="bi bi-award-fill"></i><div><div>Penghargaan</div><div class="mega-link-sub">Prestasi &amp; rekognisi</div></div></a>
+                <a href="#" class="mega-link has-child">
+                  <i class="bi bi-gear-fill"></i>
+                  <div><div>SOP Layanan <span class="child-arr"><i class="bi bi-chevron-right"></i></span></div><div class="mega-link-sub">Prosedur operasional</div></div>
+                  <div class="child-drop">
+                    <a href="#" class="simple-link"><i class="bi bi-arrow-right-circle"></i>SOP Permohonan</a>
+                    <a href="#" class="simple-link"><i class="bi bi-arrow-right-circle"></i>SOP Keberatan</a>
+                    <a href="#" class="simple-link"><i class="bi bi-arrow-right-circle"></i>SOP Sengketa</a>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <!-- Informasi Publik (mega) -->
+        <li>
+          <a href="#">Informasi Publik <i class="bi bi-chevron-down nav-caret"></i></a>
+          <div class="mega-drop" style="min-width:540px">
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="mega-sec-title">Kelompok Informasi</div>
+                <a href="#" class="mega-link"><i class="bi bi-folder2-open"></i><div><div>DIP — Wajib Tersedia</div><div class="mega-link-sub">Daftar Informasi Publik</div></div></a>
+                <a href="#" class="mega-link"><i class="bi bi-folder-fill"></i><div><div>DIB — Berkala</div><div class="mega-link-sub">Informasi berkala setiap saat</div></div></a>
+                <a href="#" class="mega-link"><i class="bi bi-folder-symlink-fill"></i><div><div>DIBS — Serta Merta</div><div class="mega-link-sub">Informasi darurat &amp; mendesak</div></div></a>
+                <a href="#" class="mega-link"><i class="bi bi-archive-fill"></i><div><div>DIU — Dikecualikan</div><div class="mega-link-sub">Informasi yang dikecualikan</div></div></a>
+              </div>
+              <div class="col-6">
+                <div class="mega-sec-title">Layanan Permohonan</div>
+                <a href="#" class="mega-link"><i class="bi bi-send-fill"></i><div><div>Ajukan Permohonan</div><div class="mega-link-sub">Kirim permohonan online</div></div></a>
+                <a href="#" class="mega-link"><i class="bi bi-search"></i><div><div>Cek Status</div><div class="mega-link-sub">Pantau status permohonan</div></div></a>
+                <a href="#" class="mega-link has-child">
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                  <div><div>Keberatan <span class="child-arr"><i class="bi bi-chevron-right"></i></span></div><div class="mega-link-sub">Pengajuan keberatan &amp; sengketa</div></div>
+                  <div class="child-drop">
+                    <a href="#" class="simple-link"><i class="bi bi-arrow-right-circle"></i>Ajukan Keberatan</a>
+                    <a href="#" class="simple-link"><i class="bi bi-arrow-right-circle"></i>Sengketa Informasi</a>
+                    <a href="#" class="simple-link"><i class="bi bi-arrow-right-circle"></i>Status Keberatan</a>
+                  </div>
+                </a>
+                <a href="#" class="mega-link"><i class="bi bi-download"></i><div><div>Unduh Dokumen</div><div class="mega-link-sub">Formulir &amp; template</div></div></a>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <!-- Berita (simple) -->
+        <li>
+          <a href="#">Berita &amp; Info <i class="bi bi-chevron-down nav-caret"></i></a>
+          <div class="simple-drop">
+            <a href="#" class="simple-link"><i class="bi bi-newspaper"></i>Berita Terkini</a>
+            <a href="#" class="simple-link"><i class="bi bi-megaphone-fill"></i>Pengumuman</a>
+            <a href="#" class="simple-link"><i class="bi bi-calendar-event-fill"></i>Agenda Kegiatan</a>
+            <a href="#" class="simple-link"><i class="bi bi-pie-chart-fill"></i>Infografis</a>
+            <a href="#" class="simple-link"><i class="bi bi-images"></i>Galeri Foto</a>
+            <a href="#" class="simple-link"><i class="bi bi-camera-video-fill"></i>Video</a>
+          </div>
+        </li>
+
+        <!-- PPID (simple) -->
+        <li>
+          <a href="#">PPID <i class="bi bi-chevron-down nav-caret"></i></a>
+          <div class="simple-drop">
+            <a href="#" class="simple-link"><i class="bi bi-info-circle-fill"></i>Tentang PPID</a>
+            <a href="#" class="simple-link"><i class="bi bi-file-earmark-check-fill"></i>Laporan Tahunan</a>
+            <a href="#" class="simple-link"><i class="bi bi-bar-chart-fill"></i>Statistik Permohonan</a>
+            <a href="#" class="simple-link"><i class="bi bi-shield-check"></i>Maklumat Layanan</a>
+          </div>
+        </li>
+
+        <li><a href="#">Kontak</a></li>
+      </ul>
+
+      <!-- Nav right -->
+      <div class="nav-right d-none d-lg-flex">
+        <button class="nav-search-btn" onclick="openSearch()"><i class="bi bi-search"></i></button>
+        <a href="#" class="nav-cta"><i class="bi bi-send-fill"></i> Ajukan Permohonan</a>
+      </div>
+
+      <!-- Mobile controls -->
+      <div class="d-lg-none d-flex align-items-center gap-2 ms-auto">
+        <button class="nav-search-btn" onclick="openSearch()"><i class="bi bi-search"></i></button>
+        <button class="navbar-toggler-x" id="mobToggler"><i class="bi bi-list"></i></button>
+      </div>
+    </div>
+
+    <!-- Mobile nav collapse -->
+    <div id="mobNav" style="display:none">
+      <div class="mob-nav-wrap">
+        <ul class="nav-menu d-flex flex-column" style="gap:0">
+          <li><a href="#" class="active" style="border-bottom:1px solid var(--border);padding:.65rem 0">Beranda</a></li>
+          <li>
+            <a href="#" onclick="toggleMob('mp')" style="border-bottom:1px solid var(--border);padding:.65rem 0;justify-content:space-between">Profil <i class="bi bi-chevron-down nav-caret"></i></a>
+            <div id="mp" class="simple-drop">
+              <a href="#" class="simple-link"><i class="bi bi-building"></i>Sejarah Instansi</a>
+              <a href="#" class="simple-link"><i class="bi bi-person-badge-fill"></i>Visi &amp; Misi</a>
+              <a href="#" class="simple-link"><i class="bi bi-diagram-3-fill"></i>Struktur Organisasi</a>
+              <a href="#" class="simple-link"><i class="bi bi-file-earmark-text-fill"></i>Dasar Hukum</a>
+              <a href="#" class="simple-link"><i class="bi bi-geo-alt-fill"></i>Kontak &amp; Lokasi</a>
+            </div>
+          </li>
+          <li>
+            <a href="#" onclick="toggleMob('mi')" style="border-bottom:1px solid var(--border);padding:.65rem 0;justify-content:space-between">Informasi Publik <i class="bi bi-chevron-down nav-caret"></i></a>
+            <div id="mi" class="simple-drop">
+              <a href="#" class="simple-link"><i class="bi bi-folder2-open"></i>DIP — Wajib Tersedia</a>
+              <a href="#" class="simple-link"><i class="bi bi-folder-fill"></i>DIB — Berkala</a>
+              <a href="#" class="simple-link"><i class="bi bi-folder-symlink-fill"></i>DIBS — Serta Merta</a>
+              <a href="#" class="simple-link"><i class="bi bi-archive-fill"></i>DIU — Dikecualikan</a>
+              <a href="#" class="simple-link"><i class="bi bi-send-fill"></i>Ajukan Permohonan</a>
+            </div>
+          </li>
+          <li>
+            <a href="#" onclick="toggleMob('mb')" style="border-bottom:1px solid var(--border);padding:.65rem 0;justify-content:space-between">Berita &amp; Info <i class="bi bi-chevron-down nav-caret"></i></a>
+            <div id="mb" class="simple-drop">
+              <a href="#" class="simple-link"><i class="bi bi-newspaper"></i>Berita Terkini</a>
+              <a href="#" class="simple-link"><i class="bi bi-megaphone-fill"></i>Pengumuman</a>
+              <a href="#" class="simple-link"><i class="bi bi-calendar-event-fill"></i>Agenda Kegiatan</a>
+              <a href="#" class="simple-link"><i class="bi bi-pie-chart-fill"></i>Infografis</a>
+              <a href="#" class="simple-link"><i class="bi bi-images"></i>Galeri Foto</a>
+            </div>
+          </li>
+          <li>
+            <a href="#" onclick="toggleMob('mpp')" style="border-bottom:1px solid var(--border);padding:.65rem 0;justify-content:space-between">PPID <i class="bi bi-chevron-down nav-caret"></i></a>
+            <div id="mpp" class="simple-drop">
+              <a href="#" class="simple-link"><i class="bi bi-info-circle-fill"></i>Tentang PPID</a>
+              <a href="#" class="simple-link"><i class="bi bi-file-earmark-check-fill"></i>Laporan Tahunan</a>
+              <a href="#" class="simple-link"><i class="bi bi-bar-chart-fill"></i>Statistik</a>
+            </div>
+          </li>
+          <li><a href="#" style="padding:.65rem 0">Kontak</a></li>
+          <li style="padding-top:.65rem"><a href="#" class="nav-cta d-inline-flex"><i class="bi bi-send-fill"></i> Ajukan Permohonan</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero-section">
+  <div class="container-fluid p-0">
+    <div class="row g-0">
+      <div class="col-12 col-lg-8">
+        <div class="hero-main" id="heroMain">
+          <div class="hero-prog" id="heroProg"></div>
+          <div class="hero-dots" id="heroDots"></div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="hero-aside">
+          <div class="hero-aside-ttl"><i class="bi bi-list-ul me-1"></i>Berita Pilihan</div>
+          <div class="hero-aside-list" id="heroList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TICKER ═══ -->
+<div class="ticker-bar">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="d-flex align-items-center gap-3">
+      <span class="ticker-lbl d-none d-sm-inline"><i class="bi bi-lightning-fill me-1"></i>Terkini</span>
+      <div class="ticker-wrap"><div class="ticker-track" id="tickerTrack"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BERITA TERKINI ═══ -->
+<section class="sec-py">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row align-items-end mb-4">
+      <div class="col" data-aos="fade-right">
+        <div class="sec-tag"><i class="bi bi-newspaper"></i> Berita Terkini</div>
+        <h2 class="sec-title">Informasi &amp; Berita Terbaru</h2>
+        <div class="sec-line"></div>
+      </div>
+      <div class="col-auto d-none d-sm-flex" data-aos="fade-left">
+        <a href="#" class="view-all"><i class="bi bi-grid-3x3-gap"></i> Semua Berita</a>
+      </div>
+    </div>
+    <div class="row g-3 g-lg-4">
+      <!-- Featured -->
+      <div class="col-12 col-md-5" data-aos="fade-right" data-aos-delay="50">
+        <a href="#" class="d-block h-100 text-decoration-none">
+          <div class="news-card">
+            <div class="nc-thumb-wrap"><img src="https://picsum.photos/seed/n1/700/420" alt="" class="nc-thumb nc-thumb-lg"/></div>
+            <div class="nc-body">
+              <span class="nc-cat">Kegiatan</span>
+              <h3 class="nc-title nc-title-lg">Bimbingan Teknis PPID se-Kota Pekalongan Tingkatkan Kapasitas Aparatur dalam Pengelolaan Informasi Publik Tahun 2024</h3>
+              <p class="nc-excerpt">Dinas Kominfo Kota Pekalongan menyelenggarakan Bimtek PPID untuk seluruh OPD dalam rangka meningkatkan kualitas layanan keterbukaan informasi.</p>
+              <div class="nc-meta">
+                <span><i class="bi bi-calendar3"></i> 15 Des 2024</span>
+                <span><i class="bi bi-clock"></i> 09:30 WIB</span>
+                <span><i class="bi bi-eye"></i> 1.2K</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <!-- 4 small cards -->
+      <div class="col-12 col-md-7">
+        <div class="row g-3">
+          <div class="col-12 col-sm-6" data-aos="fade-up" data-aos-delay="100">
+            <a href="#" class="d-block h-100 text-decoration-none">
+              <div class="news-card">
+                <div class="nc-thumb-wrap"><img src="https://picsum.photos/seed/n2/400/230" alt="" class="nc-thumb"/></div>
+                <div class="nc-body">
+                  <span class="nc-cat">Pengumuman</span>
+                  <h3 class="nc-title">Jadwal Pelayanan PPID Semester II 2024 Resmi Ditetapkan</h3>
+                  <div class="nc-meta"><span><i class="bi bi-calendar3"></i> 28 Des 2024</span><span><i class="bi bi-eye"></i> 872</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 col-sm-6" data-aos="fade-up" data-aos-delay="150">
+            <a href="#" class="d-block h-100 text-decoration-none">
+              <div class="news-card">
+                <div class="nc-thumb-wrap"><img src="https://picsum.photos/seed/n3/400/230" alt="" class="nc-thumb"/></div>
+                <div class="nc-body">
+                  <span class="nc-cat">Inovasi</span>
+                  <h3 class="nc-title">Portal PPID Digital Diluncurkan untuk Mempercepat Layanan Informasi Publik</h3>
+                  <div class="nc-meta"><span><i class="bi bi-calendar3"></i> 20 Des 2024</span><span><i class="bi bi-eye"></i> 643</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 col-sm-6" data-aos="fade-up" data-aos-delay="200">
+            <a href="#" class="d-block h-100 text-decoration-none">
+              <div class="news-card">
+                <div class="nc-thumb-wrap"><img src="https://picsum.photos/seed/n4/400/230" alt="" class="nc-thumb"/></div>
+                <div class="nc-body">
+                  <span class="nc-cat">Sosialisasi</span>
+                  <h3 class="nc-title">Sosialisasi UU Keterbukaan Informasi Publik kepada Masyarakat</h3>
+                  <div class="nc-meta"><span><i class="bi bi-calendar3"></i> 12 Des 2024</span><span><i class="bi bi-eye"></i> 490</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 col-sm-6" data-aos="fade-up" data-aos-delay="250">
+            <a href="#" class="d-block h-100 text-decoration-none">
+              <div class="news-card">
+                <div class="nc-thumb-wrap"><img src="https://picsum.photos/seed/n5/400/230" alt="" class="nc-thumb"/></div>
+                <div class="nc-body">
+                  <span class="nc-cat">Penghargaan</span>
+                  <h3 class="nc-title">PPID Kota Pekalongan Raih Predikat Informatif dari Komisi Informasi</h3>
+                  <div class="nc-meta"><span><i class="bi bi-calendar3"></i> 5 Des 2024</span><span><i class="bi bi-eye"></i> 2.1K</span></div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 text-center d-sm-none" data-aos="fade-up">
+        <a href="#" class="view-all"><i class="bi bi-grid-3x3-gap"></i> Semua Berita</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STATS ═══ -->
+<section class="sec-py-sm sec-bg-alt">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="stats-box" data-aos="fade-up">
+      <div class="row g-4 align-items-center">
+        <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="0">
+          <div class="stat-item"><div class="stat-ico"><i class="bi bi-send-fill"></i></div><div class="stat-num"><span class="counter" data-target="1284">0</span><span class="stat-sfx">+</span></div><div class="stat-lbl">Permohonan Diterima</div></div>
+        </div>
+        <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="80">
+          <div class="stat-item"><div class="stat-ico"><i class="bi bi-check-circle-fill"></i></div><div class="stat-num"><span class="counter" data-target="98">0</span><span class="stat-sfx">%</span></div><div class="stat-lbl">Tingkat Penyelesaian</div></div>
+        </div>
+        <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="160">
+          <div class="stat-item"><div class="stat-ico"><i class="bi bi-building"></i></div><div class="stat-num"><span class="counter" data-target="42">0</span><span class="stat-sfx"></span></div><div class="stat-lbl">OPD Terintegrasi</div></div>
+        </div>
+        <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="240">
+          <div class="stat-item"><div class="stat-ico"><i class="bi bi-award-fill"></i></div><div class="stat-num"><span class="counter" data-target="5">0</span><span class="stat-sfx"></span></div><div class="stat-lbl">Tahun Berpengalaman</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LAYANAN ═══ -->
+<section class="sec-py">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row justify-content-center mb-4">
+      <div class="col-12 col-md-7 text-center" data-aos="fade-up">
+        <div class="sec-tag justify-content-center">Layanan Kami</div>
+        <h2 class="sec-title">Layanan Publik PPID</h2>
+        <p class="sec-desc">Kami hadir untuk memastikan hak Anda atas informasi publik terpenuhi secara cepat, tepat, dan mudah.</p>
+        <div class="sec-line mx-auto"></div>
+      </div>
+    </div>
+    <div class="row g-3 g-md-4">
+      <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="0"><div class="svc-card"><div class="svc-ico"><i class="bi bi-send-fill"></i></div><div class="svc-title">Permohonan Informasi</div><div class="svc-desc">Ajukan permohonan informasi publik secara online</div><div class="svc-link">Selengkapnya <i class="bi bi-arrow-right"></i></div></div></div>
+      <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="55"><div class="svc-card"><div class="svc-ico"><i class="bi bi-search"></i></div><div class="svc-title">Cek Status</div><div class="svc-desc">Pantau perkembangan permohonan Anda real-time</div><div class="svc-link">Selengkapnya <i class="bi bi-arrow-right"></i></div></div></div>
+      <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="110"><div class="svc-card"><div class="svc-ico"><i class="bi bi-folder2-open"></i></div><div class="svc-title">Daftar Informasi</div><div class="svc-desc">Akses daftar informasi publik yang tersedia</div><div class="svc-link">Selengkapnya <i class="bi bi-arrow-right"></i></div></div></div>
+      <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="165"><div class="svc-card"><div class="svc-ico"><i class="bi bi-download"></i></div><div class="svc-title">Unduh Dokumen</div><div class="svc-desc">Formulir dan template permohonan</div><div class="svc-link">Selengkapnya <i class="bi bi-arrow-right"></i></div></div></div>
+      <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="220"><div class="svc-card"><div class="svc-ico"><i class="bi bi-exclamation-triangle-fill"></i></div><div class="svc-title">Ajukan Keberatan</div><div class="svc-desc">Ajukan keberatan jika permohonan ditolak</div><div class="svc-link">Selengkapnya <i class="bi bi-arrow-right"></i></div></div></div>
+      <div class="col-6 col-md-4 col-lg-2" data-aos="fade-up" data-aos-delay="275"><div class="svc-card"><div class="svc-ico"><i class="bi bi-headset"></i></div><div class="svc-title">Bantuan &amp; FAQ</div><div class="svc-desc">Pertanyaan yang sering diajukan</div><div class="svc-link">Selengkapnya <i class="bi bi-arrow-right"></i></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BANNER + PENGUMUMAN ═══ -->
+<section class="sec-py-sm sec-bg-alt">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row g-4">
+      <div class="col-12 col-lg-7" data-aos="fade-right">
+        <div class="perm-banner">
+          <div class="row align-items-center g-0">
+            <div class="col-12 col-md-8" style="position:relative;z-index:1">
+              <div style="display:inline-flex;align-items:center;gap:.35rem;background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.35);color:var(--accent);font-size:.62rem;font-weight:800;padding:.2rem .7rem;border-radius:100px;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.9rem"><i class="bi bi-lightning-fill"></i> Layanan Utama</div>
+              <h3 class="perm-banner-ttl">Ajukan Permohonan Informasi Publik dengan Mudah &amp; Cepat</h3>
+              <p class="perm-banner-desc">Hak Anda atas informasi publik dijamin UU No. 14/2008. Kami siap melayani dalam 10 hari kerja.</p>
+              <div class="perm-step"><div class="perm-step-n">1</div><div class="perm-step-txt"><div class="perm-step-ttl">Isi Formulir Online</div>Lengkapi identitas dan deskripsi informasi</div></div>
+              <div class="perm-step"><div class="perm-step-n">2</div><div class="perm-step-txt"><div class="perm-step-ttl">Tunggu Konfirmasi</div>Kami menghubungi Anda dalam 3 hari kerja</div></div>
+              <div class="perm-step"><div class="perm-step-n">3</div><div class="perm-step-txt"><div class="perm-step-ttl">Terima Informasi</div>Informasi dikirim via email atau diambil langsung</div></div>
+              <div class="d-flex gap-2 mt-3 flex-wrap">
+                <a href="#" class="btn-perm"><i class="bi bi-send-fill"></i> Ajukan Sekarang</a>
+                <a href="#" class="btn-perm btn-perm-ghost"><i class="bi bi-info-circle"></i> Pelajari Lebih</a>
+              </div>
+            </div>
+            <div class="col-md-4 d-none d-md-flex justify-content-end align-items-center" style="position:relative;z-index:1">
+              <i class="bi bi-file-earmark-check-fill" style="font-size:9rem;color:rgba(255,255,255,.1)"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-5" data-aos="fade-left">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div><div class="sec-tag mb-1">Terbaru</div><h3 class="sec-title" style="font-size:1.22rem">Pengumuman</h3></div>
+          <a href="#" class="view-all" style="font-size:.74rem">Lihat Semua</a>
+        </div>
+        <div id="pengList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ AGENDA + BERITA POPULER ═══ -->
+<section class="sec-py">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row g-4">
+      <div class="col-12 col-lg-5" data-aos="fade-right">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div><div class="sec-tag mb-1"><i class="bi bi-calendar-event-fill"></i> Jadwal</div><h3 class="sec-title" style="font-size:1.22rem">Agenda Kegiatan</h3></div>
+          <a href="#" class="view-all" style="font-size:.74rem">Lihat Semua</a>
+        </div>
+        <div class="d-flex flex-column gap-2" id="agendaList"></div>
+      </div>
+      <div class="col-12 col-lg-7" data-aos="fade-left">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div><div class="sec-tag mb-1"><i class="bi bi-fire"></i> Terpopuler</div><h3 class="sec-title" style="font-size:1.22rem">Berita Populer</h3></div>
+          <a href="#" class="view-all" style="font-size:.74rem">Lihat Semua</a>
+        </div>
+        <div class="d-flex flex-column gap-2" id="popularList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INFOGRAFIS ═══ -->
+<section class="sec-py-sm sec-bg-alt">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row align-items-end mb-4">
+      <div class="col" data-aos="fade-right"><div class="sec-tag"><i class="bi bi-pie-chart-fill"></i> Visual Data</div><h2 class="sec-title">Infografis &amp; Data</h2><div class="sec-line"></div></div>
+      <div class="col-auto d-none d-sm-block" data-aos="fade-left"><a href="#" class="view-all">Semua Infografis</a></div>
+    </div>
+    <div class="row g-3" data-aos="fade-up">
+      <div class="col-6 col-sm-4 col-lg-2"><div class="infog-card"><img src="https://picsum.photos/seed/ig1/300/400" alt=""/><div class="infog-ov"><div class="infog-cat">Anggaran</div><div class="infog-title">Realisasi APBD Kota Pekalongan 2024</div></div></div></div>
+      <div class="col-6 col-sm-4 col-lg-2"><div class="infog-card"><img src="https://picsum.photos/seed/ig2/300/400" alt=""/><div class="infog-ov"><div class="infog-cat">Statistik</div><div class="infog-title">Data Permohonan Informasi 2024</div></div></div></div>
+      <div class="col-6 col-sm-4 col-lg-2"><div class="infog-card"><img src="https://picsum.photos/seed/ig3/300/400" alt=""/><div class="infog-ov"><div class="infog-cat">Pelayanan</div><div class="infog-title">Prosedur Permohonan Informasi</div></div></div></div>
+      <div class="col-6 col-sm-4 col-lg-2 d-none d-lg-block"><div class="infog-card"><img src="https://picsum.photos/seed/ig4/300/400" alt=""/><div class="infog-ov"><div class="infog-cat">OPD</div><div class="infog-title">Peta Layanan OPD Kota Pekalongan</div></div></div></div>
+      <div class="col-6 col-sm-4 col-lg-2 d-none d-lg-block"><div class="infog-card"><img src="https://picsum.photos/seed/ig5/300/400" alt=""/><div class="infog-ov"><div class="infog-cat">Regulasi</div><div class="infog-title">Alur Keberatan Informasi</div></div></div></div>
+      <div class="col-6 col-sm-4 col-lg-2 d-none d-lg-block"><div class="infog-card"><img src="https://picsum.photos/seed/ig6/300/400" alt=""/><div class="infog-ov"><div class="infog-cat">Transparansi</div><div class="infog-title">Laporan Kinerja PPID 2024</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GALERI ═══ -->
+<section class="sec-py">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row align-items-end mb-4">
+      <div class="col" data-aos="fade-right"><div class="sec-tag"><i class="bi bi-images"></i> Dokumentasi</div><h2 class="sec-title">Galeri Kegiatan</h2><div class="sec-line"></div></div>
+      <div class="col-auto d-none d-sm-block" data-aos="fade-left"><a href="#" class="view-all">Lihat Semua Foto</a></div>
+    </div>
+    <div class="gallery-grid" data-aos="fade-up">
+      <div class="gi"><img src="https://picsum.photos/seed/g1/700/500" alt=""/><div class="gi-ov"><div class="gi-zoom"><i class="bi bi-zoom-in"></i></div></div></div>
+      <div class="gi"><img src="https://picsum.photos/seed/g2/350/250" alt=""/><div class="gi-ov"><div class="gi-zoom"><i class="bi bi-zoom-in"></i></div></div></div>
+      <div class="gi"><img src="https://picsum.photos/seed/g3/350/250" alt=""/><div class="gi-ov"><div class="gi-zoom"><i class="bi bi-zoom-in"></i></div></div></div>
+      <div class="gi"><img src="https://picsum.photos/seed/g4/350/250" alt=""/><div class="gi-ov"><div class="gi-zoom"><i class="bi bi-zoom-in"></i></div></div></div>
+      <div class="gi"><img src="https://picsum.photos/seed/g5/350/250" alt=""/><div class="gi-ov"><div class="gi-zoom"><i class="bi bi-zoom-in"></i></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SOSMED ═══ -->
+<section class="sec-py-sm sec-bg-alt">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row g-4 align-items-center">
+      <div class="col-12 col-md-6" data-aos="fade-right">
+        <div class="sec-tag"><i class="bi bi-broadcast"></i> Media Sosial</div>
+        <h3 class="sec-title" style="font-size:1.4rem">Ikuti Kami di Media Sosial</h3>
+        <p class="sec-desc">Dapatkan informasi terkini langsung di timeline Anda.</p>
+        <div class="d-flex gap-2 flex-wrap mt-3">
+          <a href="#" class="sosmed-btn sosmed-fb"><i class="bi bi-facebook"></i> Facebook</a>
+          <a href="#" class="sosmed-btn sosmed-ig"><i class="bi bi-instagram"></i> Instagram</a>
+          <a href="#" class="sosmed-btn sosmed-tw"><i class="bi bi-twitter-x"></i> X / Twitter</a>
+          <a href="#" class="sosmed-btn sosmed-yt"><i class="bi bi-youtube"></i> YouTube</a>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-5 ms-md-auto" data-aos="fade-left">
+        <div class="sosmed-card">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <div style="width:40px;height:40px;border-radius:10px;background:var(--p-soft);display:flex;align-items:center;justify-content:center;color:var(--p);font-size:1.1rem;flex-shrink:0"><i class="bi bi-shield-fill-check"></i></div>
+            <div><div style="font-size:.82rem;font-weight:800;color:var(--text)">@ppidpekalongan</div><div style="font-size:.68rem;color:var(--text-muted)">PPID Kota Pekalongan</div></div>
+            <a href="#" class="nav-cta ms-auto" style="font-size:.7rem;padding:.35rem .75rem">Follow</a>
+          </div>
+          <p style="font-size:.82rem;color:var(--text-sub);line-height:1.68;padding-bottom:.85rem;border-bottom:1px solid var(--border)">🔔 Layanan informasi publik PPID Kota Pekalongan kini hadir lebih dekat. Ajukan permohonan informasi Anda secara online kapan saja dan di mana saja. <strong style="color:var(--p)">#PPID #KotaPekalongan</strong></p>
+          <div class="d-flex gap-3 pt-2" style="font-size:.72rem;color:var(--text-muted)">
+            <span><i class="bi bi-heart" style="color:#e0354c"></i> 328</span>
+            <span><i class="bi bi-chat"></i> 47</span>
+            <span><i class="bi bi-share"></i> 112</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="site-footer">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row g-4 g-lg-5">
+      <!-- About -->
+      <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="footer-logo-ico"><i class="bi bi-shield-fill-check"></i></div>
+          <div><div class="footer-logo-title">PPID Pekalongan</div><div class="footer-logo-sub">Kota Pekalongan</div></div>
+        </div>
+        <p class="footer-desc">Pejabat Pengelola Informasi dan Dokumentasi (PPID) Kota Pekalongan berkomitmen mewujudkan keterbukaan informasi publik yang transparan, akuntabel, dan dapat diakses oleh seluruh masyarakat.</p>
+        <div class="d-flex gap-2">
+          <a href="#" class="footer-sosmed-btn"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="footer-sosmed-btn"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="footer-sosmed-btn"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" class="footer-sosmed-btn"><i class="bi bi-youtube"></i></a>
+        </div>
+        <div class="newsletter-wrap mt-3">
+          <div style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.65);margin-bottom:.55rem"><i class="bi bi-envelope-fill" style="color:var(--accent)"></i> Berlangganan Newsletter</div>
+          <input type="email" class="newsletter-inp" placeholder="Masukkan email Anda..."/>
+          <button class="btn-nl"><i class="bi bi-send-fill me-1"></i>Berlangganan</button>
+        </div>
+      </div>
+      <!-- Tautan cepat -->
+      <div class="col-6 col-md-3 col-lg-2" data-aos="fade-up" data-aos-delay="60">
+        <div class="footer-head">Tautan Cepat</div>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>Beranda</a>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>Profil Instansi</a>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>Berita Terkini</a>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>Pengumuman</a>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>Agenda Kegiatan</a>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>Galeri Foto</a>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>Infografis</a>
+      </div>
+      <!-- Layanan -->
+      <div class="col-6 col-md-3 col-lg-2" data-aos="fade-up" data-aos-delay="120">
+        <div class="footer-head">Layanan</div>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>Permohonan Informasi</a>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>Cek Status</a>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>Daftar Informasi</a>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>Unduh Formulir</a>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>Ajukan Keberatan</a>
+        <a href="#" class="footer-link"><i class="bi bi-chevron-right"></i>FAQ</a>
+      </div>
+      <!-- Kontak -->
+      <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="180">
+        <div class="footer-head">Informasi Kontak</div>
+        <div class="footer-kontak"><i class="bi bi-geo-alt-fill"></i><span>Jl. Majapahit No. 8, Kota Pekalongan, Jawa Tengah 51111</span></div>
+        <div class="footer-kontak"><i class="bi bi-telephone-fill"></i><span>(0285) 421191</span></div>
+        <div class="footer-kontak"><i class="bi bi-envelope-fill"></i><span>ppid@pekalongan.go.id</span></div>
+        <div class="footer-kontak"><i class="bi bi-globe"></i><span>www.ppid.pekalongan.go.id</span></div>
+        <div class="footer-kontak"><i class="bi bi-clock-fill"></i><span>Senin–Jumat: 08.00–16.00 WIB</span></div>
+        <div style="margin-top:1rem;padding:.9rem 1rem;background:rgba(0,114,198,.1);border-radius:var(--radius-sm);border:1px solid rgba(0,114,198,.18)">
+          <div style="font-size:.7rem;font-weight:700;color:rgba(255,255,255,.65);margin-bottom:.35rem"><i class="bi bi-shield-lock-fill" style="color:var(--accent)"></i> Responsif dalam 10 hari kerja</div>
+          <div style="font-size:.74rem;color:rgba(255,255,255,.45);line-height:1.6">Berdasarkan Pasal 22 UU No. 14 Tahun 2008 tentang Keterbukaan Informasi Publik.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container-fluid px-3 px-lg-4">
+      <div class="row align-items-center g-2">
+        <div class="col-12 col-md">&copy; 2025 PPID Kota Pekalongan. Hak cipta dilindungi undang-undang.</div>
+        <div class="col-12 col-md-auto d-flex gap-3 flex-wrap">
+          <a href="#" style="color:rgba(255,255,255,.3);transition:color .15s;font-size:.72rem" onmouseover="this.style.color='rgba(255,255,255,.65)'" onmouseout="this.style.color='rgba(255,255,255,.3)'">Kebijakan Privasi</a>
+          <a href="#" style="color:rgba(255,255,255,.3);transition:color .15s;font-size:.72rem" onmouseover="this.style.color='rgba(255,255,255,.65)'" onmouseout="this.style.color='rgba(255,255,255,.3)'">Syarat &amp; Ketentuan</a>
+          <a href="#" style="color:rgba(255,255,255,.3);transition:color .15s;font-size:.72rem" onmouseover="this.style.color='rgba(255,255,255,.65)'" onmouseout="this.style.color='rgba(255,255,255,.3)'">Peta Situs</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Back to top -->
+<button class="btt" id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="bi bi-arrow-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+/* ════════════════════════════════════════
+   DATA DUMMY
+════════════════════════════════════════ */
+const heroSlides = [
+  { img:'https://picsum.photos/seed/h1/1200/600', cat:'Kegiatan Utama', title:'Rapat Koordinasi PPID se-Jawa Tengah di Kota Pekalongan', date:'18 Des 2024', views:'3.4K' },
+  { img:'https://picsum.photos/seed/h2/1200/600', cat:'Pengumuman', title:'Peluncuran Portal Keterbukaan Informasi Publik Versi 3.0', date:'15 Des 2024', views:'2.7K' },
+  { img:'https://picsum.photos/seed/h3/1200/600', cat:'Penghargaan', title:'PPID Kota Pekalongan Raih Penghargaan Informatif Terbaik 2024', date:'10 Des 2024', views:'5.1K' },
+  { img:'https://picsum.photos/seed/h4/1200/600', cat:'Sosialisasi', title:'Sosialisasi Hak Akses Informasi Publik untuk Pelajar SMA', date:'8 Des 2024', views:'1.8K' },
+  { img:'https://picsum.photos/seed/h5/1200/600', cat:'Regulasi', title:'Implementasi Perda No. 3/2024 tentang Keterbukaan Informasi Daerah', date:'5 Des 2024', views:'2.2K' },
+  { img:'https://picsum.photos/seed/h6/1200/600', cat:'Inovasi', title:'Inovasi Layanan Digital PPID Permudah Akses Informasi Masyarakat', date:'1 Des 2024', views:'1.4K' },
+  { img:'https://picsum.photos/seed/h7/1200/600', cat:'Kolaborasi', title:'MoU PPID dengan Perguruan Tinggi untuk Riset Keterbukaan Informasi', date:'28 Nov 2024', views:'986' }
+];
+
+const marqueeTxt = [
+  'Bimtek PPID Kota Pekalongan selesai dilaksanakan', 'Peluncuran portal PPID Digital versi 3.0',
+  'Jadwal pelayanan PPID Semester II 2024 telah ditetapkan', 'Predikat Informatif kembali diraih PPID Kota Pekalongan',
+  'Formulir permohonan informasi kini tersedia online', 'Koordinasi PPID OPD dilaksanakan Senin 23 Des 2024',
+  'Bimtek PPID Kota Pekalongan selesai dilaksanakan', 'Peluncuran portal PPID Digital versi 3.0',
+  'Jadwal pelayanan PPID Semester II 2024 telah ditetapkan', 'Predikat Informatif kembali diraih PPID Kota Pekalongan',
+  'Formulir permohonan informasi kini tersedia online', 'Koordinasi PPID OPD dilaksanakan Senin 23 Des 2024',
+];
+
+const pengumumanData = [
+  { n:1, title:'Jadwal Operasional Layanan PPID Libur Natal &amp; Tahun Baru 2025', date:'30 Des 2024' },
+  { n:2, title:'Perubahan Alur Permohonan Informasi Publik Mulai Januari 2025', date:'22 Des 2024' },
+  { n:3, title:'Pengumuman Hasil Monitoring &amp; Evaluasi PPID OPD Tahun 2024', date:'18 Des 2024' },
+  { n:4, title:'Rekruitmen Petugas Pelayanan Informasi Publik Kota Pekalongan', date:'10 Des 2024' },
+  { n:5, title:'Pengesahan SOP Terbaru Layanan Informasi Publik 2025', date:'5 Des 2024' },
+];
+
+const agendaData = [
+  { day:'28', mon:'Des', title:'Rapat Evaluasi Akhir Tahun PPID 2024', time:'09:00 WIB', loc:'Aula Dinas Kominfo' },
+  { day:'3',  mon:'Jan', title:'Sosialisasi Regulasi PPID kepada OPD', time:'13:00 WIB', loc:'Ruang Rapat Utama' },
+  { day:'8',  mon:'Jan', title:'Bimtek Petugas Pelayanan Informasi', time:'08:30 WIB', loc:'Hotel Santika Pekalongan' },
+  { day:'15', mon:'Jan', title:'Monitoring Portal PPID Seluruh OPD', time:'10:00 WIB', loc:'Online/Zoom' },
+];
+
+const popularData = [
+  { img:'https://picsum.photos/seed/p1/200/150', cat:'Penghargaan', title:'PPID Pekalongan Raih Predikat Informatif Terbaik 2024', date:'10 Des 2024', views:'5.1K' },
+  { img:'https://picsum.photos/seed/p2/200/150', cat:'Regulasi', title:'UU Keterbukaan Informasi: Hak Anda yang Wajib Diketahui', date:'8 Des 2024', views:'3.8K' },
+  { img:'https://picsum.photos/seed/p3/200/150', cat:'Layanan', title:'Cara Mudah Ajukan Permohonan Informasi Publik Online', date:'5 Des 2024', views:'3.2K' },
+  { img:'https://picsum.photos/seed/p4/200/150', cat:'Inovasi', title:'Portal PPID Digital Versi 3.0 Diluncurkan untuk Publik', date:'1 Des 2024', views:'2.7K' },
+  { img:'https://picsum.photos/seed/p5/200/150', cat:'Kegiatan', title:'Rapat Koordinasi PPID Se-Jawa Tengah di Kota Pekalongan', date:'28 Nov 2024', views:'2.2K' },
+];
+
+const tickerTxt = [
+  '🔴 Rapat Koordinasi PPID se-Jawa Tengah di Pekalongan', '🟡 Jadwal pelayanan PPID libur akhir tahun telah ditetapkan',
+  '🔵 Portal PPID Digital versi 3.0 resmi diluncurkan', '🟢 PPID Pekalongan raih predikat Informatif Terbaik',
+  '🔴 Bimtek PPID dijadwalkan awal Januari 2025', '🟡 Permohonan informasi kini bisa diajukan secara online',
+  '🔴 Rapat Koordinasi PPID se-Jawa Tengah di Pekalongan', '🟡 Jadwal pelayanan PPID libur akhir tahun telah ditetapkan',
+  '🔵 Portal PPID Digital versi 3.0 resmi diluncurkan', '🟢 PPID Pekalongan raih predikat Informatif Terbaik',
+  '🔴 Bimtek PPID dijadwalkan awal Januari 2025', '🟡 Permohonan informasi kini bisa diajukan secara online',
+];
+
+/* ════════════════════════════════════════
+   INIT DATE
+════════════════════════════════════════ */
+const d = new Date();
+const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+document.getElementById('currentDate').textContent =
+  `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+
+/* ════════════════════════════════════════
+   MARQUEE
+════════════════════════════════════════ */
+const mt = document.getElementById('marqueeTrack');
+marqueeTxt.forEach(t => {
+  mt.innerHTML += `<span class="marquee-item"><span class="marquee-dot"></span>${t}</span>`;
+});
+
+/* ════════════════════════════════════════
+   TICKER
+════════════════════════════════════════ */
+const tt = document.getElementById('tickerTrack');
+tickerTxt.forEach((t,i) => {
+  tt.innerHTML += `<span class="ticker-item">${i>0?'<span class="ticker-sep">◆</span>':''}<span>${t}</span></span>`;
+});
+
+/* ════════════════════════════════════════
+   HERO SLIDER
+════════════════════════════════════════ */
+let heroIdx = 0, heroTimer;
+const heroMain = document.getElementById('heroMain');
+const heroList = document.getElementById('heroList');
+const heroDots = document.getElementById('heroDots');
+const heroProg = document.getElementById('heroProg');
+
+// Build slides
+heroSlides.forEach((s,i) => {
+  const slide = document.createElement('div');
+  slide.className = 'hero-slide' + (i===0?' active':'');
+  slide.style.backgroundImage = `url(${s.img})`;
+  slide.innerHTML = `
+    <div class="hero-content">
+      <div class="hero-cat"><i class="bi bi-tag-fill me-1"></i>${s.cat}</div>
+      <h2 class="hero-title">${s.title}</h2>
+      <div class="hero-meta">
+        <span><i class="bi bi-calendar3"></i> ${s.date}</span>
+        <span><i class="bi bi-eye"></i> ${s.views} dilihat</span>
+      </div>
+      <a href="#" class="hero-read-more"><i class="bi bi-arrow-right-circle-fill"></i> Baca Selengkapnya</a>
+    </div>`;
+  heroMain.insertBefore(slide, heroDots.parentElement ? heroDots : null);
+  heroMain.appendChild(slide);
+
+  // Dot
+  const dot = document.createElement('button');
+  dot.className = 'hero-dot' + (i===0?' active':'');
+  dot.addEventListener('click', () => goHero(i));
+  heroDots.appendChild(dot);
+});
+heroDots.parentElement.appendChild(heroDots);
+heroDots.parentElement.appendChild(heroProg);
+
+// Build aside list (slide 2–7)
+heroSlides.slice(1).forEach((s,i) => {
+  heroList.innerHTML += `
+    <div class="hero-aside-item${i===0?' active':''}" onclick="goHero(${i+1})">
+      <img src="${s.img}" alt="" class="hero-aside-thumb"/>
+      <div>
+        <div class="hero-aside-num">0${i+2}</div>
+        <div class="hero-aside-ttl-txt">${s.title}</div>
+        <div class="hero-aside-date"><i class="bi bi-calendar3 me-1"></i>${s.date}</div>
+      </div>
+    </div>`;
+});
+
+function goHero(idx) {
+  clearInterval(heroTimer);
+  const slides = heroMain.querySelectorAll('.hero-slide');
+  const dots   = heroDots.querySelectorAll('.hero-dot');
+  const items  = heroList.querySelectorAll('.hero-aside-item');
+  slides[heroIdx].classList.remove('active');
+  dots[heroIdx].classList.remove('active');
+  if(items[heroIdx-1]) items[heroIdx-1].classList.remove('active');
+  heroIdx = idx;
+  slides[heroIdx].classList.add('active');
+  dots[heroIdx].classList.add('active');
+  if(items[heroIdx-1]) items[heroIdx-1].classList.add('active');
+  // Reset progress
+  heroProg.style.animation = 'none';
+  heroProg.offsetHeight;
+  heroProg.style.animation = '';
+  startHeroTimer();
+}
+
+function startHeroTimer() {
+  heroTimer = setInterval(() => goHero((heroIdx+1) % heroSlides.length), 6000);
+}
+startHeroTimer();
+
+/* ════════════════════════════════════════
+   PENGUMUMAN
+════════════════════════════════════════ */
+const pl = document.getElementById('pengList');
+pengumumanData.forEach(p => {
+  pl.innerHTML += `
+    <div class="peng-item">
+      <div class="peng-num">${p.n}</div>
+      <div>
+        <a href="#" class="peng-ttl" style="display:block;color:var(--text);transition:color .18s"
+          onmouseover="this.style.color='var(--p)'" onmouseout="this.style.color='var(--text)'">${p.title}</a>
+        <div class="peng-date"><i class="bi bi-calendar3 me-1" style="color:var(--p)"></i>${p.date}</div>
+      </div>
+    </div>`;
+});
+
+/* ════════════════════════════════════════
+   AGENDA
+════════════════════════════════════════ */
+const al = document.getElementById('agendaList');
+agendaData.forEach(a => {
+  al.innerHTML += `
+    <div class="agenda-card" data-aos="fade-up">
+      <div class="agenda-date">
+        <div class="agenda-day">${a.day}</div>
+        <div class="agenda-mon">${a.mon}</div>
+      </div>
+      <div>
+        <div class="agenda-ttl">${a.title}</div>
+        <div class="agenda-info"><i class="bi bi-clock" style="color:var(--p)"></i>${a.time}&nbsp;&nbsp;<i class="bi bi-geo-alt" style="color:var(--p)"></i>${a.loc}</div>
+      </div>
+    </div>`;
+});
+
+/* ════════════════════════════════════════
+   POPULAR BERITA
+════════════════════════════════════════ */
+const pop = document.getElementById('popularList');
+popularData.forEach((p,i) => {
+  pop.innerHTML += `
+    <a href="#" class="text-decoration-none" data-aos="fade-up" data-aos-delay="${i*55}">
+      <div class="nc-h">
+        <img src="${p.img}" alt="" class="nc-h-thumb"/>
+        <div class="nc-h-body">
+          <span class="nc-cat" style="margin-bottom:.35rem">${p.cat}</span>
+          <div class="nc-h-title">${p.title}</div>
+          <div class="nc-meta" style="padding-top:.5rem;border:none;margin-top:.3rem">
+            <span><i class="bi bi-calendar3"></i>${p.date}</span>
+            <span><i class="bi bi-eye"></i>${p.views}</span>
+          </div>
+        </div>
+      </div>
+    </a>`;
+});
+
+/* ════════════════════════════════════════
+   COUNTER ANIMATION
+════════════════════════════════════════ */
+function animateCounters() {
+  document.querySelectorAll('.counter').forEach(el => {
+    const target = +el.dataset.target;
+    const dur = 1800;
+    const step = dur / 60;
+    let cur = 0;
+    const inc = target / (dur / (1000/60));
+    const t = setInterval(() => {
+      cur = Math.min(cur + inc, target);
+      el.textContent = Math.floor(cur).toLocaleString('id');
+      if(cur >= target) clearInterval(t);
+    }, 1000/60);
+  });
+}
+let counted = false;
+const statsObs = new IntersectionObserver(entries => {
+  if(entries[0].isIntersecting && !counted) { counted = true; animateCounters(); }
+}, { threshold:0.3 });
+const statsEl = document.querySelector('.stats-box');
+if(statsEl) statsObs.observe(statsEl);
+
+/* ════════════════════════════════════════
+   NAVBAR SCROLL + MOBILE TOGGLE
+════════════════════════════════════════ */
+const nav = document.getElementById('mainNav');
+const btt = document.getElementById('btt');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', scrollY > 60);
+  btt.classList.toggle('vis', scrollY > 300);
+});
+
+const mobToggler = document.getElementById('mobToggler');
+const mobNav = document.getElementById('mobNav');
+let mobOpen = false;
+mobToggler.addEventListener('click', () => {
+  mobOpen = !mobOpen;
+  mobNav.style.display = mobOpen ? 'block' : 'none';
+  mobToggler.innerHTML = mobOpen ? '<i class="bi bi-x-lg"></i>' : '<i class="bi bi-list"></i>';
+});
+function toggleMob(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('mob-open');
+}
+
+/* ════════════════════════════════════════
+   SEARCH MODAL
+════════════════════════════════════════ */
+const searchOv = document.getElementById('searchOv');
+function openSearch() {
+  searchOv.classList.add('open');
+  setTimeout(() => document.getElementById('searchInput').focus(), 320);
+}
+function closeSearch() { searchOv.classList.remove('open'); }
+searchOv.addEventListener('click', e => { if(e.target===searchOv) closeSearch(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeSearch(); });
+
+/* ════════════════════════════════════════
+   AOS INIT
+════════════════════════════════════════ */
+AOS.init({ duration:700, easing:'ease-out-cubic', once:true, offset:60 });
+
+/* ════════════════════════════════════════
+   PARTICLE CANVAS (partikel halus tema pemerintahan)
+════════════════════════════════════════ */
+(function() {
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], animId;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function Particle() {
+    this.reset();
+  }
+  Particle.prototype.reset = function() {
+    this.x  = Math.random() * W;
+    this.y  = Math.random() * H;
+    this.r  = Math.random() * 1.8 + 0.4;
+    this.vx = (Math.random() - 0.5) * 0.35;
+    this.vy = (Math.random() - 0.5) * 0.35;
+    this.alpha = Math.random() * 0.45 + 0.1;
+    this.color = Math.random() > 0.7 ? '#f59e0b' : '#1a8fe0';
+  };
+
+  function init() {
+    resize();
+    particles = [];
+    const count = Math.floor((W * H) / 18000);
+    for(let i = 0; i < count; i++) particles.push(new Particle());
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Connections
+    for(let i = 0; i < particles.length; i++) {
+      for(let j = i+1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < 130) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(26,143,224,${0.12 * (1 - dist/130)})`;
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Dots
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = p.color + Math.round(p.alpha * 255).toString(16).padStart(2,'0');
+      ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < -5 || p.x > W+5 || p.y < -5 || p.y > H+5) p.reset();
+    });
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  init();
+  draw();
+  window.addEventListener('resize', () => { cancelAnimationFrame(animId); init(); draw(); });
+})();
+
+</script>
+</body>
+</html>
