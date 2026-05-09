@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Instansi & OPD — PPID Kota Pekalongan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+      /* ════════════════════════════════════════════════════════
+         CSS GALERI TEMPLATE (base) — inline sepenuhnya
+      ════════════════════════════════════════════════════════ */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue        : #0072c6;
+        --blue-dark   : #005499;
+        --blue-deep   : #003d70;
+        --blue-light  : #1a8fe0;
+        --blue-soft   : rgba(0,114,198,.09);
+        --blue-glow   : rgba(0,114,198,.18);
+        --sidebar-w   : 260px;
+        --sidebar-col : 68px;
+        --topbar-h    : 62px;
+        --sidebar-bg  : #001f42;
+        --content-bg  : #f0f4f9;
+        --card-bg     : #ffffff;
+        --text-main   : #0f1c2e;
+        --text-sub    : #2d4060;
+        --text-muted  : #6b7a8d;
+        --border-light: rgba(0,0,0,.07);
+        --shadow-sm   : 0 2px 12px rgba(0,40,100,.07);
+        --shadow-md   : 0 6px 28px rgba(0,40,100,.12);
+        --shadow-lg   : 0 16px 48px rgba(0,40,100,.18);
+        --radius      : 14px;
+        --radius-sm   : 9px;
+        --ease        : .28s cubic-bezier(.22,1,.36,1);
+        --green       : #10b964;
+        --amber       : #f59e0b;
+        --red         : #dc3545;
+        --purple      : #7c3aed;
+        --bg-surface  : #f8fafc;
+        --font        : 'Plus Jakarta Sans', sans-serif;
+      }
+
+      body {
+        font-family: var(--font); background: var(--content-bg);
+        color: var(--text-main); font-size: .875rem; line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      a { text-decoration: none; color: inherit; }
+
+      /* ══ SIDEBAR ══ */
+      .sidebar {
+        position: fixed; left: 0; top: 0; bottom: 0;
+        width: var(--sidebar-w); background: var(--sidebar-bg);
+        display: flex; flex-direction: column; z-index: 300;
+        transition: transform var(--ease), width var(--ease);
+        overflow: hidden;
+      }
+      .sidebar.collapsed { width: var(--sidebar-col); }
+      .sidebar-brand {
+        display: flex; align-items: center; gap: .8rem;
+        padding: 1.1rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,.07);
+        flex-shrink: 0; overflow: hidden; min-height: 62px;
+      }
+      .brand-icon {
+        width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+        background: linear-gradient(135deg,var(--blue),var(--blue-dark));
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 1rem; box-shadow: 0 4px 14px rgba(0,114,198,.4);
+      }
+      .brand-text { overflow: hidden; white-space: nowrap; }
+      .brand-title { font-size: .85rem; font-weight: 700; color: #fff; }
+      .brand-sub   { font-size: .66rem; color: rgba(255,255,255,.45); margin-top: .05rem; }
+
+      .sidebar-scroll {
+        flex: 1; overflow-y: auto; overflow-x: hidden; padding: .75rem 0;
+        scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.1) transparent;
+      }
+      .sidebar-scroll::-webkit-scrollbar { width: 3px; }
+      .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 2px; }
+
+      .nav-section-label {
+        font-size: .58rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+        color: rgba(255,255,255,.28); padding: .9rem 1.1rem .3rem;
+        white-space: nowrap; overflow: hidden;
+      }
+      .sidebar.collapsed .nav-section-label { opacity: 0; }
+
+      .nav-item-wrapper { padding: .1rem .6rem; }
+      .nav-link-custom {
+        display: flex; align-items: center; gap: .72rem;
+        padding: .6rem .75rem; border-radius: 10px; color: rgba(255,255,255,.6);
+        font-size: .82rem; font-weight: 500; cursor: pointer; white-space: nowrap;
+        transition: background var(--ease), color var(--ease); position: relative;
+      }
+      .nav-link-custom:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); }
+      .nav-link-custom.active {
+        background: linear-gradient(90deg,rgba(0,114,198,.55),rgba(0,114,198,.2));
+        color: #fff; font-weight: 700;
+        box-shadow: inset 3px 0 0 var(--blue);
+      }
+      .nav-icon { font-size: .95rem; flex-shrink: 0; width: 18px; text-align: center; }
+      .nav-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+      .nav-badge {
+        background: var(--blue); color: #fff;
+        font-size: .58rem; font-weight: 800; padding: .12rem .45rem;
+        border-radius: 100px; flex-shrink: 0;
+      }
+      .nav-badge-amber { background: var(--amber); }
+      .sidebar.collapsed .nav-label,
+      .sidebar.collapsed .nav-badge,
+      .sidebar.collapsed .nav-section-label { display: none; }
+      .sidebar.collapsed .nav-link-custom { justify-content: center; padding: .65rem; }
+
+      .sidebar-bottom {
+        padding: .75rem .6rem; border-top: 1px solid rgba(255,255,255,.07); flex-shrink: 0;
+        display: flex; align-items: center; gap: .5rem;
+      }
+      .sidebar-user {
+        display: flex; align-items: center; gap: .6rem; flex: 1; overflow: hidden;
+        padding: .45rem .5rem; border-radius: 9px; transition: background .2s;
+      }
+      .sidebar-user:hover { background: rgba(255,255,255,.06); }
+      .su-avatar {
+        width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+        background: linear-gradient(135deg,var(--blue),var(--blue-dark));
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: .72rem; font-weight: 700;
+      }
+      .su-info { overflow: hidden; }
+      .su-name { font-size: .78rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .su-role { font-size: .64rem; color: rgba(255,255,255,.4); }
+      .sidebar-logout {
+        width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+        background: rgba(220,53,69,.12); border: none; color: #f87171;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: background .2s; font-size: .9rem;
+      }
+      .sidebar-logout:hover { background: rgba(220,53,69,.25); }
+      .sidebar.collapsed .su-info,
+      .sidebar.collapsed .sidebar-logout { display: none; }
+      .sidebar.collapsed .sidebar-user { justify-content: center; }
+      .sidebar-overlay {
+        display: none; position: fixed; inset: 0; background: rgba(0,5,20,.55);
+        z-index: 299; backdrop-filter: blur(2px);
+      }
+      .sidebar-overlay.show { display: block; }
+
+      /* ══ MAIN AREA ══ */
+      .app-wrapper { display: flex; min-height: 100vh; }
+      .main-area {
+        flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column;
+        transition: margin-left var(--ease); min-width: 0;
+      }
+      .sidebar.collapsed ~ .main-area { margin-left: var(--sidebar-col); }
+
+      /* ══ TOPBAR ══ */
+      .topbar {
+        position: sticky; top: 0; z-index: 200;
+        height: var(--topbar-h); background: rgba(255,255,255,.95);
+        backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-light);
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 1.4rem; gap: 1rem; flex-shrink: 0;
+        box-shadow: 0 1px 12px rgba(0,40,100,.06);
+      }
+      .topbar-left { display: flex; align-items: center; gap: .85rem; min-width: 0; }
+      .topbar-toggle {
+        width: 36px; height: 36px; border-radius: 9px; border: none;
+        background: var(--blue-soft); color: var(--blue);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; font-size: 1.1rem; flex-shrink: 0; transition: background .2s;
+      }
+      .topbar-toggle:hover { background: var(--blue-glow); }
+      .topbar-breadcrumb { display: flex; align-items: center; gap: .4rem; font-size: .78rem; min-width: 0; flex-wrap: wrap; }
+      .tb-bc-item { color: var(--text-muted); white-space: nowrap; }
+      .tb-bc-item.active { color: var(--blue); font-weight: 700; }
+      .tb-bc-sep { color: var(--border-light); font-size: .7rem; }
+      .topbar-right { display: flex; align-items: center; gap: .6rem; flex-shrink: 0; }
+      .topbar-icon-btn {
+        width: 36px; height: 36px; border-radius: 9px; border: none;
+        background: var(--blue-soft); color: var(--blue);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; font-size: .95rem; position: relative; transition: background .2s;
+      }
+      .topbar-icon-btn:hover { background: var(--blue-glow); }
+      .notif-dot {
+        position: absolute; top: 6px; right: 6px; width: 7px; height: 7px;
+        background: #ef4444; border-radius: 50%; border: 1.5px solid #fff;
+      }
+      .topbar-avatar {
+        width: 36px; height: 36px; border-radius: 9px;
+        background: linear-gradient(135deg,var(--blue),var(--blue-dark));
+        color: #fff; font-size: .72rem; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; box-shadow: 0 3px 10px rgba(0,114,198,.3);
+      }
+      .user-dropdown {
+        position: absolute; top: calc(100% + .5rem); right: 0; min-width: 190px;
+        background: #fff; border-radius: 12px; border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-md); padding: .4rem 0; display: none; z-index: 500;
+      }
+      .user-dropdown.show { display: block; animation: fadeDown .18s ease; }
+      @keyframes fadeDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+      .ud-item {
+        display: flex; align-items: center; gap: .6rem; padding: .52rem 1rem;
+        font-size: .8rem; color: var(--text-sub); cursor: pointer; transition: background .15s;
+      }
+      .ud-item:hover { background: var(--blue-soft); color: var(--blue); }
+      .ud-item i { font-size: .85rem; width: 16px; }
+      .ud-divider { height: 1px; background: var(--border-light); margin: .3rem 0; }
+      .ud-item.ud-logout { color: #dc3545; }
+      .ud-item.ud-logout:hover { background: #fff1f2; }
+      .topbar-user-wrap { position: relative; }
+
+      /* ══ CONTENT AREA ══ */
+      .content-area { flex: 1; overflow-x: hidden; }
+
+      /* ══ BREADCRUMB BANNER ══ */
+      .breadcrumb-banner {
+        background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-dark) 60%, var(--blue) 100%);
+        border-radius: var(--radius); padding: 1.2rem 1.5rem;
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: .75rem; position: relative; overflow: hidden;
+      }
+      .breadcrumb-banner::before {
+        content: ''; position: absolute; right: -2rem; top: -2rem;
+        width: 160px; height: 160px; border-radius: 50%;
+        background: rgba(255,255,255,.05);
+      }
+      .breadcrumb-banner::after {
+        content: ''; position: absolute; right: 4rem; bottom: -3rem;
+        width: 110px; height: 110px; border-radius: 50%;
+        background: rgba(255,255,255,.04);
+      }
+      .bb-left { position: relative; z-index: 1; }
+      .bb-page-name { font-size: 1.1rem; font-weight: 800; color: #fff; }
+      .bb-desc { font-size: .76rem; color: rgba(255,255,255,.6); margin-top: .15rem; }
+      .bb-right {
+        display: flex; align-items: center; gap: .4rem;
+        font-size: .72rem; position: relative; z-index: 1;
+      }
+      .bb-crumb-item { color: rgba(255,255,255,.55); display: flex; align-items: center; gap: .3rem; }
+      .bb-crumb-item.active { color: rgba(255,255,255,.9); font-weight: 600; }
+      .bb-crumb-sep { color: rgba(255,255,255,.3); }
+
+      /* ══ STAT STRIP CARD ══ */
+      .stat-strip-card {
+        background: var(--card-bg); border-radius: var(--radius);
+        border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);
+        padding: .9rem 1.1rem; display: flex; align-items: center; gap: .9rem;
+        transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+      }
+      .stat-strip-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+      .ssc-icon {
+        width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.15rem;
+      }
+      .ssc-value { font-size: 1.4rem; font-weight: 800; color: var(--text-main); line-height: 1; }
+      .ssc-label { font-size: .71rem; color: var(--text-muted); margin-top: .15rem; }
+
+      /* ══ MAIN CARD ══ */
+      .main-card {
+        background: var(--card-bg); border-radius: var(--radius);
+        border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); overflow: hidden;
+      }
+      .card-header {
+        padding: .9rem 1.2rem; border-bottom: 1px solid var(--border-light);
+        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .6rem;
+      }
+      .card-title-section { display: flex; align-items: center; gap: .55rem; }
+      .card-title-section i { font-size: 1rem; color: var(--blue); }
+      .card-title-section h6 { font-size: .9rem; font-weight: 700; color: var(--text-main); margin: 0; }
+
+      /* ══ TOOLBAR ══ */
+      .toolbar-wrap {
+        padding: .9rem 1.2rem; border-bottom: 1px solid var(--border-light);
+        display: flex; align-items: center; gap: .65rem; flex-wrap: wrap;
+      }
+      .toolbar-left { display: flex; align-items: center; gap: .55rem; flex-wrap: wrap; flex: 1; }
+      .toolbar-right { display: flex; align-items: center; gap: .5rem; flex-shrink: 0; }
+
+      .input-wrap { position: relative; }
+      .input-wrap .input-icon {
+        position: absolute; left: .75rem; top: 50%; transform: translateY(-50%);
+        color: var(--text-muted); font-size: .82rem; pointer-events: none;
+      }
+      .input-wrap input {
+        height: 36px; border: 1.5px solid var(--border-light); border-radius: var(--radius-sm);
+        padding: 0 .85rem 0 2.1rem; font-family: var(--font); font-size: .8rem;
+        color: var(--text-main); outline: none; transition: border .2s, box-shadow .2s;
+        background: #fff; width: 230px;
+      }
+      .input-wrap input:focus {
+        border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft);
+      }
+      .input-wrap input::placeholder { color: #b0bac7; }
+
+      /* Select2 toolbar */
+      .w-select2-sm { display: none; }
+      .select2-container--default .select2-selection--single {
+        height: 36px; border: 1.5px solid var(--border-light);
+        border-radius: var(--radius-sm) !important; background: #fff;
+        display: flex; align-items: center;
+      }
+      .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 34px; padding-left: .75rem; padding-right: 2rem;
+        font-family: var(--font); font-size: .8rem; color: var(--text-main);
+      }
+      .select2-container--default .select2-selection--single .select2-selection__arrow { height: 34px; right: 8px; }
+      .select2-container--default.select2-container--open .select2-selection--single {
+        border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft);
+      }
+      .select2-dropdown { border: 1.5px solid var(--blue); border-radius: 10px; box-shadow: var(--shadow-md); overflow: hidden; }
+      .select2-search--dropdown .select2-search__field {
+        border: 1.5px solid var(--border-light); border-radius: 7px;
+        font-family: var(--font); font-size: .8rem; padding: .38rem .65rem; outline: none;
+      }
+      .select2-results__option { font-family: var(--font); font-size: .8rem; padding: .45rem .75rem; }
+      .select2-results__option--highlighted { background: var(--blue) !important; }
+
+      /* per-page select */
+      .select-perpage { display: none; }
+
+      /* reset btn */
+      .btn-reset {
+        width: 36px; height: 36px; border-radius: var(--radius-sm);
+        border: 1.5px solid var(--border-light); background: #fff; color: var(--text-muted);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; font-size: .9rem; transition: all .2s;
+      }
+      .btn-reset:hover { background: #fee2e2; border-color: #fca5a5; color: var(--red); }
+
+      /* ══ TABLE ══ */
+      .table-responsive-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      table.data-table {
+        width: 100%; border-collapse: collapse; font-size: .82rem;
+        min-width: 860px;
+      }
+      table.data-table thead tr { background: var(--sidebar-bg); }
+      table.data-table thead th {
+        color: rgba(255,255,255,.85); font-size: .72rem; font-weight: 700;
+        letter-spacing: .04em; padding: .75rem 1rem; text-align: left;
+        white-space: nowrap;
+      }
+      table.data-table thead th:first-child { border-radius: 0; }
+      table.data-table tbody tr {
+        border-bottom: 1px solid var(--border-light);
+        transition: background .15s;
+      }
+      table.data-table tbody tr:hover { background: var(--blue-soft); }
+      table.data-table tbody tr:last-child { border-bottom: none; }
+      table.data-table td { padding: .78rem 1rem; vertical-align: middle; }
+      .col-no { width: 48px; text-align: center; color: var(--text-muted); font-size: .76rem; font-weight: 600; }
+      .col-aksi { width: 110px; text-align: center; }
+      .sortable { cursor: pointer; user-select: none; }
+      .sortable:hover { color: rgba(255,255,255,1); }
+      .sort-icon { font-size: .65rem; opacity: .5; margin-left: .25rem; }
+
+      /* ══ EMPTY STATE ══ */
+      .empty-state {
+        text-align: center; padding: 3rem 1rem; color: var(--text-muted);
+      }
+      .empty-state i { font-size: 2.5rem; opacity: .3; display: block; margin-bottom: .65rem; }
+      .empty-state p { font-size: .84rem; }
+
+      /* ══ PAGINATION ══ */
+      .pagination-row {
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: .7rem; padding: .85rem 1.2rem;
+        border-top: 1px solid var(--border-light);
+      }
+      .pagination-info { font-size: .78rem; color: var(--text-muted); }
+      .pagination-controls { display: flex; align-items: center; gap: .3rem; }
+      .page-btn {
+        width: 32px; height: 32px; border-radius: 8px;
+        border: 1.5px solid var(--border-light); background: #fff;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; font-size: .8rem; color: var(--text-muted);
+        transition: background .18s, color .18s, border-color .18s; font-weight: 600;
+      }
+      .page-btn:hover { background: var(--blue-soft); color: var(--blue); border-color: rgba(0,114,198,.25); }
+      .page-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+      .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+      .page-dots { font-size: .82rem; color: var(--text-muted); padding: 0 .2rem; line-height: 32px; }
+
+      /* ══ BADGE ══ */
+      .badge-status {
+        display: inline-flex; align-items: center; gap: .28rem;
+        padding: .22rem .7rem; border-radius: 100px;
+        font-size: .7rem; font-weight: 700; white-space: nowrap;
+      }
+      .badge-aktif    { background: #d1fae5; color: #065f46; }
+      .badge-nonaktif { background: #fee2e2; color: #991b1b; }
+      .badge-tipe {
+        display: inline-block; padding: .2rem .65rem; border-radius: 6px;
+        font-size: .7rem; font-weight: 700;
+      }
+      .badge-dinas  { background: rgba(0,114,198,.1);  color: var(--blue); }
+      .badge-badan  { background: rgba(124,58,237,.1); color: var(--purple); }
+      .badge-kec    { background: rgba(16,185,100,.1); color: #059652; }
+      .badge-rsud   { background: rgba(239,68,68,.1);  color: #dc2626; }
+      .badge-sekda  { background: rgba(245,158,11,.1); color: #d97706; }
+      .badge-lainnya{ background: rgba(107,114,128,.1);color: #374151; }
+
+      /* ══ ACTION BUTTONS ══ */
+      .aksi-group { display: flex; align-items: center; gap: .35rem; justify-content: center; }
+      .btn-icon-only {
+        width: 30px; height: 30px; border-radius: 8px; border: none;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; font-size: .82rem; transition: all .2s; flex-shrink: 0;
+      }
+      .btn-detail { background: rgba(0,114,198,.1);  color: var(--blue); }
+      .btn-detail:hover { background: var(--blue); color: #fff; }
+      .btn-edit   { background: rgba(245,158,11,.1); color: var(--amber); }
+      .btn-edit:hover { background: var(--amber); color: #fff; }
+      .btn-delete { background: rgba(220,53,69,.1);  color: var(--red); }
+      .btn-delete:hover { background: var(--red); color: #fff; }
+
+      /* ══ BTN PRIMARY / OUTLINE ══ */
+      .btn-primary {
+        display: inline-flex; align-items: center; gap: .4rem;
+        padding: .52rem 1.1rem; border-radius: var(--radius-sm);
+        background: linear-gradient(135deg,var(--blue),var(--blue-dark));
+        color: #fff; font-family: var(--font); font-size: .82rem; font-weight: 700;
+        border: none; cursor: pointer; transition: opacity .2s, transform .2s;
+        box-shadow: 0 4px 14px rgba(0,114,198,.3); white-space: nowrap;
+      }
+      .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+      .btn-outline {
+        display: inline-flex; align-items: center; gap: .4rem;
+        padding: .52rem 1.1rem; border-radius: var(--radius-sm);
+        border: 1.5px solid var(--border-light); background: #fff;
+        color: var(--text-muted); font-family: var(--font); font-size: .82rem;
+        font-weight: 600; cursor: pointer; transition: all .2s; white-space: nowrap;
+      }
+      .btn-outline:hover { background: var(--blue-soft); color: var(--blue); border-color: rgba(0,114,198,.3); }
+      .btn-export {
+        display: inline-flex; align-items: center; gap: .4rem;
+        padding: .5rem .95rem; border-radius: var(--radius-sm);
+        border: 1.5px solid var(--border-light); background: #fff;
+        color: var(--text-muted); font-family: var(--font); font-size: .8rem;
+        font-weight: 600; cursor: pointer; transition: all .2s; white-space: nowrap;
+      }
+      .btn-export:hover { background: #f0fdf4; color: #16a34a; border-color: #86efac; }
+
+      /* ══ MODAL ══ */
+      .modal-overlay {
+        position: fixed; inset: 0; background: rgba(0,10,30,.5);
+        backdrop-filter: blur(4px); z-index: 500;
+        display: flex; align-items: center; justify-content: center;
+        padding: 1rem; opacity: 0; pointer-events: none;
+        transition: opacity .25s;
+      }
+      .modal-overlay.open { opacity: 1; pointer-events: all; }
+      .modal-box {
+        background: #fff; border-radius: var(--radius); width: 100%;
+        box-shadow: var(--shadow-lg); display: flex; flex-direction: column;
+        max-height: 92vh; transform: translateY(16px);
+        transition: transform .28s var(--ease);
+      }
+      .modal-overlay.open .modal-box { transform: translateY(0); }
+      .modal-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-light);
+        flex-shrink: 0; gap: .75rem;
+      }
+      .modal-header-left { display: flex; align-items: center; gap: .75rem; }
+      .modal-icon-badge {
+        width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0;
+        background: linear-gradient(135deg,var(--blue),var(--blue-dark));
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 1rem; box-shadow: 0 4px 14px rgba(0,114,198,.3);
+      }
+      .modal-title   { font-size: .92rem; font-weight: 800; color: var(--text-main); }
+      .modal-subtitle{ font-size: .73rem; color: var(--text-muted); margin-top: .05rem; }
+      .modal-close {
+        width: 32px; height: 32px; border-radius: 8px; border: none;
+        background: rgba(0,0,0,.05); color: var(--text-muted); cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: .88rem; transition: background .18s, color .18s; flex-shrink: 0;
+      }
+      .modal-close:hover { background: #fee2e2; color: var(--red); }
+      .modal-body { flex: 1; overflow-y: auto; padding: 1.25rem 1.5rem; }
+      .modal-footer {
+        display: flex; align-items: center; justify-content: flex-end; gap: .6rem;
+        padding: .9rem 1.25rem; border-top: 1px solid var(--border-light); flex-shrink: 0;
+      }
+
+      /* ══ FORM ══ */
+      .form-label {
+        display: block; font-size: .78rem; font-weight: 700;
+        color: var(--text-sub); margin-bottom: .35rem;
+      }
+      .required { color: var(--red); margin-left: .15rem; }
+      .form-control {
+        width: 100%; height: 40px; border: 1.5px solid var(--border-light);
+        border-radius: var(--radius-sm); padding: 0 .9rem;
+        font-family: var(--font); font-size: .82rem; color: var(--text-main);
+        outline: none; transition: border .2s, box-shadow .2s; background: #fff;
+      }
+      .form-control:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
+      .form-control::placeholder { color: #b0bac7; }
+      textarea.form-control { height: auto; padding: .65rem .9rem; line-height: 1.6; resize: vertical; }
+      .form-error { display: none; font-size: .72rem; color: var(--red); margin-top: .28rem; }
+      .form-control.is-error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(220,53,69,.1); }
+      .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; margin-bottom: .9rem; }
+      @media(max-width:575px) { .form-grid-2 { grid-template-columns: 1fr; } }
+      .form-group { margin-bottom: .9rem; }
+      .form-group:last-child { margin-bottom: 0; }
+      .form-section-label {
+        font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em;
+        color: var(--blue); padding: .4rem 0 .3rem; margin: .6rem 0 .5rem;
+        border-bottom: 1px solid rgba(0,114,198,.15);
+        display: flex; align-items: center; gap: .4rem;
+      }
+
+      /* Status toggle */
+      .status-toggle-wrap { display: flex; align-items: center; gap: .65rem; }
+      .tog-status { position: relative; display: inline-block; width: 44px; height: 24px; }
+      .tog-status input { opacity: 0; width: 0; height: 0; }
+      .tog-status-slider {
+        position: absolute; inset: 0; background: #d1d9e6;
+        border-radius: 100px; cursor: pointer; transition: background .25s;
+      }
+      .tog-status-slider::before {
+        content: ''; position: absolute; width: 18px; height: 18px;
+        left: 3px; top: 3px; background: #fff; border-radius: 50%;
+        transition: transform .25s; box-shadow: 0 1px 4px rgba(0,0,0,.18);
+      }
+      .tog-status input:checked + .tog-status-slider { background: var(--green); }
+      .tog-status input:checked + .tog-status-slider::before { transform: translateX(20px); }
+      .tog-status-label { font-size: .82rem; font-weight: 600; color: var(--text-main); }
+
+      /* ══ LOGO PREVIEW ══ */
+      .logo-prev-wrap {
+        display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      }
+      .logo-prev-box {
+        width: 80px; height: 80px; border-radius: 12px;
+        border: 2px dashed var(--border-light); background: var(--bg-surface);
+        display: flex; align-items: center; justify-content: center; overflow: hidden;
+        flex-shrink: 0;
+      }
+      .logo-prev-box img { width: 100%; height: 100%; object-fit: contain; }
+      .logo-prev-box i { font-size: 2rem; color: #cdd5e0; }
+      .logo-upload-btn {
+        display: inline-flex; align-items: center; gap: .38rem;
+        padding: .45rem .95rem; border-radius: 8px;
+        border: 1.5px solid var(--border-light); background: #fff;
+        font-size: .78rem; font-weight: 600; color: var(--text-muted); cursor: pointer;
+        transition: all .2s; position: relative; overflow: hidden;
+      }
+      .logo-upload-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-soft); }
+      .logo-upload-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+      /* ══ DETAIL MODAL GRID ══ */
+      .detail-grid { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+      .detail-logo-col { flex-shrink: 0; text-align: center; }
+      .detail-logo-box {
+        width: 90px; height: 90px; border-radius: 14px; overflow: hidden;
+        border: 1px solid var(--border-light); background: var(--bg-surface);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto .55rem;
+      }
+      .detail-logo-box img { width: 100%; height: 100%; object-fit: contain; }
+      .detail-logo-box i { font-size: 2.5rem; color: #cdd5e0; }
+      .detail-info-col { flex: 1; min-width: 220px; }
+      .detail-section-title {
+        font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em;
+        color: var(--blue); margin-bottom: .45rem; display: flex; align-items: center; gap: .35rem;
+      }
+      .detail-row {
+        display: flex; gap: .6rem; padding: .32rem 0;
+        border-bottom: 1px solid rgba(0,0,0,.04); font-size: .8rem;
+      }
+      .detail-lbl { width: 130px; flex-shrink: 0; color: var(--text-muted); font-size: .74rem; padding-top: .05rem; }
+      .detail-val { flex: 1; color: var(--text-main); font-weight: 500; word-break: break-word; }
+
+      /* ══ LOGOUT MODAL ══ */
+      .logout-overlay {
+        position: fixed; inset: 0; background: rgba(0,10,30,.55);
+        backdrop-filter: blur(6px); z-index: 600;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; pointer-events: none; transition: opacity .3s;
+      }
+      .logout-overlay.open { opacity: 1; pointer-events: all; }
+      .logout-modal {
+        background: #fff; border-radius: 20px; padding: 2.2rem 2rem;
+        width: 340px; text-align: center; box-shadow: var(--shadow-lg);
+        transform: scale(.92); transition: transform .3s var(--ease);
+      }
+      .logout-overlay.open .logout-modal { transform: scale(1); }
+      .logout-icon-ring {
+        width: 76px; height: 76px; margin: 0 auto 1.1rem; position: relative;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .logout-icon-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .ring-dashed {
+        fill: none; stroke: rgba(0,114,198,.18);
+        stroke-width: 1.5; stroke-dasharray: 5 4;
+        animation: spinRing 18s linear infinite;
+      }
+      @keyframes spinRing { to { stroke-dashoffset: -200; } }
+      .logout-icon-inner {
+        width: 52px; height: 52px; border-radius: 50%; position: relative;
+        background: linear-gradient(135deg,var(--blue),var(--blue-dark));
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 1.3rem; box-shadow: 0 6px 20px rgba(0,114,198,.4);
+      }
+      .logout-title { font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: .4rem; }
+      .logout-desc  { font-size: .8rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.3rem; }
+      .logout-btns  { display: flex; gap: .6rem; justify-content: center; }
+      .btn-cancel {
+        padding: .55rem 1.25rem; border-radius: 10px;
+        border: 1.5px solid var(--border-light); background: #fff;
+        font-family: var(--font); font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s;
+      }
+      .btn-cancel:hover { background: var(--blue-soft); border-color: rgba(0,114,198,.3); color: var(--blue); }
+      .btn-confirm-red {
+        padding: .55rem 1.25rem; border-radius: 10px;
+        background: linear-gradient(135deg,#dc3545,#c0392b);
+        border: none; color: #fff; font-family: var(--font); font-size: .82rem;
+        font-weight: 700; cursor: pointer;
+        box-shadow: 0 4px 14px rgba(220,53,69,.35); transition: opacity .2s;
+      }
+      .btn-confirm-red:hover { opacity: .88; }
+
+      /* ══ FOOTER ══ */
+      .main-footer {
+        background: #fff; border-top: 1px solid var(--border-light);
+        padding: .85rem 1.5rem; display: flex; align-items: center;
+        justify-content: space-between; flex-wrap: wrap; gap: .5rem;
+        font-size: .75rem; color: var(--text-muted);
+      }
+      .footer-link { color: var(--text-muted); transition: color .15s; }
+      .footer-link:hover { color: var(--blue); }
+      .footer-right { display: flex; gap: 1rem; }
+
+      /* ══ FAB ══ */
+      .fab-top {
+        position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 100;
+        width: 42px; height: 42px; border-radius: 12px;
+        background: linear-gradient(135deg,var(--blue),var(--blue-dark));
+        color: #fff; border: none; cursor: pointer; font-size: 1rem;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 6px 20px rgba(0,114,198,.4); opacity: 0;
+        transition: opacity .3s, transform .3s; pointer-events: none;
+      }
+      .fab-top.show { opacity: 1; pointer-events: all; }
+      .fab-top:hover { transform: translateY(-3px); }
+
+      /* ══ TOAST ══ */
+      .toast-notif {
+        position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(20px);
+        background: var(--sidebar-bg); color: #fff; font-size: .8rem; font-weight: 600;
+        padding: .65rem 1.2rem; border-radius: 10px; box-shadow: var(--shadow-md);
+        z-index: 800; opacity: 0; transition: opacity .3s, transform .3s;
+        white-space: nowrap; pointer-events: none;
+      }
+      .toast-notif.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+      /* ══ MOBILE RESPONSIVE ══ */
+      @media (max-width: 991px) {
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.mobile-open { transform: translateX(0); }
+        .main-area { margin-left: 0 !important; }
+        table.data-table { display: none; }
+        .mob-list-wrap { display: block !important; }
+      }
+      @media (min-width: 992px) {
+        .mob-list-wrap { display: none; }
+      }
+
+      /* Mobile OPD cards */
+      .mob-list-wrap { display: none; }
+      .mob-opd-card {
+        background: #fff; border-radius: 12px; border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm); margin-bottom: .7rem; overflow: hidden;
+      }
+      .mob-opd-header {
+        display: flex; align-items: center; gap: .8rem;
+        padding: .85rem 1rem; border-bottom: 1px solid var(--border-light);
+      }
+      .mob-opd-logo {
+        width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+        background: var(--bg-surface); border: 1px solid var(--border-light);
+        display: flex; align-items: center; justify-content: center; overflow: hidden;
+        color: #cdd5e0; font-size: 1.2rem;
+      }
+      .mob-opd-logo img { width: 100%; height: 100%; object-fit: contain; }
+      .mob-opd-info { flex: 1; min-width: 0; }
+      .mob-opd-nama { font-size: .86rem; font-weight: 700; color: var(--text-main); }
+      .mob-opd-singkatan { font-size: .71rem; color: var(--text-muted); }
+      .mob-opd-body { padding: .55rem 1rem; }
+      .mob-opd-row { display: flex; gap: .5rem; padding: .22rem 0; font-size: .78rem; }
+      .mob-opd-lbl { width: 88px; flex-shrink: 0; color: var(--text-muted); font-size: .72rem; }
+      .mob-opd-val { flex: 1; color: var(--text-main); font-weight: 500; }
+      .mob-opd-footer {
+        display: flex; gap: .5rem; padding: .6rem 1rem;
+        border-top: 1px solid var(--border-light); background: var(--bg-surface);
+      }
+      .mob-opd-footer .btn-icon-only {
+        flex: 1; justify-content: center;
+        font-size: .74rem; gap: .3rem; width: auto; height: 32px; border-radius: 8px;
+        display: flex; align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+    <!-- ══ LOGOUT MODAL ══ -->
+    <div class="logout-overlay" id="logoutModal">
+      <div class="logout-modal">
+        <div class="logout-icon-ring">
+          <svg viewBox="0 0 76 76"><circle class="ring-dashed" cx="38" cy="38" r="34"></circle></svg>
+          <div class="logout-icon-inner"><i class="bi bi-box-arrow-right"></i></div>
+        </div>
+        <h4 class="logout-title">Keluar dari Sistem?</h4>
+        <p class="logout-desc">Sesi Anda akan diakhiri. Pastikan semua perubahan telah tersimpan.</p>
+        <div class="logout-btns">
+          <button class="btn-cancel" onclick="closeLogoutModal()">Batal</button>
+          <button class="btn-confirm-red" onclick="window.location.href='login-ppid.html'">
+            <i class="bi bi-box-arrow-right me-1"></i>Ya, Keluar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DELETE MODAL ══ -->
+    <div class="modal-overlay" id="deleteModal">
+      <div class="modal-box" style="max-width:420px">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <div class="modal-icon-badge" style="background:linear-gradient(135deg,#dc3545,#c0392b)">
+              <i class="bi bi-trash3-fill"></i>
+            </div>
+            <div>
+              <div class="modal-title">Hapus Instansi / OPD</div>
+              <div class="modal-subtitle">Tindakan ini tidak dapat dibatalkan</div>
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeDel()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size:.84rem;color:var(--text-muted);line-height:1.7">
+            Anda akan menghapus instansi <strong id="delNama" style="color:var(--text-main)"></strong>.
+            Semua data terkait instansi ini akan ikut terhapus. Yakin melanjutkan?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-outline" onclick="closeDel()"><i class="bi bi-x me-1"></i>Batal</button>
+          <button class="btn-primary" style="background:linear-gradient(135deg,#dc3545,#c0392b);box-shadow:0 4px 14px rgba(220,53,69,.35)" onclick="confirmDel()">
+            <i class="bi bi-trash3 me-1"></i>Ya, Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DETAIL MODAL ══ -->
+    <div class="modal-overlay" id="detailModal">
+      <div class="modal-box" style="max-width:620px">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <div class="modal-icon-badge"><i class="bi bi-building-fill"></i></div>
+            <div>
+              <div class="modal-title">Detail Instansi / OPD</div>
+              <div class="modal-subtitle" id="detailSub">—</div>
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeDetail()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body" id="detailBody"></div>
+        <div class="modal-footer">
+          <button class="btn-outline" onclick="closeDetail()"><i class="bi bi-x me-1"></i>Tutup</button>
+          <button class="btn-primary" id="detailEditBtn"><i class="bi bi-pencil-fill me-1"></i>Edit Data</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FORM MODAL ══ -->
+    <div class="modal-overlay" id="formModal">
+      <div class="modal-box" style="max-width:640px">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <div class="modal-icon-badge"><i class="bi bi-building" id="fmIcon"></i></div>
+            <div>
+              <div class="modal-title" id="fmTitle">Tambah Instansi / OPD</div>
+              <div class="modal-subtitle" id="fmSub">Isi data instansi dengan lengkap</div>
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeMod()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body">
+          <form id="opdForm" novalidate>
+
+            <!-- Logo -->
+            <div class="form-group">
+              <label class="form-label">Logo Instansi</label>
+              <div class="logo-prev-wrap">
+                <div class="logo-prev-box" id="logoPrevBox">
+                  <i class="bi bi-building" id="logoPlaceholder"></i>
+                  <img id="logoPreview" src="" alt="" style="display:none;width:100%;height:100%;object-fit:contain"/>
+                </div>
+                <div>
+                  <label class="logo-upload-btn">
+                    <i class="bi bi-cloud-arrow-up-fill"></i> Upload Logo
+                    <input type="file" id="fLogo" accept="image/*" onchange="previewLogo(this)"/>
+                  </label>
+                  <button type="button" class="logo-upload-btn ms-1" onclick="removeLogo()" id="btnRemoveLogo" style="display:none;border-color:#fca5a5;color:var(--red)">
+                    <i class="bi bi-x-circle"></i> Hapus
+                  </button>
+                  <div style="font-size:.68rem;color:var(--text-muted);margin-top:.4rem">Format: JPG, PNG, SVG — Maks. 1 MB</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section-label"><i class="bi bi-info-circle-fill"></i> Informasi Utama</div>
+
+            <div class="form-group">
+              <label class="form-label">Nama Instansi / OPD <span class="required">*</span></label>
+              <input type="text" class="form-control" id="fNama" placeholder="Nama lengkap instansi..."/>
+              <div class="form-error" id="errNama">Nama instansi wajib diisi.</div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Singkatan</label>
+                <input type="text" class="form-control" id="fSingkatan" placeholder="Contoh: DISKOMINFO"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tipe Instansi <span class="required">*</span></label>
+                <select class="form-control w-select2" id="fTipe">
+                  <option value="">-- Pilih Tipe --</option>
+                  <option value="dinas">Dinas</option>
+                  <option value="badan">Badan</option>
+                  <option value="kecamatan">Kecamatan</option>
+                  <option value="rsud">RSUD / Puskesmas</option>
+                  <option value="sekda">Sekretariat Daerah</option>
+                  <option value="lainnya">Lainnya</option>
+                </select>
+                <div class="form-error" id="errTipe">Tipe instansi wajib dipilih.</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Kepala Instansi / Pejabat PPID</label>
+              <input type="text" class="form-control" id="fKepala" placeholder="Nama kepala instansi..."/>
+            </div>
+
+            <div class="form-section-label"><i class="bi bi-geo-alt-fill"></i> Alamat & Kontak</div>
+
+            <div class="form-group">
+              <label class="form-label">Alamat <span class="required">*</span></label>
+              <input type="text" class="form-control" id="fAlamat" placeholder="Jl. ..."/>
+              <div class="form-error" id="errAlamat">Alamat wajib diisi.</div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Telepon</label>
+                <input type="text" class="form-control" id="fTelp" placeholder="(0285) ..."/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" id="fEmail" placeholder="instansi@pekalongan.go.id"/>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Website</label>
+              <input type="text" class="form-control" id="fWebsite" placeholder="https://..."/>
+            </div>
+
+            <div class="form-section-label"><i class="bi bi-file-text-fill"></i> Deskripsi & Status</div>
+
+            <div class="form-group">
+              <label class="form-label">Tugas Pokok / Deskripsi</label>
+              <textarea class="form-control" id="fDesk" rows="3" placeholder="Uraian singkat tugas dan fungsi instansi..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <div class="status-toggle-wrap">
+                <label class="tog-status">
+                  <input type="checkbox" id="fStatus" checked/>
+                  <span class="tog-status-slider"></span>
+                </label>
+                <span class="tog-status-label" id="fStatusLabel">Aktif</span>
+              </div>
+            </div>
+
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-outline" onclick="closeMod()"><i class="bi bi-x me-1"></i>Batal</button>
+          <button class="btn-primary" onclick="saveMod()">
+            <i class="bi bi-check-lg me-1"></i><span id="btnSaveLabel">Simpan Data</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ APP LAYOUT ══ -->
+    <div class="app-wrapper">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <a class="sidebar-brand" href="dashboard-ppid.html">
+          <div class="brand-icon"><i class="bi bi-shield-lock-fill"></i></div>
+          <div class="brand-text">
+            <div class="brand-title">PPID Pekalongan</div>
+            <div class="brand-sub">Kota Pekalongan · v2.0</div>
+          </div>
+        </a>
+        <nav class="sidebar-scroll">
+
+          <div class="nav-item-wrapper">
+            <a href="dashboard-ppid.html" class="nav-link-custom" data-tip="Dashboard">
+              <i class="bi bi-grid-1x2-fill nav-icon"></i>
+              <span class="nav-label">Dashboard</span>
+            </a>
+          </div>
+
+          <div class="nav-section-label">Master Data</div>
+          <div class="nav-item-wrapper">
+            <a href="admin-pengelola-ppid.html" class="nav-link-custom">
+              <i class="bi bi-person-badge-fill nav-icon"></i>
+              <span class="nav-label">Admin Pengelola</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="pemohon-ppid.html" class="nav-link-custom">
+              <i class="bi bi-people-fill nav-icon"></i>
+              <span class="nav-label">Pemohon</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="instansi-opd-ppid.html" class="nav-link-custom active">
+              <i class="bi bi-building nav-icon"></i>
+              <span class="nav-label">Instansi / OPD</span>
+              <span class="nav-badge">42</span>
+            </a>
+          </div>
+
+          <div class="nav-section-label">Kelompok Informasi</div>
+          <div class="nav-item-wrapper">
+            <a href="#" class="nav-link-custom">
+              <i class="bi bi-folder2-open nav-icon"></i><span class="nav-label">Kelinfo DIP</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="#" class="nav-link-custom">
+              <i class="bi bi-folder-fill nav-icon"></i><span class="nav-label">Kelinfo DIB</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="#" class="nav-link-custom">
+              <i class="bi bi-folder-symlink-fill nav-icon"></i><span class="nav-label">Kelinfo DIBS</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="#" class="nav-link-custom">
+              <i class="bi bi-archive-fill nav-icon"></i><span class="nav-label">Kelinfo DIU</span>
+            </a>
+          </div>
+
+          <div class="nav-section-label">Permohonan</div>
+          <div class="nav-item-wrapper">
+            <a href="permohonan-masuk-ppid.html" class="nav-link-custom">
+              <i class="bi bi-inbox-fill nav-icon"></i>
+              <span class="nav-label">Permohonan Masuk</span>
+              <span class="nav-badge nav-badge-amber">3</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="#" class="nav-link-custom">
+              <i class="bi bi-clock-history nav-icon"></i><span class="nav-label">Riwayat Permohonan</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="#" class="nav-link-custom">
+              <i class="bi bi-bar-chart-fill nav-icon"></i><span class="nav-label">Laporan &amp; Statistik</span>
+            </a>
+          </div>
+
+          <div class="nav-section-label">Konten Website</div>
+          <div class="nav-item-wrapper">
+            <a href="berita-ppid.html" class="nav-link-custom">
+              <i class="bi bi-newspaper nav-icon"></i><span class="nav-label">Berita</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="galeri-ppid.html" class="nav-link-custom">
+              <i class="bi bi-images nav-icon"></i><span class="nav-label">Galeri</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="infografis-ppid.html" class="nav-link-custom">
+              <i class="bi bi-pie-chart-fill nav-icon"></i><span class="nav-label">Infografis</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="kelola-menu-ppid.html" class="nav-link-custom">
+              <i class="bi bi-menu-button-wide-fill nav-icon"></i><span class="nav-label">Kelola Menu</span>
+            </a>
+          </div>
+
+          <div class="nav-section-label">Sistem</div>
+          <div class="nav-item-wrapper">
+            <a href="role-ppid.html" class="nav-link-custom">
+              <i class="bi bi-shield-fill-check nav-icon"></i><span class="nav-label">Role &amp; Akses</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="pengaturan-ppid.html" class="nav-link-custom">
+              <i class="bi bi-gear-fill nav-icon"></i><span class="nav-label">Pengaturan</span>
+            </a>
+          </div>
+
+          <div class="sidebar-bottom">
+            <a href="profile-ppid.html" class="sidebar-user">
+              <div class="su-avatar">SA</div>
+              <div class="su-info">
+                <div class="su-name">Super Admin</div>
+                <div class="su-role">Administrator</div>
+              </div>
+            </a>
+            <button class="sidebar-logout" onclick="openLogoutModal()" title="Keluar">
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="main-area" id="mainArea">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="topbar-toggle" id="toggleBtn" onclick="toggleSidebar()">
+              <i class="bi bi-list"></i>
+            </button>
+            <div class="topbar-breadcrumb">
+              <span class="tb-bc-item">Master Data</span>
+              <i class="bi bi-chevron-right tb-bc-sep"></i>
+              <span class="tb-bc-item active">Instansi &amp; OPD</span>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <button class="topbar-icon-btn" title="Notifikasi">
+              <i class="bi bi-bell-fill"></i>
+              <span class="notif-dot"></span>
+            </button>
+            <div class="topbar-user-wrap">
+              <div class="topbar-avatar" onclick="toggleUserMenu()" title="Profil">SA</div>
+              <div class="user-dropdown" id="userDropdown">
+                <div class="ud-item" onclick="window.location.href='profile-ppid.html'">
+                  <i class="bi bi-person-fill"></i> Profil Saya
+                </div>
+                <div class="ud-item">
+                  <i class="bi bi-gear-fill"></i> Pengaturan
+                </div>
+                <div class="ud-divider"></div>
+                <div class="ud-item ud-logout" onclick="openLogoutModal()">
+                  <i class="bi bi-box-arrow-right"></i> Keluar
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- CONTENT -->
+        <main class="content-area">
+          <div class="container-fluid px-0">
+
+            <!-- Breadcrumb Banner -->
+            <div class="px-3 px-lg-4 pt-3 pt-lg-4 mb-3">
+              <div class="breadcrumb-banner">
+                <div class="bb-left">
+                  <div class="bb-page-name">Instansi &amp; OPD</div>
+                  <div class="bb-desc">Kelola data instansi dan Organisasi Perangkat Daerah Kota Pekalongan</div>
+                </div>
+                <div class="bb-right">
+                  <div class="bb-crumb-item"><i class="bi bi-house-fill"></i> Home</div>
+                  <span class="bb-crumb-sep">/</span>
+                  <div class="bb-crumb-item">Master Data</div>
+                  <span class="bb-crumb-sep">/</span>
+                  <div class="bb-crumb-item active"><i class="bi bi-building"></i> Instansi &amp; OPD</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="px-3 px-lg-4 mb-3">
+              <div class="row g-3">
+                <div class="col-6 col-md-3">
+                  <div class="stat-strip-card h-100">
+                    <div class="ssc-icon" style="background:rgba(0,114,198,.1);color:var(--blue)">
+                      <i class="bi bi-building"></i>
+                    </div>
+                    <div class="ssc-body">
+                      <div class="ssc-value" id="statTotal">42</div>
+                      <div class="ssc-label">Total OPD</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="stat-strip-card h-100">
+                    <div class="ssc-icon" style="background:rgba(16,185,100,.1);color:#10b964">
+                      <i class="bi bi-building-check"></i>
+                    </div>
+                    <div class="ssc-body">
+                      <div class="ssc-value" id="statAktif">39</div>
+                      <div class="ssc-label">Aktif</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="stat-strip-card h-100">
+                    <div class="ssc-icon" style="background:rgba(0,114,198,.1);color:var(--blue)">
+                      <i class="bi bi-diagram-3-fill"></i>
+                    </div>
+                    <div class="ssc-body">
+                      <div class="ssc-value">18</div>
+                      <div class="ssc-label">Dinas</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="stat-strip-card h-100">
+                    <div class="ssc-icon" style="background:rgba(124,58,237,.1);color:var(--purple)">
+                      <i class="bi bi-bounding-box-circles"></i>
+                    </div>
+                    <div class="ssc-body">
+                      <div class="ssc-value">4</div>
+                      <div class="ssc-label">Kecamatan</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Tabel -->
+            <div class="px-3 px-lg-4 pb-4">
+              <div class="main-card">
+
+                <!-- Card Header -->
+                <div class="card-header">
+                  <div class="card-title-section">
+                    <i class="bi bi-building"></i>
+                    <h6>Daftar Instansi &amp; OPD</h6>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button class="btn-export" onclick="exportData()">
+                      <i class="bi bi-file-earmark-excel-fill"></i>
+                      <span class="d-none d-sm-inline">Export</span>
+                    </button>
+                    <button class="btn-primary" onclick="openMod('tambah')">
+                      <i class="bi bi-plus-lg"></i>Tambah OPD
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Toolbar -->
+                <div class="toolbar-wrap">
+                  <div class="toolbar-left">
+                    <div class="input-wrap">
+                      <i class="bi bi-search input-icon"></i>
+                      <input type="text" id="searchInput" placeholder="Cari nama / singkatan..." oninput="doFilter()"/>
+                    </div>
+                    <select class="w-select2-sm" id="filterTipe" onchange="doFilter()">
+                      <option value="">Semua Tipe</option>
+                      <option value="dinas">Dinas</option>
+                      <option value="badan">Badan</option>
+                      <option value="kecamatan">Kecamatan</option>
+                      <option value="rsud">RSUD / Puskesmas</option>
+                      <option value="sekda">Sekretariat Daerah</option>
+                      <option value="lainnya">Lainnya</option>
+                    </select>
+                    <select class="w-select2-sm" id="filterStatus" onchange="doFilter()">
+                      <option value="">Semua Status</option>
+                      <option value="aktif">Aktif</option>
+                      <option value="nonaktif">Tidak Aktif</option>
+                    </select>
+                    <button class="btn-reset" onclick="resetFilter()" title="Reset Filter">
+                      <i class="bi bi-arrow-counterclockwise"></i>
+                    </button>
+                  </div>
+                  <div class="toolbar-right">
+                    <span style="font-size:.78rem;color:var(--text-muted);white-space:nowrap">Tampilkan</span>
+                    <select class="select-perpage" id="perPage" onchange="doFilter()">
+                      <option value="5">5</option>
+                      <option value="10" selected>10</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                    </select>
+                    <span style="font-size:.78rem;color:var(--text-muted)">data</span>
+                  </div>
+                </div>
+
+                <!-- Table Desktop -->
+                <div class="table-responsive-x">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th class="col-no">No</th>
+                        <th>Logo</th>
+                        <th class="sortable" onclick="sortBy('nama')">Nama Instansi / OPD <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                        <th class="sortable" onclick="sortBy('tipe')">Tipe <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                        <th>Kepala / PPID</th>
+                        <th>Kontak</th>
+                        <th>Status</th>
+                        <th class="col-aksi">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                  </table>
+                  <div class="empty-state" id="emptyState" style="display:none">
+                    <i class="bi bi-building"></i>
+                    <p>Tidak ada data yang ditemukan.</p>
+                  </div>
+                </div>
+
+                <!-- Mobile List -->
+                <div class="mob-list-wrap" id="mobList"></div>
+                <div class="empty-state" id="emptyMob" style="display:none">
+                  <i class="bi bi-building"></i><p>Tidak ada data yang ditemukan.</p>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-row">
+                  <div class="pagination-info" id="pagInfo"></div>
+                  <div class="pagination-controls" id="pagCtrl"></div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="main-footer">
+          <div>&copy; 2025 <strong>PPID Kota Pekalongan</strong> — Sistem Informasi Layanan Publik.</div>
+          <div class="footer-right">
+            <a href="#" class="footer-link">Bantuan</a>
+            <a href="#" class="footer-link">Kebijakan Privasi</a>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- FAB -->
+    <button class="fab-top" id="fabTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <i class="bi bi-chevron-up"></i>
+    </button>
+    <!-- Toast -->
+    <div class="toast-notif" id="toastNotif"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+/* ══════════════════════════════════════════════════════
+   DATA SAMPLE
+══════════════════════════════════════════════════════ */
+const TIPE_META = {
+  dinas     : { label:'Dinas',             cls:'badge-dinas',   icon:'bi-building-fill' },
+  badan     : { label:'Badan',             cls:'badge-badan',   icon:'bi-bounding-box-circles' },
+  kecamatan : { label:'Kecamatan',         cls:'badge-kec',     icon:'bi-map-fill' },
+  rsud      : { label:'RSUD / Puskesmas',  cls:'badge-rsud',    icon:'bi-hospital-fill' },
+  sekda     : { label:'Setda / Setwan',    cls:'badge-sekda',   icon:'bi-briefcase-fill' },
+  lainnya   : { label:'Lainnya',           cls:'badge-lainnya', icon:'bi-building' },
+};
+
+let opd = [
+  { id:1,  nama:'Dinas Komunikasi dan Informatika',          singkatan:'DISKOMINFO',   tipe:'dinas',     kepala:'Drs. Bambang Supriyanto, M.Si.', alamat:'Jl. Majapahit No. 8, Pekalongan', telp:'(0285) 421191', email:'kominfo@pekalongan.go.id',    website:'kominfo.pekalongan.go.id',     desk:'Menyelenggarakan urusan pemerintahan bidang komunikasi dan informatika.', status:'aktif' },
+  { id:2,  nama:'Dinas Pendidikan',                          singkatan:'DISDIK',       tipe:'dinas',     kepala:'Dr. Siti Hartati, M.Pd.',         alamat:'Jl. Sriwijaya No. 10, Pekalongan', telp:'(0285) 421500', email:'disdik@pekalongan.go.id',     website:'disdik.pekalongan.go.id',      desk:'Menyelenggarakan urusan pemerintahan bidang pendidikan.', status:'aktif' },
+  { id:3,  nama:'Dinas Kesehatan',                           singkatan:'DINKES',       tipe:'dinas',     kepala:'dr. Ahmad Mujiono, M.Kes.',       alamat:'Jl. Bahagia No. 5, Pekalongan', telp:'(0285) 421300', email:'dinkes@pekalongan.go.id',     website:'dinkes.pekalongan.go.id',      desk:'Menyelenggarakan urusan pemerintahan bidang kesehatan.', status:'aktif' },
+  { id:4,  nama:'Dinas Pekerjaan Umum dan Penataan Ruang',   singkatan:'DPUPR',        tipe:'dinas',     kepala:'Ir. Hendra Wijaya, MT.',          alamat:'Jl. Pemuda No. 20, Pekalongan', telp:'(0285) 421250', email:'dpupr@pekalongan.go.id',      website:'dpupr.pekalongan.go.id',       desk:'Menyelenggarakan urusan pemerintahan bidang pekerjaan umum.', status:'aktif' },
+  { id:5,  nama:'Dinas Sosial',                              singkatan:'DINSOS',       tipe:'dinas',     kepala:'Dra. Nur Hayati, M.Si.',          alamat:'Jl. Diponegoro No. 3, Pekalongan', telp:'(0285) 421400', email:'dinsos@pekalongan.go.id',    website:'dinsos.pekalongan.go.id',      desk:'Menyelenggarakan urusan pemerintahan bidang sosial.', status:'aktif' },
+  { id:6,  nama:'Dinas Kependudukan dan Pencatatan Sipil',   singkatan:'DISDUKCAPIL',  tipe:'dinas',     kepala:'Agus Salim, S.STP., M.Si.',       alamat:'Jl. Merdeka No. 1, Pekalongan', telp:'(0285) 421600', email:'dukcapil@pekalongan.go.id',   website:'dukcapil.pekalongan.go.id',    desk:'Menyelenggarakan urusan administrasi kependudukan.', status:'aktif' },
+  { id:7,  nama:'Dinas Perdagangan, Koperasi dan UKM',       singkatan:'DISNAKERIN',   tipe:'dinas',     kepala:'H. Farid Kurniawan, SE., MM.',    alamat:'Jl. Hayam Wuruk No. 15, Pekalongan', telp:'(0285) 421700', email:'disdagkop@pekalongan.go.id',website:'disdagkop.pekalongan.go.id',   desk:'Menyelenggarakan urusan perdagangan, koperasi, dan UMKM.', status:'aktif' },
+  { id:8,  nama:'Badan Perencanaan Pembangunan Daerah',       singkatan:'BAPPEDA',      tipe:'badan',     kepala:'Dr. Retno Wulandari, M.Sc.',      alamat:'Jl. Veteran No. 7, Pekalongan', telp:'(0285) 421800', email:'bappeda@pekalongan.go.id',    website:'bappeda.pekalongan.go.id',     desk:'Merencanakan dan mengoordinasikan pembangunan daerah.', status:'aktif' },
+  { id:9,  nama:'Badan Kepegawaian Daerah',                  singkatan:'BKD',          tipe:'badan',     kepala:'Drs. Slamet Raharjo, M.Si.',      alamat:'Jl. Sukarno-Hatta No. 3, Pekalongan', telp:'(0285) 421900', email:'bkd@pekalongan.go.id',   website:'bkd.pekalongan.go.id',         desk:'Mengelola manajemen kepegawaian daerah.', status:'aktif' },
+  { id:10, nama:'Badan Pendapatan Daerah',                   singkatan:'BAPENDA',      tipe:'badan',     kepala:'H. Imam Syafi\'i, SE., M.Acc.',   alamat:'Jl. Mataram No. 5, Pekalongan', telp:'(0285) 422000', email:'bapenda@pekalongan.go.id',    website:'bapenda.pekalongan.go.id',     desk:'Mengelola pendapatan dan retribusi daerah.', status:'aktif' },
+  { id:11, nama:'Kecamatan Pekalongan Barat',                singkatan:'KEC. PKL BARAT', tipe:'kecamatan', kepala:'Drs. Yulianto, M.Si.',          alamat:'Jl. Sriwijaya No. 25, Pekalongan', telp:'(0285) 422100', email:'pkl.barat@pekalongan.go.id',website:'',                             desk:'Kecamatan Pekalongan Barat dengan 7 kelurahan.', status:'aktif' },
+  { id:12, nama:'Kecamatan Pekalongan Timur',                singkatan:'KEC. PKL TIMUR', tipe:'kecamatan', kepala:'Hj. Sri Mulyani, S.AP.',       alamat:'Jl. Dr. Cipto No. 8, Pekalongan', telp:'(0285) 422200', email:'pkl.timur@pekalongan.go.id', website:'',                             desk:'Kecamatan Pekalongan Timur dengan 10 kelurahan.', status:'aktif' },
+  { id:13, nama:'Kecamatan Pekalongan Utara',                singkatan:'KEC. PKL UTARA', tipe:'kecamatan', kepala:'Eko Prasetyo, S.STP.',         alamat:'Jl. Bahari No. 18, Pekalongan', telp:'(0285) 422300', email:'pkl.utara@pekalongan.go.id', website:'',                             desk:'Kecamatan Pekalongan Utara dengan 9 kelurahan.', status:'aktif' },
+  { id:14, nama:'Kecamatan Pekalongan Selatan',              singkatan:'KEC. PKL SELATAN', tipe:'kecamatan', kepala:'Ahmad Fauzi, S.STP., M.Si.', alamat:'Jl. KH. Mansyur No. 4, Pekalongan', telp:'(0285) 422400', email:'pkl.selatan@pekalongan.go.id',website:'',                          desk:'Kecamatan Pekalongan Selatan dengan 9 kelurahan.', status:'aktif' },
+  { id:15, nama:'RSUD Bendan Kota Pekalongan',               singkatan:'RSUD BENDAN',  tipe:'rsud',      kepala:'dr. Hernowo Prasetyo, Sp.PD.',    alamat:'Jl. Sriwijaya No. 1, Pekalongan', telp:'(0285) 422500', email:'rsud@pekalongan.go.id',       website:'rsudbendan.pekalongan.go.id',  desk:'Rumah sakit umum daerah tipe C milik Kota Pekalongan.', status:'aktif' },
+  { id:16, nama:'Sekretariat Daerah Kota Pekalongan',        singkatan:'SETDA',        tipe:'sekda',     kepala:'Drs. H. Muhamad Yusuf, M.Si.',   alamat:'Jl. Sriwijaya No. 5, Pekalongan', telp:'(0285) 421000', email:'setda@pekalongan.go.id',      website:'setda.pekalongan.go.id',       desk:'Membantu Wali Kota dalam penyusunan kebijakan dan koordinasi.', status:'aktif' },
+  { id:17, nama:'Dinas Lingkungan Hidup',                    singkatan:'DLH',          tipe:'dinas',     kepala:'Ir. Wahyu Hidayat, M.Ling.',     alamat:'Jl. Nusantara No. 11, Pekalongan', telp:'(0285) 422600', email:'dlh@pekalongan.go.id',        website:'dlh.pekalongan.go.id',         desk:'Menyelenggarakan urusan lingkungan hidup.', status:'aktif' },
+  { id:18, nama:'Dinas Pariwisata dan Kebudayaan',           singkatan:'DISPARBUD',    tipe:'dinas',     kepala:'Dra. Rini Lestari, MM.',         alamat:'Jl. Pemuda No. 45, Pekalongan', telp:'(0285) 422700', email:'disparbud@pekalongan.go.id',  website:'disparbud.pekalongan.go.id',   desk:'Menyelenggarakan urusan pariwisata dan kebudayaan.', status:'nonaktif' },
+];
+
+let filtered  = [...opd];
+let curPage   = 1;
+let sortKey   = '';
+let sortDir   = 'asc';
+let delId     = null;
+let editId    = null;
+let detailId  = null;
+
+/* ══ SELECT2 ══ */
+$(document).ready(function() {
+  $('#filterTipe').select2({ placeholder:'Semua Tipe', allowClear:true, width:'160px' });
+  $('#filterStatus').select2({ placeholder:'Semua Status', allowClear:true, width:'150px', minimumResultsForSearch:Infinity });
+  $('#perPage').select2({ minimumResultsForSearch:Infinity, width:'70px' });
+  $('#fTipe').select2({ placeholder:'-- Pilih Tipe --', allowClear:true, dropdownParent:$('#formModal'), width:'100%', minimumResultsForSearch:Infinity });
+
+  $('#filterTipe, #filterStatus').on('change', doFilter);
+  $('#perPage').on('change', doFilter);
+
+  document.getElementById('fStatus').addEventListener('change', function() {
+    document.getElementById('fStatusLabel').textContent = this.checked ? 'Aktif' : 'Tidak Aktif';
+  });
+
+  doFilter();
+  updateStatCards();
+});
+
+/* ══ STAT CARDS ══ */
+function updateStatCards() {
+  document.getElementById('statTotal').textContent = opd.length;
+  document.getElementById('statAktif').textContent = opd.filter(r => r.status === 'aktif').length;
+}
+
+/* ══ RENDER TABLE ══ */
+function renderTable() {
+  const pp    = parseInt($('#perPage').val()) || 10;
+  const total = filtered.length;
+  const start = (curPage - 1) * pp;
+  const slice = filtered.slice(start, start + pp);
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+  const mob   = document.getElementById('mobList');
+  const emMob = document.getElementById('emptyMob');
+
+  if (!slice.length) {
+    tbody.innerHTML = '';
+    mob.innerHTML   = '';
+    empty.style.display = window.innerWidth > 991 ? 'block' : 'none';
+    emMob.style.display = window.innerWidth <= 991 ? 'block' : 'none';
+  } else {
+    empty.style.display = 'none';
+    emMob.style.display = 'none';
+
+    /* Desktop */
+    tbody.innerHTML = slice.map((r, i) => {
+      const no  = start + i + 1;
+      const tm  = TIPE_META[r.tipe] || TIPE_META.lainnya;
+      const sta = r.status === 'aktif'
+        ? `<span class="badge-status badge-aktif"><i class="bi bi-circle-fill" style="font-size:.45rem"></i>Aktif</span>`
+        : `<span class="badge-status badge-nonaktif"><i class="bi bi-circle-fill" style="font-size:.45rem"></i>Tidak Aktif</span>`;
+      return `
+        <tr>
+          <td class="col-no">${no}</td>
+          <td>
+            <div style="width:40px;height:40px;border-radius:9px;border:1px solid var(--border-light);background:var(--bg-surface);display:flex;align-items:center;justify-content:center;overflow:hidden;color:#cdd5e0;font-size:1.2rem">
+              <i class="bi ${tm.icon}"></i>
+            </div>
+          </td>
+          <td>
+            <div style="font-weight:700;color:var(--text-main);font-size:.84rem">${r.nama}</div>
+            <div style="font-size:.71rem;color:var(--text-muted)">${r.singkatan || '—'}</div>
+          </td>
+          <td><span class="badge-tipe ${tm.cls}">${tm.label}</span></td>
+          <td>
+            <div style="font-size:.81rem;color:var(--text-main)">${r.kepala || '—'}</div>
+          </td>
+          <td>
+            <div style="font-size:.79rem;color:var(--text-main)">${r.telp || '—'}</div>
+            <div style="font-size:.7rem;color:var(--text-muted)">${r.email || '—'}</div>
+          </td>
+          <td>${sta}</td>
+          <td class="col-aksi">
+            <div class="aksi-group">
+              <button class="btn-icon-only btn-detail" onclick="openDetail(${r.id})" title="Detail"><i class="bi bi-eye-fill"></i></button>
+              <button class="btn-icon-only btn-edit"   onclick="openMod('edit',${r.id})" title="Edit"><i class="bi bi-pencil-fill"></i></button>
+              <button class="btn-icon-only btn-delete" onclick="openDel(${r.id})" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+
+    /* Mobile */
+    mob.innerHTML = slice.map((r, i) => {
+      const tm  = TIPE_META[r.tipe] || TIPE_META.lainnya;
+      const sta = r.status === 'aktif'
+        ? `<span class="badge-status badge-aktif">Aktif</span>`
+        : `<span class="badge-status badge-nonaktif">Tidak Aktif</span>`;
+      return `
+        <div class="mob-opd-card">
+          <div class="mob-opd-header">
+            <div class="mob-opd-logo"><i class="bi ${tm.icon}"></i></div>
+            <div class="mob-opd-info">
+              <div class="mob-opd-nama">${r.nama}</div>
+              <div class="mob-opd-singkatan">${r.singkatan || '—'} &bull; <span class="badge-tipe ${tm.cls}" style="font-size:.62rem">${tm.label}</span></div>
+            </div>
+            ${sta}
+          </div>
+          <div class="mob-opd-body">
+            <div class="mob-opd-row"><span class="mob-opd-lbl">Kepala</span><span class="mob-opd-val">${r.kepala || '—'}</span></div>
+            <div class="mob-opd-row"><span class="mob-opd-lbl">Telepon</span><span class="mob-opd-val">${r.telp || '—'}</span></div>
+            <div class="mob-opd-row"><span class="mob-opd-lbl">Email</span><span class="mob-opd-val">${r.email || '—'}</span></div>
+          </div>
+          <div class="mob-opd-footer">
+            <button class="btn-icon-only btn-detail" onclick="openDetail(${r.id})"><i class="bi bi-eye-fill"></i> Detail</button>
+            <button class="btn-icon-only btn-edit"   onclick="openMod('edit',${r.id})"><i class="bi bi-pencil-fill"></i> Edit</button>
+            <button class="btn-icon-only btn-delete" onclick="openDel(${r.id})"><i class="bi bi-trash3-fill"></i> Hapus</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  updatePagination(total, pp);
+}
+
+/* ══ PAGINATION ══ */
+function updatePagination(total, pp) {
+  const pages = Math.max(1, Math.ceil(total / pp));
+  const s = total ? (curPage - 1) * pp + 1 : 0;
+  const e = Math.min(curPage * pp, total);
+  document.getElementById('pagInfo').textContent =
+    total ? `Menampilkan ${s}–${e} dari ${total} data` : 'Tidak ada data';
+
+  const ctrl = document.getElementById('pagCtrl');
+  if (pages <= 1) { ctrl.innerHTML = ''; return; }
+
+  const mk = (html, pg, active, disabled) => {
+    const b = document.createElement('button');
+    b.className = 'page-btn' + (active ? ' active' : '');
+    b.disabled  = disabled;
+    b.innerHTML = html;
+    if (!disabled && !active) b.onclick = () => { curPage = pg; renderTable(); };
+    return b;
+  };
+
+  ctrl.innerHTML = '';
+  ctrl.appendChild(mk('<i class="bi bi-chevron-left"></i>', curPage - 1, false, curPage === 1));
+  for (let p = 1; p <= pages; p++) {
+    if (p === 1 || p === pages || (p >= curPage - 1 && p <= curPage + 1)) {
+      ctrl.appendChild(mk(p, p, p === curPage, false));
+    } else if (p === curPage - 2 || p === curPage + 2) {
+      const dots = document.createElement('span');
+      dots.className = 'page-dots'; dots.textContent = '…';
+      ctrl.appendChild(dots);
+    }
+  }
+  ctrl.appendChild(mk('<i class="bi bi-chevron-right"></i>', curPage + 1, false, curPage === pages));
+}
+
+/* ══ FILTER & SORT ══ */
+function doFilter() {
+  const q  = (document.getElementById('searchInput').value || '').toLowerCase();
+  const tp = ($('#filterTipe').val()   || '').toLowerCase();
+  const st = ($('#filterStatus').val() || '').toLowerCase();
+
+  filtered = opd.filter(r => {
+    const mq = !q  || r.nama.toLowerCase().includes(q) || (r.singkatan||'').toLowerCase().includes(q) || (r.kepala||'').toLowerCase().includes(q);
+    const mt = !tp || r.tipe === tp;
+    const ms = !st || r.status === st;
+    return mq && mt && ms;
+  });
+
+  if (sortKey) {
+    filtered.sort((a, b) => {
+      const va = (a[sortKey] || '').toLowerCase();
+      const vb = (b[sortKey] || '').toLowerCase();
+      return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+  }
+
+  curPage = 1;
+  renderTable();
+}
+
+function sortBy(key) {
+  sortDir = sortKey === key && sortDir === 'asc' ? 'desc' : 'asc';
+  sortKey = key;
+  doFilter();
+}
+
+function resetFilter() {
+  document.getElementById('searchInput').value = '';
+  $('#filterTipe').val(null).trigger('change');
+  $('#filterStatus').val(null).trigger('change');
+  filtered = [...opd]; sortKey = ''; sortDir = 'asc';
+  curPage = 1; renderTable();
+}
+
+/* ══ MODAL FORM ══ */
+function openMod(mode, id) {
+  editId = id || null;
+  clearErrors();
+  resetForm();
+
+  if (mode === 'edit') {
+    const r = opd.find(x => x.id === id);
+    document.getElementById('fmTitle').textContent    = 'Edit Instansi / OPD';
+    document.getElementById('fmSub').textContent      = `Mengedit: ${r.nama}`;
+    document.getElementById('btnSaveLabel').textContent = 'Perbarui Data';
+    document.getElementById('fNama').value      = r.nama;
+    document.getElementById('fSingkatan').value = r.singkatan || '';
+    document.getElementById('fKepala').value    = r.kepala || '';
+    document.getElementById('fAlamat').value    = r.alamat || '';
+    document.getElementById('fTelp').value      = r.telp || '';
+    document.getElementById('fEmail').value     = r.email || '';
+    document.getElementById('fWebsite').value   = r.website || '';
+    document.getElementById('fDesk').value      = r.desk || '';
+    document.getElementById('fStatus').checked  = r.status === 'aktif';
+    document.getElementById('fStatusLabel').textContent = r.status === 'aktif' ? 'Aktif' : 'Tidak Aktif';
+    setTimeout(() => { $('#fTipe').val(r.tipe).trigger('change'); }, 50);
+  } else {
+    document.getElementById('fmTitle').textContent     = 'Tambah Instansi / OPD';
+    document.getElementById('fmSub').textContent       = 'Isi data instansi dengan lengkap';
+    document.getElementById('btnSaveLabel').textContent = 'Simpan Data';
+  }
+
+  document.getElementById('formModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMod() {
+  document.getElementById('formModal').classList.remove('open');
+  document.body.style.overflow = '';
+  editId = null;
+}
+
+function resetForm() {
+  document.getElementById('opdForm').reset();
+  $('#fTipe').val(null).trigger('change');
+  document.getElementById('fStatusLabel').textContent = 'Aktif';
+  removeLogo();
+}
+
+function saveMod() {
+  if (!validate()) return;
+  const data = {
+    nama      : document.getElementById('fNama').value.trim(),
+    singkatan : document.getElementById('fSingkatan').value.trim(),
+    tipe      : $('#fTipe').val(),
+    kepala    : document.getElementById('fKepala').value.trim(),
+    alamat    : document.getElementById('fAlamat').value.trim(),
+    telp      : document.getElementById('fTelp').value.trim(),
+    email     : document.getElementById('fEmail').value.trim(),
+    website   : document.getElementById('fWebsite').value.trim(),
+    desk      : document.getElementById('fDesk').value.trim(),
+    status    : document.getElementById('fStatus').checked ? 'aktif' : 'nonaktif',
+  };
+  if (editId) {
+    const idx = opd.findIndex(x => x.id === editId);
+    opd[idx] = { ...opd[idx], ...data };
+    showToast('Data berhasil diperbarui');
+  } else {
+    data.id = Math.max(...opd.map(x => x.id)) + 1;
+    opd.push(data);
+    showToast('Data berhasil ditambahkan');
+  }
+  filtered = [...opd];
+  closeMod();
+  doFilter();
+  updateStatCards();
+}
+
+/* ══ VALIDATE ══ */
+function validate() {
+  clearErrors();
+  let ok = true;
+  if (!document.getElementById('fNama').value.trim())   { showErr('errNama'); ok = false; }
+  if (!document.getElementById('fAlamat').value.trim()) { showErr('errAlamat'); ok = false; }
+  if (!$('#fTipe').val())                                { showErr('errTipe'); ok = false; }
+  return ok;
+}
+function showErr(id) { document.getElementById(id).style.display = 'block'; }
+function clearErrors() { document.querySelectorAll('.form-error').forEach(e => e.style.display = 'none'); }
+
+/* ══ DETAIL MODAL ══ */
+function openDetail(id) {
+  const r   = opd.find(x => x.id === id);
+  detailId  = id;
+  const tm  = TIPE_META[r.tipe] || TIPE_META.lainnya;
+  const sta = r.status === 'aktif'
+    ? `<span class="badge-status badge-aktif">Aktif</span>`
+    : `<span class="badge-status badge-nonaktif">Tidak Aktif</span>`;
+
+  document.getElementById('detailSub').textContent = r.singkatan || r.tipe;
+  document.getElementById('detailEditBtn').onclick = () => { closeDetail(); setTimeout(() => openMod('edit', id), 120); };
+
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-logo-col">
+        <div class="detail-logo-box"><i class="bi ${tm.icon}" style="font-size:2.5rem;color:#cdd5e0"></i></div>
+        <div style="font-size:.72rem;font-weight:700;color:var(--text-main);margin-top:.3rem">${r.singkatan || '—'}</div>
+        <div style="margin-top:.35rem">${sta}</div>
+      </div>
+      <div class="detail-info-col">
+        <div class="detail-section-title"><i class="bi bi-info-circle-fill"></i> Informasi Umum</div>
+        <div class="detail-row"><span class="detail-lbl">Nama</span><span class="detail-val" style="font-weight:700">${r.nama}</span></div>
+        <div class="detail-row"><span class="detail-lbl">Tipe</span><span class="detail-val"><span class="badge-tipe ${tm.cls}">${tm.label}</span></span></div>
+        <div class="detail-row"><span class="detail-lbl">Kepala / PPID</span><span class="detail-val">${r.kepala || '—'}</span></div>
+        <div class="detail-row"><span class="detail-lbl">Tugas Pokok</span><span class="detail-val" style="font-size:.76rem;color:var(--text-muted)">${r.desk || '—'}</span></div>
+
+        <div class="detail-section-title" style="margin-top:.9rem"><i class="bi bi-geo-alt-fill"></i> Kontak &amp; Alamat</div>
+        <div class="detail-row"><span class="detail-lbl">Alamat</span><span class="detail-val">${r.alamat || '—'}</span></div>
+        <div class="detail-row"><span class="detail-lbl">Telepon</span><span class="detail-val">${r.telp || '—'}</span></div>
+        <div class="detail-row"><span class="detail-lbl">Email</span><span class="detail-val">${r.email || '—'}</span></div>
+        <div class="detail-row"><span class="detail-lbl">Website</span><span class="detail-val">${r.website ? `<a href="https://${r.website}" target="_blank" style="color:var(--blue)">${r.website}</a>` : '—'}</span></div>
+      </div>
+    </div>`;
+
+  document.getElementById('detailModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDetail() {
+  document.getElementById('detailModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ══ DELETE MODAL ══ */
+function openDel(id) {
+  delId = id;
+  const r = opd.find(x => x.id === id);
+  document.getElementById('delNama').textContent = r.nama;
+  document.getElementById('deleteModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDel() {
+  document.getElementById('deleteModal').classList.remove('open');
+  document.body.style.overflow = '';
+  delId = null;
+}
+function confirmDel() {
+  opd      = opd.filter(x => x.id !== delId);
+  filtered = filtered.filter(x => x.id !== delId);
+  closeDel();
+  if ((curPage - 1) * parseInt($('#perPage').val()) >= filtered.length && curPage > 1) curPage--;
+  renderTable();
+  updateStatCards();
+  showToast('Data berhasil dihapus');
+}
+
+/* ══ LOGO UPLOAD ══ */
+function previewLogo(input) {
+  if (!input.files.length) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('logoPreview').src = e.target.result;
+    document.getElementById('logoPreview').style.display = 'block';
+    document.getElementById('logoPlaceholder').style.display = 'none';
+    document.getElementById('btnRemoveLogo').style.display = '';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+function removeLogo() {
+  document.getElementById('fLogo').value = '';
+  document.getElementById('logoPreview').src = '';
+  document.getElementById('logoPreview').style.display = 'none';
+  document.getElementById('logoPlaceholder').style.display = '';
+  document.getElementById('btnRemoveLogo').style.display = 'none';
+}
+
+/* ══ EXPORT ══ */
+function exportData() { showToast('Fitur export akan terhubung ke backend.'); }
+
+/* ══ SIDEBAR ══ */
+const sidebarEl  = document.getElementById('sidebar');
+const mainAreaEl = document.getElementById('mainArea');
+const sidebarOv  = document.getElementById('sidebarOverlay');
+let sbCollapsed  = false;
+
+function toggleSidebar() {
+  if (window.innerWidth <= 991) {
+    const open = sidebarEl.classList.toggle('mobile-open');
+    sidebarOv.classList.toggle('show', open);
+  } else {
+    sbCollapsed = !sbCollapsed;
+    sidebarEl.classList.toggle('collapsed', sbCollapsed);
+  }
+}
+function closeMobileSidebar() {
+  sidebarEl.classList.remove('mobile-open');
+  sidebarOv.classList.remove('show');
+}
+
+/* ══ USER DROPDOWN ══ */
+const userDrop = document.getElementById('userDropdown');
+function toggleUserMenu() {
+  const o = userDrop.classList.toggle('show');
+  userDrop.style.display = o ? 'block' : 'none';
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.topbar-user-wrap')) {
+    userDrop.classList.remove('show');
+  }
+});
+
+/* ══ LOGOUT ══ */
+function openLogoutModal()  { document.getElementById('logoutModal').classList.add('open'); }
+function closeLogoutModal() { document.getElementById('logoutModal').classList.remove('open'); }
+
+/* ══ CLOSE ON OVERLAY CLICK ══ */
+['deleteModal','detailModal','formModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+/* ══ FAB + SCROLL ══ */
+const fabEl = document.getElementById('fabTop');
+window.addEventListener('scroll', () => {
+  fabEl.classList.toggle('show', window.scrollY > 300);
+});
+
+/* ══ TOAST ══ */
+function showToast(msg) {
+  const t = document.getElementById('toastNotif');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ══ ESCAPE KEY ══ */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  ['deleteModal','detailModal','formModal'].forEach(id => {
+    document.getElementById(id).classList.remove('open');
+  });
+  document.getElementById('logoutModal').classList.remove('open');
+  document.body.style.overflow = '';
+});
+
+window.addEventListener('resize', renderTable);
+    </script>
+  </body>
+</html>
