@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Informasi Pelaksana — PPID Kota Pekalongan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+      *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+
+      :root {
+        --blue        : #0072c6;
+        --blue-dark   : #005499;
+        --blue-deep   : #003d70;
+        --blue-light  : #1a8fe0;
+        --blue-soft   : rgba(0,114,198,.09);
+        --blue-glow   : rgba(0,114,198,.18);
+        --sidebar-w   : 260px;
+        --sidebar-col : 68px;
+        --topbar-h    : 62px;
+        --sidebar-bg  : #001f42;
+        --content-bg  : #f0f4f9;
+        --card-bg     : #ffffff;
+        --text-main   : #0f1c2e;
+        --text-sub    : #2d4060;
+        --text-muted  : #6b7a8d;
+        --border-light: rgba(0,0,0,.07);
+        --shadow-sm   : 0 2px 12px rgba(0,40,100,.07);
+        --shadow-md   : 0 6px 28px rgba(0,40,100,.12);
+        --shadow-lg   : 0 16px 48px rgba(0,40,100,.18);
+        --radius      : 14px;
+        --radius-sm   : 9px;
+        --ease        : .28s cubic-bezier(.22,1,.36,1);
+        --green       : #10b964;
+        --amber       : #f59e0b;
+        --red         : #dc3545;
+        --purple      : #7c3aed;
+        --bg-surface  : #f8fafc;
+        --font        : 'Plus Jakarta Sans', sans-serif;
+      }
+
+      body { font-family:var(--font); background:var(--content-bg); color:var(--text-main); font-size:.875rem; line-height:1.6; overflow-x:hidden; }
+      a { text-decoration:none; color:inherit; }
+
+      /* ══ SIDEBAR ══ */
+      .sidebar { position:fixed; left:0; top:0; bottom:0; width:var(--sidebar-w); background:var(--sidebar-bg); display:flex; flex-direction:column; z-index:300; transition:transform var(--ease),width var(--ease); overflow:hidden; }
+      .sidebar.collapsed { width:var(--sidebar-col); }
+      .sidebar-brand { display:flex; align-items:center; gap:.8rem; padding:1.1rem 1rem 1rem; border-bottom:1px solid rgba(255,255,255,.07); flex-shrink:0; overflow:hidden; min-height:62px; }
+      .brand-icon { width:36px; height:36px; border-radius:10px; flex-shrink:0; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:1rem; box-shadow:0 4px 14px rgba(0,114,198,.4); }
+      .brand-text { overflow:hidden; white-space:nowrap; }
+      .brand-title { font-size:.85rem; font-weight:700; color:#fff; }
+      .brand-sub { font-size:.66rem; color:rgba(255,255,255,.45); margin-top:.05rem; }
+      .sidebar-scroll { flex:1; overflow-y:auto; overflow-x:hidden; padding:.75rem 0; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.1) transparent; }
+      .sidebar-scroll::-webkit-scrollbar { width:3px; }
+      .sidebar-scroll::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); border-radius:2px; }
+      .nav-section-label { font-size:.58rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.28); padding:.9rem 1.1rem .3rem; white-space:nowrap; overflow:hidden; }
+      .sidebar.collapsed .nav-section-label { opacity:0; }
+      .nav-item-wrapper { padding:.1rem .6rem; }
+      .nav-link-custom { display:flex; align-items:center; gap:.72rem; padding:.6rem .75rem; border-radius:10px; color:rgba(255,255,255,.6); font-size:.82rem; font-weight:500; cursor:pointer; white-space:nowrap; transition:background var(--ease),color var(--ease); }
+      .nav-link-custom:hover { background:rgba(255,255,255,.07); color:rgba(255,255,255,.9); }
+      .nav-link-custom.active { background:linear-gradient(90deg,rgba(0,114,198,.55),rgba(0,114,198,.2)); color:#fff; font-weight:700; box-shadow:inset 3px 0 0 var(--blue); }
+      .nav-icon { font-size:.95rem; flex-shrink:0; width:18px; text-align:center; }
+      .nav-label { flex:1; overflow:hidden; text-overflow:ellipsis; }
+      .nav-badge { background:var(--blue); color:#fff; font-size:.58rem; font-weight:800; padding:.12rem .45rem; border-radius:100px; flex-shrink:0; }
+      .nav-badge-amber { background:var(--amber); }
+      .sidebar.collapsed .nav-label,.sidebar.collapsed .nav-badge,.sidebar.collapsed .nav-section-label { display:none; }
+      .sidebar.collapsed .nav-link-custom { justify-content:center; padding:.65rem; }
+      .sidebar-bottom { padding:.75rem .6rem; border-top:1px solid rgba(255,255,255,.07); flex-shrink:0; display:flex; align-items:center; gap:.5rem; }
+      .sidebar-user { display:flex; align-items:center; gap:.6rem; flex:1; overflow:hidden; padding:.45rem .5rem; border-radius:9px; transition:background .2s; }
+      .sidebar-user:hover { background:rgba(255,255,255,.06); }
+      .su-avatar { width:34px; height:34px; border-radius:9px; flex-shrink:0; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:.72rem; font-weight:700; }
+      .su-name { font-size:.78rem; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .su-role { font-size:.64rem; color:rgba(255,255,255,.4); }
+      .sidebar-logout { width:32px; height:32px; border-radius:8px; flex-shrink:0; background:rgba(220,53,69,.12); border:none; color:#f87171; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .2s; font-size:.9rem; }
+      .sidebar-logout:hover { background:rgba(220,53,69,.25); }
+      .sidebar.collapsed .su-info,.sidebar.collapsed .sidebar-logout { display:none; }
+      .sidebar.collapsed .sidebar-user { justify-content:center; }
+      .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,5,20,.55); z-index:299; backdrop-filter:blur(2px); }
+      .sidebar-overlay.show { display:block; }
+
+      /* ══ LAYOUT ══ */
+      .app-wrapper { display:flex; min-height:100vh; }
+      .main-area { flex:1; margin-left:var(--sidebar-w); display:flex; flex-direction:column; transition:margin-left var(--ease); min-width:0; }
+      .sidebar.collapsed ~ .main-area { margin-left:var(--sidebar-col); }
+
+      /* ══ TOPBAR ══ */
+      .topbar { position:sticky; top:0; z-index:200; height:var(--topbar-h); background:rgba(255,255,255,.95); backdrop-filter:blur(10px); border-bottom:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between; padding:0 1.4rem; gap:1rem; flex-shrink:0; box-shadow:0 1px 12px rgba(0,40,100,.06); }
+      .topbar-left { display:flex; align-items:center; gap:.85rem; min-width:0; }
+      .topbar-toggle { width:36px; height:36px; border-radius:9px; border:none; background:var(--blue-soft); color:var(--blue); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem; flex-shrink:0; transition:background .2s; }
+      .topbar-toggle:hover { background:var(--blue-glow); }
+      .topbar-breadcrumb { display:flex; align-items:center; gap:.4rem; font-size:.78rem; min-width:0; flex-wrap:wrap; }
+      .tb-bc-item { color:var(--text-muted); white-space:nowrap; }
+      .tb-bc-item.active { color:var(--blue); font-weight:700; }
+      .tb-bc-sep { color:var(--border-light); font-size:.7rem; }
+      .topbar-right { display:flex; align-items:center; gap:.6rem; flex-shrink:0; }
+      .topbar-icon-btn { width:36px; height:36px; border-radius:9px; border:none; background:var(--blue-soft); color:var(--blue); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:.95rem; position:relative; transition:background .2s; }
+      .topbar-icon-btn:hover { background:var(--blue-glow); }
+      .notif-dot { position:absolute; top:6px; right:6px; width:7px; height:7px; background:#ef4444; border-radius:50%; border:1.5px solid #fff; }
+      .topbar-avatar { width:36px; height:36px; border-radius:9px; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); color:#fff; font-size:.72rem; font-weight:700; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,114,198,.3); }
+      .topbar-user-wrap { position:relative; }
+      .user-dropdown { position:absolute; top:calc(100% + .5rem); right:0; min-width:190px; background:#fff; border-radius:12px; border:1px solid var(--border-light); box-shadow:var(--shadow-md); padding:.4rem 0; display:none; z-index:500; }
+      .user-dropdown.show { display:block; animation:fadeDown .18s ease; }
+      @keyframes fadeDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+      .ud-item { display:flex; align-items:center; gap:.6rem; padding:.52rem 1rem; font-size:.8rem; color:var(--text-sub); cursor:pointer; transition:background .15s; }
+      .ud-item:hover { background:var(--blue-soft); color:var(--blue); }
+      .ud-item i { font-size:.85rem; width:16px; }
+      .ud-divider { height:1px; background:var(--border-light); margin:.3rem 0; }
+      .ud-item.ud-logout { color:#dc3545; }
+      .ud-item.ud-logout:hover { background:#fff1f2; }
+
+      /* ══ CONTENT ══ */
+      .content-area { flex:1; overflow-x:hidden; }
+
+      /* ══ BREADCRUMB BANNER ══ */
+      .breadcrumb-banner { background:linear-gradient(135deg,var(--blue-deep) 0%,var(--blue-dark) 60%,var(--blue) 100%); border-radius:var(--radius); padding:1.2rem 1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.75rem; position:relative; overflow:hidden; }
+      .breadcrumb-banner::before { content:''; position:absolute; right:-2rem; top:-2rem; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,.05); }
+      .breadcrumb-banner::after  { content:''; position:absolute; right:4rem; bottom:-3rem; width:110px; height:110px; border-radius:50%; background:rgba(255,255,255,.04); }
+      .bb-left { position:relative; z-index:1; }
+      .bb-page-name { font-size:1.1rem; font-weight:800; color:#fff; }
+      .bb-desc { font-size:.76rem; color:rgba(255,255,255,.6); margin-top:.15rem; }
+      .bb-right { display:flex; align-items:center; gap:.4rem; font-size:.72rem; position:relative; z-index:1; }
+      .bb-crumb-item { color:rgba(255,255,255,.55); display:flex; align-items:center; gap:.3rem; }
+      .bb-crumb-item.active { color:rgba(255,255,255,.9); font-weight:600; }
+      .bb-crumb-sep { color:rgba(255,255,255,.3); }
+
+      /* ══ STAT CARDS ══ */
+      .stat-strip-card { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border-light); box-shadow:var(--shadow-sm); padding:.9rem 1.1rem; display:flex; align-items:center; gap:.9rem; transition:transform .25s var(--ease),box-shadow .25s var(--ease); }
+      .stat-strip-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+      .ssc-icon { width:44px; height:44px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.15rem; }
+      .ssc-value { font-size:1.4rem; font-weight:800; color:var(--text-main); line-height:1; }
+      .ssc-label { font-size:.71rem; color:var(--text-muted); margin-top:.15rem; }
+
+      /* ══ FILTER CARD ══ */
+      .filter-card { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border-light); box-shadow:var(--shadow-sm); padding:1.1rem 1.25rem; }
+      .filter-grid { display:grid; grid-template-columns:1fr 1fr 1fr auto auto; gap:.65rem; align-items:end; }
+      @media(max-width:1100px) { .filter-grid { grid-template-columns:1fr 1fr; } }
+      @media(max-width:600px)  { .filter-grid { grid-template-columns:1fr; } }
+      .filter-label { font-size:.72rem; font-weight:700; color:var(--text-muted); margin-bottom:.3rem; display:block; }
+      .filter-input {
+        width:100%; height:38px; border:1.5px solid var(--border-light); border-radius:var(--radius-sm);
+        padding:0 .85rem 0 2.1rem; font-family:var(--font); font-size:.8rem; color:var(--text-main);
+        outline:none; transition:border .2s,box-shadow .2s; background:#fff;
+      }
+      .filter-input:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-soft); }
+      .filter-input::placeholder { color:#b0bac7; }
+      .filter-input-wrap { position:relative; }
+      .filter-input-wrap i.fi-icon { position:absolute; left:.75rem; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:.82rem; pointer-events:none; }
+      .w-select2-filter { display:none; }
+
+      /* ══ FILTER ACTION BUTTONS ══ */
+      .btn-filter-reset {
+        height:38px; padding:0 1rem; border-radius:var(--radius-sm);
+        border:1.5px solid var(--border-light); background:#fff;
+        color:var(--text-muted); font-family:var(--font); font-size:.8rem; font-weight:600;
+        cursor:pointer; display:flex; align-items:center; gap:.4rem; transition:all .2s; white-space:nowrap;
+      }
+      .btn-filter-reset:hover { background:#fee2e2; border-color:#fca5a5; color:var(--red); }
+      .per-page-wrap { display:flex; align-items:center; gap:.4rem; white-space:nowrap; }
+      .per-page-wrap span { font-size:.76rem; color:var(--text-muted); }
+      .select-perpage-filter { display:none; }
+
+      /* ══ ACTION HEADER BUTTONS ══ */
+      .btn-primary {
+        display:inline-flex; align-items:center; gap:.4rem;
+        padding:.55rem 1.15rem; border-radius:var(--radius-sm);
+        background:linear-gradient(135deg,var(--blue),var(--blue-dark));
+        color:#fff; font-family:var(--font); font-size:.82rem; font-weight:700;
+        border:none; cursor:pointer; transition:opacity .2s,transform .2s;
+        box-shadow:0 4px 14px rgba(0,114,198,.3); white-space:nowrap;
+      }
+      .btn-primary:hover { opacity:.9; transform:translateY(-1px); }
+      .btn-success {
+        display:inline-flex; align-items:center; gap:.4rem;
+        padding:.55rem 1.15rem; border-radius:var(--radius-sm);
+        background:linear-gradient(135deg,#10b964,#059652);
+        color:#fff; font-family:var(--font); font-size:.82rem; font-weight:700;
+        border:none; cursor:pointer; transition:opacity .2s,transform .2s;
+        box-shadow:0 4px 14px rgba(16,185,100,.3); white-space:nowrap;
+      }
+      .btn-success:hover { opacity:.9; transform:translateY(-1px); }
+      .btn-outline {
+        display:inline-flex; align-items:center; gap:.4rem;
+        padding:.55rem 1.15rem; border-radius:var(--radius-sm);
+        border:1.5px solid var(--border-light); background:#fff;
+        color:var(--text-muted); font-family:var(--font); font-size:.82rem;
+        font-weight:600; cursor:pointer; transition:all .2s; white-space:nowrap;
+      }
+      .btn-outline:hover { background:var(--blue-soft); color:var(--blue); border-color:rgba(0,114,198,.3); }
+
+      /* ══ MAIN CONTENT CARD ══ */
+      .main-card { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border-light); box-shadow:var(--shadow-sm); overflow:hidden; }
+      .card-topbar {
+        background:var(--sidebar-bg); padding:.7rem 1.2rem;
+        display:grid; align-items:center;
+        grid-template-columns: 40px 60px 1fr 1fr 130px 90px 130px;
+        gap:.5rem; position:sticky; top:var(--topbar-h); z-index:10;
+      }
+      .cth { color:rgba(255,255,255,.7); font-size:.7rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+      .cth.center { text-align:center; }
+
+      /* ══ ACCORDION GROUP ══ */
+      .info-group { border-bottom:1px solid var(--border-light); }
+      .info-group:last-child { border-bottom:none; }
+
+      .group-header {
+        display:flex; align-items:center; gap:.85rem;
+        padding:.7rem 1.2rem; cursor:pointer;
+        background:var(--bg-surface);
+        transition:background .18s;
+        user-select:none;
+        border-bottom:1px solid var(--border-light);
+      }
+      .group-header:hover { background:#eef3fa; }
+      .group-header.open { background:#e8f0fb; }
+
+      .group-toggle-btn {
+        width:28px; height:28px; border-radius:8px; flex-shrink:0;
+        display:flex; align-items:center; justify-content:center;
+        font-size:.85rem; font-weight:800; border:none; cursor:pointer;
+        transition:all .2s;
+      }
+      .group-toggle-btn.minus { background:var(--blue); color:#fff; box-shadow:0 2px 8px rgba(0,114,198,.35); }
+      .group-toggle-btn.plus  { background:#e2eaf5; color:var(--blue); }
+      .group-toggle-btn:hover { transform:scale(1.1); }
+
+      .group-no {
+        width:36px; height:36px; border-radius:10px; flex-shrink:0;
+        background:var(--blue); color:#fff;
+        display:flex; align-items:center; justify-content:center;
+        font-size:.82rem; font-weight:800;
+      }
+      .group-title { font-size:.88rem; font-weight:700; color:var(--text-main); flex:1; }
+      .group-meta { font-size:.71rem; color:var(--text-muted); white-space:nowrap; }
+      .group-count {
+        display:inline-flex; align-items:center; gap:.28rem;
+        background:var(--blue-soft); color:var(--blue);
+        font-size:.7rem; font-weight:700; padding:.18rem .65rem; border-radius:100px;
+      }
+
+      /* ══ GROUP BODY (collapsed/expanded) ══ */
+      .group-body { overflow:hidden; transition:max-height .35s var(--ease), opacity .3s; }
+      .group-body.collapsed { max-height:0; opacity:0; }
+      .group-body.expanded  { opacity:1; }
+
+      /* ══ DATA ROW ══ */
+      .data-row {
+        display:grid;
+        grid-template-columns: 40px 60px 1fr 1fr 130px 90px 130px;
+        gap:.5rem; align-items:center;
+        padding:.7rem 1.2rem;
+        border-bottom:1px solid var(--border-light);
+        transition:background .15s;
+      }
+      .data-row:last-child { border-bottom:none; }
+      .data-row:hover { background:rgba(0,114,198,.035); }
+      .data-row.row-complete  { background:rgba(16,185,100,.04); }
+      .data-row.row-complete:hover { background:rgba(16,185,100,.07); }
+      .data-row.row-pending   { background:rgba(245,158,11,.03); }
+      .data-row.row-pending:hover { background:rgba(245,158,11,.06); }
+
+      .dr-no { font-size:.8rem; font-weight:600; color:var(--text-muted); text-align:center; }
+      .dr-kelinfo { font-size:.8rem; color:var(--text-sub); line-height:1.45; }
+      .dr-instansi { font-size:.75rem; font-weight:600; color:var(--text-sub); line-height:1.4; }
+      .dr-tahun { font-size:.82rem; font-weight:700; color:var(--text-main); text-align:center; }
+      .dr-aksi { display:flex; align-items:center; justify-content:center; gap:.4rem; flex-wrap:wrap; }
+
+      /* ══ FILE BUTTON ══ */
+      .btn-download {
+        display:inline-flex; align-items:center; gap:.32rem;
+        padding:.3rem .75rem; border-radius:8px; font-size:.73rem; font-weight:700;
+        background:linear-gradient(135deg,var(--blue),var(--blue-dark));
+        color:#fff; border:none; cursor:pointer;
+        box-shadow:0 2px 8px rgba(0,114,198,.3); transition:all .2s; white-space:nowrap;
+      }
+      .btn-download:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,114,198,.4); }
+      .btn-no-file {
+        display:inline-flex; align-items:center; gap:.3rem;
+        padding:.28rem .65rem; border-radius:8px; font-size:.72rem; font-weight:600;
+        background:rgba(107,114,128,.1); color:var(--text-muted); border:1px dashed #d1d5db; white-space:nowrap;
+      }
+
+      /* ══ STATUS BADGE ══ */
+      .badge-valid {
+        display:inline-flex; align-items:center; gap:.28rem;
+        padding:.24rem .72rem; border-radius:100px; font-size:.71rem; font-weight:700; white-space:nowrap;
+        background:#d1fae5; color:#065f46;
+      }
+      .badge-pending {
+        display:inline-flex; align-items:center; gap:.28rem;
+        padding:.24rem .72rem; border-radius:100px; font-size:.71rem; font-weight:700; white-space:nowrap;
+        background:#fef9c3; color:#854d0e;
+      }
+      .badge-reject {
+        display:inline-flex; align-items:center; gap:.28rem;
+        padding:.24rem .72rem; border-radius:100px; font-size:.71rem; font-weight:700; white-space:nowrap;
+        background:#fee2e2; color:#991b1b;
+      }
+
+      /* ══ ROW ACTION BUTTONS ══ */
+      .btn-icon-sm {
+        width:28px; height:28px; border-radius:7px; border:none;
+        display:flex; align-items:center; justify-content:center;
+        cursor:pointer; font-size:.78rem; transition:all .2s; flex-shrink:0;
+      }
+      .btn-batal  { background:rgba(245,158,11,.12); color:var(--amber); }
+      .btn-batal:hover { background:var(--amber); color:#fff; }
+      .btn-valid  { background:rgba(16,185,100,.12); color:var(--green); }
+      .btn-valid:hover { background:var(--green); color:#fff; }
+      .btn-upload { background:rgba(0,114,198,.12); color:var(--blue); }
+      .btn-upload:hover { background:var(--blue); color:#fff; }
+      .btn-eye    { background:rgba(124,58,237,.12); color:var(--purple); }
+      .btn-eye:hover { background:var(--purple); color:#fff; }
+      .btn-del    { background:rgba(220,53,69,.1); color:var(--red); }
+      .btn-del:hover { background:var(--red); color:#fff; }
+
+      /* ══ EMPTY STATE ══ */
+      .empty-state { text-align:center; padding:3.5rem 1rem; color:var(--text-muted); }
+      .empty-state i { font-size:2.8rem; opacity:.25; display:block; margin-bottom:.75rem; }
+      .empty-state p { font-size:.84rem; }
+
+      /* ══ PAGINATION ══ */
+      .pagination-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.7rem; padding:.85rem 1.2rem; border-top:1px solid var(--border-light); }
+      .pagination-info { font-size:.78rem; color:var(--text-muted); }
+      .pagination-controls { display:flex; align-items:center; gap:.3rem; }
+      .page-btn { width:32px; height:32px; border-radius:8px; border:1.5px solid var(--border-light); background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:.8rem; color:var(--text-muted); transition:background .18s,color .18s,border-color .18s; font-weight:600; }
+      .page-btn:hover { background:var(--blue-soft); color:var(--blue); border-color:rgba(0,114,198,.25); }
+      .page-btn.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+      .page-btn:disabled { opacity:.4; cursor:not-allowed; }
+      .page-dots { font-size:.82rem; color:var(--text-muted); padding:0 .2rem; line-height:32px; }
+
+      /* ══ MODAL ══ */
+      .modal-overlay { position:fixed; inset:0; background:rgba(0,10,30,.5); backdrop-filter:blur(4px); z-index:500; display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; pointer-events:none; transition:opacity .25s; }
+      .modal-overlay.open { opacity:1; pointer-events:all; }
+      .modal-box { background:#fff; border-radius:var(--radius); width:100%; box-shadow:var(--shadow-lg); display:flex; flex-direction:column; max-height:92vh; transform:translateY(16px); transition:transform .28s var(--ease); }
+      .modal-overlay.open .modal-box { transform:translateY(0); }
+      .modal-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; border-bottom:1px solid var(--border-light); flex-shrink:0; gap:.75rem; }
+      .modal-header-left { display:flex; align-items:center; gap:.75rem; }
+      .modal-icon-badge { width:40px; height:40px; border-radius:11px; flex-shrink:0; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:1rem; box-shadow:0 4px 14px rgba(0,114,198,.3); }
+      .modal-title    { font-size:.92rem; font-weight:800; color:var(--text-main); }
+      .modal-subtitle { font-size:.73rem; color:var(--text-muted); margin-top:.05rem; }
+      .modal-close { width:32px; height:32px; border-radius:8px; border:none; background:rgba(0,0,0,.05); color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.88rem; transition:background .18s,color .18s; flex-shrink:0; }
+      .modal-close:hover { background:#fee2e2; color:var(--red); }
+      .modal-body   { flex:1; overflow-y:auto; padding:1.25rem 1.5rem; }
+      .modal-footer { display:flex; align-items:center; justify-content:flex-end; gap:.6rem; padding:.9rem 1.25rem; border-top:1px solid var(--border-light); flex-shrink:0; }
+      .form-label { display:block; font-size:.78rem; font-weight:700; color:var(--text-sub); margin-bottom:.35rem; }
+      .required { color:var(--red); margin-left:.15rem; }
+      .form-control { width:100%; height:40px; border:1.5px solid var(--border-light); border-radius:var(--radius-sm); padding:0 .9rem; font-family:var(--font); font-size:.82rem; color:var(--text-main); outline:none; transition:border .2s,box-shadow .2s; background:#fff; }
+      .form-control:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-soft); }
+      .form-control::placeholder { color:#b0bac7; }
+      .form-group { margin-bottom:.9rem; }
+      .form-group:last-child { margin-bottom:0; }
+      .form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; margin-bottom:.9rem; }
+      @media(max-width:575px) { .form-grid-2 { grid-template-columns:1fr; } }
+      .form-error { display:none; font-size:.72rem; color:var(--red); margin-top:.28rem; }
+
+      /* upload zone */
+      .upload-zone {
+        border:2px dashed var(--border-light); border-radius:var(--radius-sm);
+        padding:1.5rem 1rem; text-align:center; cursor:pointer;
+        transition:border-color .2s,background .2s; position:relative; overflow:hidden;
+      }
+      .upload-zone:hover { border-color:var(--blue); background:var(--blue-soft); }
+      .upload-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+      .upload-zone-icon { font-size:1.8rem; color:var(--blue); margin-bottom:.4rem; }
+      .upload-zone-text { font-size:.8rem; font-weight:600; color:var(--text-main); }
+      .upload-zone-hint { font-size:.7rem; color:var(--text-muted); margin-top:.2rem; }
+      .upload-preview { display:flex; align-items:center; gap:.6rem; padding:.55rem .85rem; border:1.5px solid var(--border-light); border-radius:var(--radius-sm); background:var(--bg-surface); }
+      .upload-preview i { color:var(--blue); font-size:1rem; }
+      .upload-preview-name { flex:1; font-size:.79rem; font-weight:600; color:var(--text-main); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .upload-preview-remove { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:.9rem; transition:color .15s; }
+      .upload-preview-remove:hover { color:var(--red); }
+
+      /* ══ LOGOUT MODAL ══ */
+      .logout-overlay { position:fixed; inset:0; background:rgba(0,10,30,.55); backdrop-filter:blur(6px); z-index:600; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .3s; }
+      .logout-overlay.open { opacity:1; pointer-events:all; }
+      .logout-modal { background:#fff; border-radius:20px; padding:2.2rem 2rem; width:340px; text-align:center; box-shadow:var(--shadow-lg); transform:scale(.92); transition:transform .3s var(--ease); }
+      .logout-overlay.open .logout-modal { transform:scale(1); }
+      .logout-icon-ring { width:76px; height:76px; margin:0 auto 1.1rem; position:relative; display:flex; align-items:center; justify-content:center; }
+      .logout-icon-ring svg { position:absolute; inset:0; width:100%; height:100%; }
+      .ring-dashed { fill:none; stroke:rgba(0,114,198,.18); stroke-width:1.5; stroke-dasharray:5 4; animation:spinRing 18s linear infinite; }
+      @keyframes spinRing { to { stroke-dashoffset:-200; } }
+      .logout-icon-inner { width:52px; height:52px; border-radius:50%; position:relative; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.3rem; box-shadow:0 6px 20px rgba(0,114,198,.4); }
+      .logout-title { font-size:1rem; font-weight:800; color:var(--text-main); margin-bottom:.4rem; }
+      .logout-desc  { font-size:.8rem; color:var(--text-muted); line-height:1.6; margin-bottom:1.3rem; }
+      .logout-btns  { display:flex; gap:.6rem; justify-content:center; }
+      .btn-cancel { padding:.55rem 1.25rem; border-radius:10px; border:1.5px solid var(--border-light); background:#fff; font-family:var(--font); font-size:.82rem; font-weight:700; cursor:pointer; transition:all .2s; }
+      .btn-cancel:hover { background:var(--blue-soft); border-color:rgba(0,114,198,.3); color:var(--blue); }
+      .btn-confirm-red { padding:.55rem 1.25rem; border-radius:10px; background:linear-gradient(135deg,#dc3545,#c0392b); border:none; color:#fff; font-family:var(--font); font-size:.82rem; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(220,53,69,.35); transition:opacity .2s; }
+      .btn-confirm-red:hover { opacity:.88; }
+
+      /* ══ FOOTER ══ */
+      .main-footer { background:#fff; border-top:1px solid var(--border-light); padding:.85rem 1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem; font-size:.75rem; color:var(--text-muted); }
+      .footer-link { color:var(--text-muted); transition:color .15s; }
+      .footer-link:hover { color:var(--blue); }
+      .footer-right { display:flex; gap:1rem; }
+
+      /* ══ FAB & TOAST ══ */
+      .fab-top { position:fixed; bottom:1.5rem; right:1.5rem; z-index:100; width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); color:#fff; border:none; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(0,114,198,.4); opacity:0; transition:opacity .3s,transform .3s; pointer-events:none; }
+      .fab-top.show { opacity:1; pointer-events:all; }
+      .fab-top:hover { transform:translateY(-3px); }
+      .toast-notif { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%) translateY(20px); background:var(--sidebar-bg); color:#fff; font-size:.8rem; font-weight:600; padding:.65rem 1.2rem; border-radius:10px; box-shadow:var(--shadow-md); z-index:800; opacity:0; transition:opacity .3s,transform .3s; white-space:nowrap; pointer-events:none; }
+      .toast-notif.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+      /* ══ MOBILE ══ */
+      @media(max-width:991px) {
+        .sidebar { transform:translateX(-100%); }
+        .sidebar.mobile-open { transform:translateX(0); }
+        .main-area { margin-left:0 !important; }
+        .card-topbar { display:none; }
+        .data-row { display:none; }
+        .mob-wrapper { display:block !important; }
+        .filter-grid { grid-template-columns:1fr; }
+      }
+      @media(min-width:992px) {
+        .mob-wrapper { display:none; }
+      }
+      .mob-wrapper { display:none; }
+
+      /* Mobile data card */
+      .mob-data-card { background:#fff; border-radius:12px; border:1px solid var(--border-light); box-shadow:var(--shadow-sm); margin-bottom:.65rem; overflow:hidden; }
+      .mob-data-header { display:flex; align-items:flex-start; gap:.75rem; padding:.8rem 1rem; border-bottom:1px solid var(--border-light); background:var(--bg-surface); }
+      .mob-data-no { width:28px; height:28px; border-radius:8px; background:var(--blue-soft); color:var(--blue); display:flex; align-items:center; justify-content:center; font-size:.76rem; font-weight:800; flex-shrink:0; }
+      .mob-data-info { flex:1; min-width:0; }
+      .mob-data-kelinfo { font-size:.83rem; font-weight:600; color:var(--text-main); line-height:1.4; }
+      .mob-data-instansi { font-size:.72rem; color:var(--text-muted); margin-top:.12rem; }
+      .mob-data-body { padding:.65rem 1rem; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+      .mob-data-footer { display:flex; gap:.5rem; padding:.6rem 1rem; border-top:1px solid var(--border-light); flex-wrap:wrap; }
+      .mob-data-footer .btn-icon-sm { width:auto; padding:0 .65rem; border-radius:8px; font-size:.74rem; gap:.3rem; height:30px; display:flex; align-items:center; }
+
+      /* Tooltip */
+      [title] { position:relative; cursor:pointer; }
+    </style>
+  </head>
+  <body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+    <!-- ══ LOGOUT MODAL ══ -->
+    <div class="logout-overlay" id="logoutModal">
+      <div class="logout-modal">
+        <div class="logout-icon-ring">
+          <svg viewBox="0 0 76 76"><circle class="ring-dashed" cx="38" cy="38" r="34"></circle></svg>
+          <div class="logout-icon-inner"><i class="bi bi-box-arrow-right"></i></div>
+        </div>
+        <h4 class="logout-title">Keluar dari Sistem?</h4>
+        <p class="logout-desc">Sesi Anda akan diakhiri. Pastikan semua perubahan telah tersimpan.</p>
+        <div class="logout-btns">
+          <button class="btn-cancel" onclick="closeLogoutModal()">Batal</button>
+          <button class="btn-confirm-red" onclick="window.location.href='login-ppid.html'">
+            <i class="bi bi-box-arrow-right me-1"></i>Ya, Keluar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MODAL TAMBAH / EDIT PERKELINFO ══ -->
+    <div class="modal-overlay" id="formModal">
+      <div class="modal-box" style="max-width:600px">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <div class="modal-icon-badge"><i class="bi bi-file-earmark-plus-fill" id="fmIcon"></i></div>
+            <div>
+              <div class="modal-title" id="fmTitle">Tambah Data Per Kelinfo</div>
+              <div class="modal-subtitle" id="fmSub">Isi informasi dokumen kelompok informasi</div>
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeMod()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body">
+          <form id="perkelForm" novalidate>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Kelompok Informasi (DIP) <span class="required">*</span></label>
+                <select class="form-control w-select2-mod" id="fDip">
+                  <option value="">-- Pilih DIP --</option>
+                  <option value="1">DIP-001 — Profil Badan Publik</option>
+                  <option value="2">DIP-002 — Program Kegiatan</option>
+                  <option value="3">DIP-003 — Kinerja Instansi</option>
+                  <option value="4">DIP-004 — Laporan Keuangan</option>
+                  <option value="5">DIP-005 — Laporan Akses Informasi</option>
+                  <option value="6">DIP-006 — Daftar Informasi Publik</option>
+                  <option value="7">DIP-007 — Hasil Keputusan</option>
+                  <option value="8">DIP-008 — Seluruh Kebijakan</option>
+                </select>
+                <div class="form-error" id="errDip">Kelompok informasi wajib dipilih.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Instansi / OPD <span class="required">*</span></label>
+                <select class="form-control w-select2-mod" id="fInstansi">
+                  <option value="">-- Pilih Instansi --</option>
+                  <option value="1">Dinas Komunikasi dan Informatika</option>
+                  <option value="2">Dinas Pendidikan</option>
+                  <option value="3">Dinas Kesehatan</option>
+                  <option value="4">Badan Perencanaan Pembangunan Daerah</option>
+                  <option value="5">Dinas Pekerjaan Umum dan Penataan Ruang</option>
+                  <option value="6">Sekretariat Daerah Kota Pekalongan</option>
+                </select>
+                <div class="form-error" id="errInstansi">Instansi wajib dipilih.</div>
+              </div>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Tahun <span class="required">*</span></label>
+                <select class="form-control w-select2-mod" id="fTahun">
+                  <option value="">-- Tahun --</option>
+                  <option value="2026" selected>2026</option>
+                  <option value="2025">2025</option>
+                  <option value="2024">2024</option>
+                  <option value="2023">2023</option>
+                </select>
+                <div class="form-error" id="errTahun">Tahun wajib dipilih.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Keterangan Tambahan</label>
+                <input type="text" class="form-control" id="fKet" placeholder="Opsional..."/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Upload Dokumen / File</label>
+              <div class="upload-zone" id="uploadZone">
+                <input type="file" id="fFile" accept=".pdf,.doc,.docx,.xls,.xlsx" onchange="handleFile(this)"/>
+                <div class="upload-zone-icon"><i class="bi bi-cloud-arrow-up-fill"></i></div>
+                <div class="upload-zone-text">Klik atau drag &amp; drop file di sini</div>
+                <div class="upload-zone-hint">PDF, DOC, DOCX, XLS, XLSX — Maks. 10 MB</div>
+              </div>
+              <div class="upload-preview" id="uploadPreview" style="display:none">
+                <i class="bi bi-file-earmark-fill"></i>
+                <span class="upload-preview-name" id="uploadFileName"></span>
+                <button type="button" class="upload-preview-remove" onclick="clearFile()"><i class="bi bi-x-circle-fill"></i></button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-outline" onclick="closeMod()"><i class="bi bi-x me-1"></i>Batal</button>
+          <button class="btn-primary" onclick="saveMod()">
+            <i class="bi bi-check-lg me-1"></i><span id="btnSaveLabel">Simpan Data</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MODAL VERIFIKASI ══ -->
+    <div class="modal-overlay" id="verifyModal">
+      <div class="modal-box" style="max-width:420px">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <div class="modal-icon-badge" style="background:linear-gradient(135deg,#10b964,#059652)">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <div>
+              <div class="modal-title">Verifikasi Dokumen</div>
+              <div class="modal-subtitle" id="verifySub">Konfirmasi verifikasi data</div>
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeVerify()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size:.84rem;color:var(--text-muted);line-height:1.7">
+            Anda akan memvalidasi dokumen <strong id="verifyNama" style="color:var(--text-main)"></strong> dari instansi <strong id="verifyInstansi" style="color:var(--blue)"></strong>.
+            Status akan berubah menjadi <span style="background:#d1fae5;color:#065f46;padding:.15rem .5rem;border-radius:6px;font-weight:700;font-size:.78rem">Valid</span>.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-outline" onclick="closeVerify()">Batal</button>
+          <button class="btn-success" onclick="confirmVerify()"><i class="bi bi-check-circle-fill me-1"></i>Ya, Validasi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LAYOUT ══ -->
+    <div class="app-wrapper">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <a class="sidebar-brand" href="dashboard-ppid.html">
+          <div class="brand-icon"><i class="bi bi-shield-lock-fill"></i></div>
+          <div class="brand-text">
+            <div class="brand-title">PPID Pekalongan</div>
+            <div class="brand-sub">Kota Pekalongan · v2.0</div>
+          </div>
+        </a>
+        <nav class="sidebar-scroll">
+          <div class="nav-item-wrapper">
+            <a href="dashboard-ppid.html" class="nav-link-custom">
+              <i class="bi bi-grid-1x2-fill nav-icon"></i><span class="nav-label">Dashboard</span>
+            </a>
+          </div>
+          <div class="nav-section-label">Master Data</div>
+          <div class="nav-item-wrapper">
+            <a href="admin-pengelola-ppid.html" class="nav-link-custom">
+              <i class="bi bi-person-badge-fill nav-icon"></i><span class="nav-label">Admin Pengelola</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="pemohon-ppid.html" class="nav-link-custom">
+              <i class="bi bi-people-fill nav-icon"></i><span class="nav-label">Pemohon</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="instansi-opd-ppid.html" class="nav-link-custom">
+              <i class="bi bi-building nav-icon"></i><span class="nav-label">Instansi / OPD</span>
+            </a>
+          </div>
+          <div class="nav-section-label">Kelompok Informasi</div>
+          <div class="nav-item-wrapper">
+            <a href="kelinfo-dip-ppid.html" class="nav-link-custom">
+              <i class="bi bi-folder2-open nav-icon"></i><span class="nav-label">Kelinfo DIP</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="daftar-informasi-ppid.html" class="nav-link-custom active">
+              <i class="bi bi-list-columns-reverse nav-icon"></i>
+              <span class="nav-label">Daftar Informasi</span>
+              <span class="nav-badge nav-badge-amber">7</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="#" class="nav-link-custom">
+              <i class="bi bi-folder-fill nav-icon"></i><span class="nav-label">Kelinfo DIB</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="#" class="nav-link-custom">
+              <i class="bi bi-folder-symlink-fill nav-icon"></i><span class="nav-label">Kelinfo DIBS</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="#" class="nav-link-custom">
+              <i class="bi bi-archive-fill nav-icon"></i><span class="nav-label">Kelinfo DIU</span>
+            </a>
+          </div>
+          <div class="nav-section-label">Permohonan</div>
+          <div class="nav-item-wrapper">
+            <a href="permohonan-masuk-ppid.html" class="nav-link-custom">
+              <i class="bi bi-inbox-fill nav-icon"></i>
+              <span class="nav-label">Permohonan Masuk</span>
+              <span class="nav-badge nav-badge-amber">3</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="#" class="nav-link-custom">
+              <i class="bi bi-clock-history nav-icon"></i><span class="nav-label">Riwayat Permohonan</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="#" class="nav-link-custom">
+              <i class="bi bi-bar-chart-fill nav-icon"></i><span class="nav-label">Laporan &amp; Statistik</span>
+            </a>
+          </div>
+          <div class="nav-section-label">Konten Website</div>
+          <div class="nav-item-wrapper">
+            <a href="berita-ppid.html" class="nav-link-custom">
+              <i class="bi bi-newspaper nav-icon"></i><span class="nav-label">Berita</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="galeri-ppid.html" class="nav-link-custom">
+              <i class="bi bi-images nav-icon"></i><span class="nav-label">Galeri</span>
+            </a>
+          </div>
+          <div class="nav-section-label">Sistem</div>
+          <div class="nav-item-wrapper">
+            <a href="role-ppid.html" class="nav-link-custom">
+              <i class="bi bi-shield-fill-check nav-icon"></i><span class="nav-label">Role &amp; Akses</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="pengaturan-ppid.html" class="nav-link-custom">
+              <i class="bi bi-gear-fill nav-icon"></i><span class="nav-label">Pengaturan</span>
+            </a>
+          </div>
+          <div class="sidebar-bottom">
+            <a href="profile-ppid.html" class="sidebar-user">
+              <div class="su-avatar">SA</div>
+              <div class="su-info">
+                <div class="su-name">Super Admin</div>
+                <div class="su-role">Administrator</div>
+              </div>
+            </a>
+            <button class="sidebar-logout" onclick="openLogoutModal()"><i class="bi bi-box-arrow-right"></i></button>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="main-area" id="mainArea">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="topbar-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+            <div class="topbar-breadcrumb">
+              <span class="tb-bc-item">Kelompok Informasi</span>
+              <i class="bi bi-chevron-right tb-bc-sep"></i>
+              <span class="tb-bc-item active">Daftar Informasi Pelaksana</span>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <button class="topbar-icon-btn" title="Notifikasi">
+              <i class="bi bi-bell-fill"></i><span class="notif-dot"></span>
+            </button>
+            <div class="topbar-user-wrap">
+              <div class="topbar-avatar" onclick="toggleUserMenu()">SA</div>
+              <div class="user-dropdown" id="userDropdown">
+                <div class="ud-item" onclick="window.location.href='profile-ppid.html'"><i class="bi bi-person-fill"></i> Profil Saya</div>
+                <div class="ud-item"><i class="bi bi-gear-fill"></i> Pengaturan</div>
+                <div class="ud-divider"></div>
+                <div class="ud-item ud-logout" onclick="openLogoutModal()"><i class="bi bi-box-arrow-right"></i> Keluar</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- CONTENT -->
+        <main class="content-area">
+          <div class="container-fluid px-0">
+
+            <!-- Breadcrumb Banner -->
+            <div class="px-3 px-lg-4 pt-3 pt-lg-4 mb-3">
+              <div class="breadcrumb-banner">
+                <div class="bb-left">
+                  <div class="bb-page-name">Daftar Informasi Pelaksana</div>
+                  <div class="bb-desc">Informasi Manajemen per Instansi / OPD berdasarkan Kelompok Informasi Publik</div>
+                </div>
+                <div class="bb-right">
+                  <div class="bb-crumb-item"><i class="bi bi-house-fill"></i> Home</div>
+                  <span class="bb-crumb-sep">/</span>
+                  <div class="bb-crumb-item">Kelompok Informasi</div>
+                  <span class="bb-crumb-sep">/</span>
+                  <div class="bb-crumb-item active"><i class="bi bi-list-columns-reverse"></i> Daftar Informasi</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="px-3 px-lg-4 mb-3">
+              <div class="row g-3">
+                <div class="col-6 col-md-3">
+                  <div class="stat-strip-card h-100">
+                    <div class="ssc-icon" style="background:rgba(0,114,198,.1);color:var(--blue)"><i class="bi bi-file-earmark-text-fill"></i></div>
+                    <div><div class="ssc-value" id="statTotal">0</div><div class="ssc-label">Total Dokumen</div></div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="stat-strip-card h-100">
+                    <div class="ssc-icon" style="background:#d1fae5;color:#065f46"><i class="bi bi-check-circle-fill"></i></div>
+                    <div><div class="ssc-value" id="statValid">0</div><div class="ssc-label">Terverifikasi</div></div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="stat-strip-card h-100">
+                    <div class="ssc-icon" style="background:#fef9c3;color:#854d0e"><i class="bi bi-clock-fill"></i></div>
+                    <div><div class="ssc-value" id="statPending">0</div><div class="ssc-label">Menunggu</div></div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="stat-strip-card h-100">
+                    <div class="ssc-icon" style="background:#fee2e2;color:#991b1b"><i class="bi bi-file-earmark-x-fill"></i></div>
+                    <div><div class="ssc-value" id="statBelum">0</div><div class="ssc-label">Belum Upload</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filter Card -->
+            <div class="px-3 px-lg-4 mb-3">
+              <div class="filter-card">
+                <div class="filter-grid">
+                  <!-- Cari -->
+                  <div>
+                    <label class="filter-label"><i class="bi bi-search me-1"></i>Cari data</label>
+                    <div class="filter-input-wrap">
+                      <i class="bi bi-search fi-icon"></i>
+                      <input type="text" class="filter-input" id="searchInput" placeholder="Cari kelinfo / instansi..." oninput="doFilter()"/>
+                    </div>
+                  </div>
+                  <!-- Filter Instansi -->
+                  <div>
+                    <label class="filter-label"><i class="bi bi-building me-1"></i>Instansi / OPD</label>
+                    <select class="w-select2-filter" id="filterInstansi" onchange="doFilter()">
+                      <option value="">Semua Instansi</option>
+                      <option>Dinas Komunikasi dan Informatika</option>
+                      <option>Dinas Pendidikan</option>
+                      <option>Dinas Kesehatan</option>
+                      <option>Badan Perencanaan Pembangunan Daerah</option>
+                      <option>Dinas Pekerjaan Umum dan Penataan Ruang</option>
+                      <option>Sekretariat Daerah Kota Pekalongan</option>
+                    </select>
+                  </div>
+                  <!-- Filter Tahun -->
+                  <div>
+                    <label class="filter-label"><i class="bi bi-calendar3 me-1"></i>Tahun</label>
+                    <select class="w-select2-filter" id="filterTahun" onchange="doFilter()">
+                      <option value="">Semua Tahun</option>
+                      <option value="2026">2026</option>
+                      <option value="2025">2025</option>
+                      <option value="2024">2024</option>
+                    </select>
+                  </div>
+                  <!-- Filter Jenis -->
+                  <div>
+                    <label class="filter-label"><i class="bi bi-funnel me-1"></i>Jenis Kelinfo</label>
+                    <select class="w-select2-filter" id="filterJenis" onchange="doFilter()">
+                      <option value="">Semua Jenis</option>
+                      <option>Informasi Wajib Berkala</option>
+                      <option>Informasi Wajib Tersedia Setiap Saat</option>
+                      <option>Informasi Serta Merta</option>
+                      <option>Informasi Dikecualikan</option>
+                    </select>
+                  </div>
+                  <!-- Reset -->
+                  <div style="display:flex;align-items:flex-end">
+                    <button class="btn-filter-reset" onclick="resetFilter()">
+                      <i class="bi bi-arrow-counterclockwise"></i>Reset
+                    </button>
+                  </div>
+                  <!-- Per Page -->
+                  <div style="display:flex;align-items:flex-end;justify-content:flex-end">
+                    <div class="per-page-wrap">
+                      <span>Tampilkan</span>
+                      <select class="select-perpage-filter" id="perPage" onchange="doFilter()">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                      </select>
+                      <span>data</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Table Card -->
+            <div class="px-3 px-lg-4 pb-4">
+              <div class="main-card">
+
+                <!-- Card Header Aksi -->
+                <div style="padding:.9rem 1.2rem;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.65rem">
+                  <div style="display:flex;align-items:center;gap:.55rem">
+                    <i class="bi bi-list-columns-reverse" style="font-size:1rem;color:var(--blue)"></i>
+                    <h6 style="font-size:.9rem;font-weight:700;color:var(--text-main);margin:0">Daftar Informasi</h6>
+                    <span id="groupCountBadge" style="background:var(--blue-soft);color:var(--blue);font-size:.7rem;font-weight:700;padding:.15rem .65rem;border-radius:100px"></span>
+                  </div>
+                  <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn-outline" onclick="toggleAllGroups()" id="btnToggleAll">
+                      <i class="bi bi-arrows-expand"></i>
+                      <span class="d-none d-sm-inline">Buka Semua</span>
+                    </button>
+                    <button class="btn-success" onclick="verifyAll()">
+                      <i class="bi bi-shield-check"></i>
+                      <span class="d-none d-sm-inline">Verifikasi Semua</span>
+                    </button>
+                    <button class="btn-primary" onclick="openMod('tambah')">
+                      <i class="bi bi-plus-lg"></i>
+                      <span class="d-none d-sm-inline">Tambah Per Kelinfo</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Table Header (sticky) -->
+                <div class="card-topbar">
+                  <div class="cth center">*</div>
+                  <div class="cth center">No</div>
+                  <div class="cth">Kelinfo</div>
+                  <div class="cth">Instansi</div>
+                  <div class="cth center">File</div>
+                  <div class="cth center">Tahun</div>
+                  <div class="cth center">Status &amp; Aksi</div>
+                </div>
+
+                <!-- Grouped Data -->
+                <div id="groupsContainer"></div>
+
+                <!-- Mobile -->
+                <div class="mob-wrapper" id="mobWrapper"></div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState" style="display:none">
+                  <i class="bi bi-folder2-open"></i>
+                  <p>Tidak ada data yang ditemukan.</p>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-row">
+                  <div class="pagination-info" id="pagInfo"></div>
+                  <div class="pagination-controls" id="pagCtrl"></div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </main>
+
+        <footer class="main-footer">
+          <div>&copy; 2025 <strong>PPID Kota Pekalongan</strong> — Sistem Informasi Layanan Publik.</div>
+          <div class="footer-right">
+            <a href="#" class="footer-link">Bantuan</a>
+            <a href="#" class="footer-link">Kebijakan Privasi</a>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <button class="fab-top" id="fabTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <i class="bi bi-chevron-up"></i>
+    </button>
+    <div class="toast-notif" id="toastNotif"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+
+/* ══════════════════════════════════════════════════════
+   DATA — struktur per kelinfo (DIP) → rows (per instansi)
+══════════════════════════════════════════════════════ */
+let rawData = [
+  {
+    dip_id:1, dip_kode:'DIP-001', dip_jenis:'Informasi Wajib Berkala',
+    dip_label:'Informasi tentang profil Badan Publik',
+    rows:[
+      { id:1,  no:1, kelinfo:'Kedudukan domisili beserta alamat lengkap', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'profil_diskominfo_2026.pdf', tahun:'2026', status:'valid' },
+      { id:2,  no:2, kelinfo:'Tugas dan Fungsi', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'tupoksi_2026.pdf', tahun:'2026', status:'valid' },
+      { id:3,  no:3, kelinfo:'Struktur Organisasi, Tugas, Wewenang dan Fungsi', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'struktur_org_2026.pdf', tahun:'2026', status:'valid' },
+      { id:4,  no:4, kelinfo:'Profil Pimpinan Pemerintahan Kota Pekalongan', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'profil_pimpinan_2026.pdf', tahun:'2026', status:'valid' },
+    ]
+  },
+  {
+    dip_id:2, dip_kode:'DIP-002', dip_jenis:'Informasi Wajib Berkala',
+    dip_label:'LHKPN dan LHKAN',
+    rows:[
+      { id:5,  no:5, kelinfo:'Menyampaikan informasi terkait profil dan struktur PPID dan PPID Pelaksana Pemerintah Kota Pekalongan', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'ppid_struktur_2026.pdf', tahun:'2026', status:'valid' },
+      { id:6,  no:6, kelinfo:'Visi dan Misi', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:null, tahun:'2026', status:'pending' },
+      { id:7,  no:7, kelinfo:'Rencana Strategis (Renstra) OPD', instansi:'DINAS PENDIDIKAN', file:null, tahun:'2026', status:'pending' },
+    ]
+  },
+  {
+    dip_id:3, dip_kode:'DIP-003', dip_jenis:'Informasi Wajib Berkala',
+    dip_label:'Ringkasan informasi tentang kinerja dalam lingkup badan publik',
+    rows:[
+      { id:8,  no:8,  kelinfo:'Laporan Kinerja Instansi Pemerintah (LKIP/LKjIP)', instansi:'DINAS KESEHATAN', file:'lkip_dinkes_2026.pdf', tahun:'2026', status:'valid' },
+      { id:9,  no:9,  kelinfo:'Indeks Kepuasan Masyarakat (IKM)', instansi:'DINAS KESEHATAN', file:null, tahun:'2026', status:'pending' },
+      { id:10, no:10, kelinfo:'Standar Pelayanan Minimum (SPM)', instansi:'BADAN PERENCANAAN PEMBANGUNAN DAERAH', file:'spm_bappeda_2026.pdf', tahun:'2026', status:'valid' },
+    ]
+  },
+  {
+    dip_id:4, dip_kode:'DIP-004', dip_jenis:'Informasi Wajib Berkala',
+    dip_label:'Ringkasan laporan keuangan',
+    rows:[
+      { id:11, no:11, kelinfo:'Laporan Realisasi Anggaran (LRA)', instansi:'SEKRETARIAT DAERAH KOTA PEKALONGAN', file:'lra_setda_2026.pdf', tahun:'2026', status:'valid' },
+      { id:12, no:12, kelinfo:'Neraca Keuangan', instansi:'SEKRETARIAT DAERAH KOTA PEKALONGAN', file:null, tahun:'2026', status:'pending' },
+      { id:13, no:13, kelinfo:'Laporan Operasional (LO)', instansi:'DINAS PEKERJAAN UMUM DAN PENATAAN RUANG', file:null, tahun:'2026', status:'pending' },
+    ]
+  },
+  {
+    dip_id:5, dip_kode:'DIP-005', dip_jenis:'Informasi Wajib Berkala',
+    dip_label:'Ringkasan laporan akses informasi publik',
+    rows:[
+      { id:14, no:14, kelinfo:'Jumlah Permohonan Informasi Diterima', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'laporan_permohonan_2026.pdf', tahun:'2026', status:'valid' },
+      { id:15, no:15, kelinfo:'Waktu Rata-rata Penyelesaian Permohonan', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:null, tahun:'2026', status:'pending' },
+    ]
+  },
+];
+
+/* ══ FILTER STATE ══ */
+let filteredData = [];
+let groupStates  = {}; // { dip_id: true/false } = expanded
+let allExpanded  = true;
+let verifyRowId  = null;
+let editId       = null;
+
+/* ══ SELECT2 INIT ══ */
+$(document).ready(function() {
+  $('#filterInstansi').select2({ placeholder:'Semua Instansi', allowClear:true, width:'100%' });
+  $('#filterTahun').select2({ placeholder:'Semua Tahun', allowClear:true, width:'100%', minimumResultsForSearch:Infinity });
+  $('#filterJenis').select2({ placeholder:'Semua Jenis', allowClear:true, width:'100%' });
+  $('#perPage').select2({ minimumResultsForSearch:Infinity, width:'80px' });
+  $('#fDip').select2({ placeholder:'-- Pilih DIP --', allowClear:true, dropdownParent:$('#formModal'), width:'100%' });
+  $('#fInstansi').select2({ placeholder:'-- Pilih Instansi --', allowClear:true, dropdownParent:$('#formModal'), width:'100%' });
+  $('#fTahun').select2({ placeholder:'-- Tahun --', allowClear:true, dropdownParent:$('#formModal'), width:'100%', minimumResultsForSearch:Infinity });
+
+  $('#filterInstansi,#filterTahun,#filterJenis').on('change', doFilter);
+  $('#perPage').on('change', doFilter);
+
+  // init group states: all expanded
+  rawData.forEach(g => { groupStates[g.dip_id] = true; });
+
+  doFilter();
+  updateStats();
+});
+
+/* ══ STATS ══ */
+function updateStats() {
+  const all  = rawData.flatMap(g => g.rows);
+  const val  = all.filter(r => r.status === 'valid').length;
+  const pend = all.filter(r => r.status === 'pending' && r.file).length;
+  const bel  = all.filter(r => !r.file).length;
+  document.getElementById('statTotal').textContent   = all.length;
+  document.getElementById('statValid').textContent   = val;
+  document.getElementById('statPending').textContent = pend;
+  document.getElementById('statBelum').textContent   = bel;
+}
+
+/* ══ FILTER ══ */
+function doFilter() {
+  const q  = (document.getElementById('searchInput').value || '').toLowerCase();
+  const fi = ($('#filterInstansi').val() || '').toLowerCase();
+  const ft = ($('#filterTahun').val() || '');
+  const fj = ($('#filterJenis').val() || '');
+
+  filteredData = rawData
+    .map(g => {
+      const matchJenis = !fj || g.dip_jenis === fj;
+      const rows = g.rows.filter(r => {
+        const mq = !q || r.kelinfo.toLowerCase().includes(q) || r.instansi.toLowerCase().includes(q) || g.dip_label.toLowerCase().includes(q);
+        const mi = !fi || r.instansi.toLowerCase().includes(fi);
+        const mt = !ft || r.tahun === ft;
+        return mq && mi && mt;
+      });
+      return matchJenis && rows.length ? { ...g, rows } : null;
+    })
+    .filter(Boolean);
+
+  renderGroups();
+}
+
+function resetFilter() {
+  document.getElementById('searchInput').value = '';
+  $('#filterInstansi').val(null).trigger('change');
+  $('#filterTahun').val(null).trigger('change');
+  $('#filterJenis').val(null).trigger('change');
+  doFilter();
+}
+
+/* ══ RENDER GROUPS ══ */
+function renderGroups() {
+  const container = document.getElementById('groupsContainer');
+  const mob       = document.getElementById('mobWrapper');
+  const empty     = document.getElementById('emptyState');
+  const badge     = document.getElementById('groupCountBadge');
+
+  const totalRows = filteredData.reduce((s,g) => s + g.rows.length, 0);
+  badge.textContent = `${filteredData.length} kelinfo · ${totalRows} dokumen`;
+
+  if (!filteredData.length) {
+    container.innerHTML = '';
+    mob.innerHTML = '';
+    empty.style.display = 'block';
+    updatePagination(0, 10);
+    return;
+  }
+  empty.style.display = 'none';
+
+  /* Desktop groups */
+  container.innerHTML = filteredData.map(g => {
+    const isOpen = groupStates[g.dip_id] !== false;
+    const validCount = g.rows.filter(r => r.status === 'valid').length;
+    const bodyHeight = isOpen ? `${g.rows.length * 72 + 20}px` : '0';
+    return `
+      <div class="info-group" id="grp_${g.dip_id}">
+        <div class="group-header ${isOpen ? 'open' : ''}" onclick="toggleGroup(${g.dip_id})">
+          <button class="group-toggle-btn ${isOpen ? 'minus' : 'plus'}" id="gbtn_${g.dip_id}">
+            <i class="bi bi-${isOpen ? 'dash' : 'plus'}-lg"></i>
+          </button>
+          <div class="group-no">${g.dip_kode.replace('DIP-','')}</div>
+          <div class="group-title">${g.dip_label}</div>
+          <span class="group-count"><i class="bi bi-file-earmark-text"></i>${g.rows.length} dokumen</span>
+          <span style="margin-left:.5rem;background:#d1fae5;color:#065f46;font-size:.68rem;font-weight:700;padding:.14rem .55rem;border-radius:100px">
+            ${validCount}/${g.rows.length} valid
+          </span>
+          <span class="group-meta d-none d-md-inline" style="font-size:.68rem;background:rgba(0,114,198,.08);color:var(--blue);padding:.14rem .55rem;border-radius:100px;margin-left:.35rem">
+            <i class="bi bi-tags-fill me-1"></i>${g.dip_jenis}
+          </span>
+        </div>
+        <div class="group-body ${isOpen ? 'expanded' : 'collapsed'}" id="gbody_${g.dip_id}" style="max-height:${isOpen ? 'none' : '0'}">
+          ${g.rows.map((r,i) => buildDesktopRow(r, i)).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  /* Mobile groups */
+  mob.innerHTML = filteredData.map(g => {
+    return `
+      <div style="margin-bottom:1rem">
+        <div style="display:flex;align-items:center;gap:.6rem;padding:.65rem .85rem;background:var(--sidebar-bg);border-radius:10px;margin-bottom:.4rem;cursor:pointer" onclick="toggleGroup(${g.dip_id})">
+          <div style="background:var(--blue);color:#fff;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0">${g.dip_kode.replace('DIP-','')}</div>
+          <div style="flex:1;font-size:.82rem;font-weight:700;color:#fff">${g.dip_label}</div>
+          <span style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);font-size:.68rem;font-weight:700;padding:.14rem .55rem;border-radius:100px">${g.rows.length}</span>
+        </div>
+        <div id="mbody_${g.dip_id}" class="${groupStates[g.dip_id] !== false ? '' : 'd-none'}">
+          ${g.rows.map(r => buildMobileCard(r)).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  updatePagination(totalRows, parseInt($('#perPage').val()) || 10);
+}
+
+/* ══ BUILD DESKTOP ROW ══ */
+function buildDesktopRow(r, i) {
+  const fileBtn = r.file
+    ? `<button class="btn-download" onclick="downloadFile(${r.id})" title="${r.file}">
+         <i class="bi bi-download"></i>Download
+       </button>`
+    : `<span class="btn-no-file"><i class="bi bi-dash-circle"></i> Belum ada</span>`;
+
+  let statusBadge, actionBtns;
+  if (r.status === 'valid') {
+    statusBadge = `<span class="badge-valid"><i class="bi bi-patch-check-fill" style="font-size:.6rem"></i>Valid</span>`;
+    actionBtns  = `
+      <button class="btn-icon-sm btn-batal" onclick="batalValidasi(${r.id})" title="Batalkan Validasi"><i class="bi bi-x-circle-fill"></i></button>
+      <button class="btn-icon-sm btn-eye"   onclick="lihatDetail(${r.id})" title="Lihat Detail"><i class="bi bi-eye-fill"></i></button>`;
+  } else if (r.file) {
+    statusBadge = `<span class="badge-pending"><i class="bi bi-clock-fill" style="font-size:.6rem"></i>Menunggu</span>`;
+    actionBtns  = `
+      <button class="btn-icon-sm btn-valid"  onclick="openVerify(${r.id})" title="Verifikasi"><i class="bi bi-check-circle-fill"></i></button>
+      <button class="btn-icon-sm btn-upload" onclick="openMod('edit',${r.id})" title="Edit"><i class="bi bi-pencil-fill"></i></button>
+      <button class="btn-icon-sm btn-del"    onclick="hapusRow(${r.id})" title="Hapus"><i class="bi bi-trash3-fill"></i></button>`;
+  } else {
+    statusBadge = `<span class="badge-reject"><i class="bi bi-exclamation-circle-fill" style="font-size:.6rem"></i>Belum Upload</span>`;
+    actionBtns  = `
+      <button class="btn-icon-sm btn-upload" onclick="openMod('edit',${r.id})" title="Upload File"><i class="bi bi-upload"></i></button>
+      <button class="btn-icon-sm btn-del"    onclick="hapusRow(${r.id})" title="Hapus"><i class="bi bi-trash3-fill"></i></button>`;
+  }
+
+  const rowCls = r.status === 'valid' ? 'row-complete' : r.file ? 'row-pending' : '';
+
+  return `
+    <div class="data-row ${rowCls}" id="row_${r.id}">
+      <div></div>
+      <div class="dr-no">${r.no}</div>
+      <div class="dr-kelinfo">${r.kelinfo}</div>
+      <div class="dr-instansi">
+        <i class="bi bi-building me-1" style="color:var(--blue);font-size:.72rem"></i>${r.instansi}
+      </div>
+      <div class="dr-aksi" style="justify-content:center">${fileBtn}</div>
+      <div class="dr-tahun">${r.tahun}</div>
+      <div class="dr-aksi">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:.35rem">
+          ${statusBadge}
+          <div style="display:flex;gap:.3rem">${actionBtns}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ══ BUILD MOBILE CARD ══ */
+function buildMobileCard(r) {
+  const fileBtn = r.file
+    ? `<button class="btn-icon-sm btn-upload" style="background:var(--blue);color:#fff" onclick="downloadFile(${r.id})"><i class="bi bi-download"></i> Unduh</button>`
+    : `<span style="font-size:.72rem;color:var(--text-muted)"><i class="bi bi-dash-circle me-1"></i>Belum ada file</span>`;
+
+  let statusBadge;
+  if (r.status === 'valid')      statusBadge = `<span class="badge-valid">Valid</span>`;
+  else if (r.file)               statusBadge = `<span class="badge-pending">Menunggu</span>`;
+  else                           statusBadge = `<span class="badge-reject">Belum Upload</span>`;
+
+  return `
+    <div class="mob-data-card">
+      <div class="mob-data-header">
+        <div class="mob-data-no">${r.no}</div>
+        <div class="mob-data-info">
+          <div class="mob-data-kelinfo">${r.kelinfo}</div>
+          <div class="mob-data-instansi"><i class="bi bi-building me-1"></i>${r.instansi}</div>
+        </div>
+        ${statusBadge}
+      </div>
+      <div class="mob-data-body">
+        ${fileBtn}
+        <span style="font-size:.75rem;color:var(--text-muted);margin-left:auto"><i class="bi bi-calendar3 me-1"></i>${r.tahun}</span>
+      </div>
+      <div class="mob-data-footer">
+        ${r.status !== 'valid' ? `<button class="btn-icon-sm btn-valid" onclick="openVerify(${r.id})"><i class="bi bi-check-circle-fill"></i> Validasi</button>` : ''}
+        <button class="btn-icon-sm btn-upload" onclick="openMod('edit',${r.id})"><i class="bi bi-pencil-fill"></i> Edit</button>
+        <button class="btn-icon-sm btn-del" onclick="hapusRow(${r.id})"><i class="bi bi-trash3-fill"></i> Hapus</button>
+      </div>
+    </div>`;
+}
+
+/* ══ TOGGLE GROUP ══ */
+function toggleGroup(dipId) {
+  const body  = document.getElementById(`gbody_${dipId}`);
+  const btn   = document.getElementById(`gbtn_${dipId}`);
+  const hdr   = btn?.closest('.group-header');
+  const mobB  = document.getElementById(`mbody_${dipId}`);
+  const isOpen = groupStates[dipId] !== false;
+
+  if (body) {
+    if (isOpen) {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      requestAnimationFrame(() => { body.style.maxHeight = '0'; body.classList.remove('expanded'); body.classList.add('collapsed'); });
+    } else {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      body.classList.remove('collapsed'); body.classList.add('expanded');
+      setTimeout(() => { body.style.maxHeight = 'none'; }, 360);
+    }
+    if (btn) {
+      btn.className = `group-toggle-btn ${isOpen ? 'plus' : 'minus'}`;
+      btn.innerHTML = `<i class="bi bi-${isOpen ? 'plus' : 'dash'}-lg"></i>`;
+    }
+    if (hdr) hdr.classList.toggle('open', !isOpen);
+  }
+  if (mobB) mobB.classList.toggle('d-none', !isOpen);
+  groupStates[dipId] = !isOpen;
+}
+
+function toggleAllGroups() {
+  allExpanded = !allExpanded;
+  rawData.forEach(g => {
+    groupStates[g.dip_id] = allExpanded;
+  });
+  document.getElementById('btnToggleAll').innerHTML =
+    `<i class="bi bi-arrows-${allExpanded ? 'collapse' : 'expand'}"></i><span class="d-none d-sm-inline">${allExpanded ? 'Tutup Semua' : 'Buka Semua'}</span>`;
+  renderGroups();
+}
+
+/* ══ PAGINATION ══ */
+function updatePagination(total, pp) {
+  const pages = Math.max(1, Math.ceil(total / pp));
+  document.getElementById('pagInfo').textContent = total ? `${total} total dokumen dalam ${filteredData.length} kelompok` : 'Tidak ada data';
+  const ctrl = document.getElementById('pagCtrl');
+  ctrl.innerHTML = '';
+  if (pages <= 1) return;
+  // Simple prev/next for grouped view
+  const prev = document.createElement('button');
+  prev.className = 'page-btn'; prev.innerHTML = '<i class="bi bi-chevron-left"></i>'; prev.disabled = true;
+  ctrl.appendChild(prev);
+  const cur = document.createElement('button');
+  cur.className = 'page-btn active'; cur.textContent = '1';
+  ctrl.appendChild(cur);
+  const nxt = document.createElement('button');
+  nxt.className = 'page-btn'; nxt.innerHTML = '<i class="bi bi-chevron-right"></i>';
+  ctrl.appendChild(nxt);
+}
+
+/* ══ VERIFY ══ */
+function openVerify(id) {
+  verifyRowId = id;
+  const r = rawData.flatMap(g => g.rows).find(x => x.id === id);
+  document.getElementById('verifyNama').textContent     = r.kelinfo;
+  document.getElementById('verifyInstansi').textContent = r.instansi;
+  document.getElementById('verifyModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeVerify() { document.getElementById('verifyModal').classList.remove('open'); document.body.style.overflow = ''; verifyRowId = null; }
+function confirmVerify() {
+  const r = rawData.flatMap(g => g.rows).find(x => x.id === verifyRowId);
+  if (r) r.status = 'valid';
+  closeVerify();
+  doFilter(); updateStats();
+  showToast('Dokumen berhasil diverifikasi');
+}
+function verifyAll() {
+  rawData.flatMap(g => g.rows).filter(r => r.file && r.status !== 'valid').forEach(r => r.status = 'valid');
+  doFilter(); updateStats();
+  showToast('Semua dokumen berhasil diverifikasi');
+}
+function batalValidasi(id) {
+  const r = rawData.flatMap(g => g.rows).find(x => x.id === id);
+  if (r) r.status = 'pending';
+  doFilter(); updateStats();
+  showToast('Validasi dibatalkan');
+}
+function hapusRow(id) {
+  rawData.forEach(g => { g.rows = g.rows.filter(r => r.id !== id); });
+  rawData = rawData.filter(g => g.rows.length > 0);
+  doFilter(); updateStats();
+  showToast('Data berhasil dihapus');
+}
+function downloadFile(id) { showToast('Mengunduh file dokumen...'); }
+function lihatDetail(id) { showToast('Membuka detail dokumen...'); }
+
+/* ══ FORM MODAL ══ */
+function openMod(mode, id) {
+  editId = id || null;
+  clearErrors();
+  document.getElementById('dipForm')?.reset?.();
+  clearFile();
+  if (mode === 'edit') {
+    document.getElementById('fmTitle').textContent = 'Edit Data Per Kelinfo';
+    document.getElementById('btnSaveLabel').textContent = 'Perbarui Data';
+  } else {
+    document.getElementById('fmTitle').textContent = 'Tambah Data Per Kelinfo';
+    document.getElementById('btnSaveLabel').textContent = 'Simpan Data';
+    setTimeout(() => {
+      $('#fDip').val(null).trigger('change');
+      $('#fInstansi').val(null).trigger('change');
+      $('#fTahun').val('2026').trigger('change');
+    }, 50);
+  }
+  document.getElementById('formModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMod() { document.getElementById('formModal').classList.remove('open'); document.body.style.overflow = ''; editId = null; }
+function saveMod() {
+  clearErrors(); let ok = true;
+  if (!$('#fDip').val())      { document.getElementById('errDip').style.display = 'block'; ok = false; }
+  if (!$('#fInstansi').val()) { document.getElementById('errInstansi').style.display = 'block'; ok = false; }
+  if (!$('#fTahun').val())    { document.getElementById('errTahun').style.display = 'block'; ok = false; }
+  if (!ok) return;
+  closeMod();
+  showToast(editId ? 'Data berhasil diperbarui' : 'Data berhasil ditambahkan');
+}
+function clearErrors() { document.querySelectorAll('.form-error').forEach(e => e.style.display = 'none'); }
+
+/* ══ FILE UPLOAD ══ */
+function handleFile(input) {
+  if (!input.files.length) return;
+  const f = input.files[0];
+  document.getElementById('uploadZone').style.display    = 'none';
+  document.getElementById('uploadPreview').style.display = 'flex';
+  document.getElementById('uploadFileName').textContent  = f.name;
+}
+function clearFile() {
+  const fi = document.getElementById('fFile');
+  if (fi) fi.value = '';
+  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('uploadZone').style.display    = '';
+}
+
+/* ══ SIDEBAR ══ */
+const sidebarEl = document.getElementById('sidebar');
+const sidebarOv = document.getElementById('sidebarOverlay');
+let sbCollapsed = false;
+function toggleSidebar() {
+  if (window.innerWidth <= 991) {
+    const o = sidebarEl.classList.toggle('mobile-open');
+    sidebarOv.classList.toggle('show', o);
+  } else {
+    sbCollapsed = !sbCollapsed;
+    sidebarEl.classList.toggle('collapsed', sbCollapsed);
+  }
+}
+function closeMobileSidebar() {
+  sidebarEl.classList.remove('mobile-open');
+  sidebarOv.classList.remove('show');
+}
+
+/* ══ USER DROPDOWN ══ */
+const userDrop = document.getElementById('userDropdown');
+function toggleUserMenu() { userDrop.classList.toggle('show'); }
+document.addEventListener('click', e => { if (!e.target.closest('.topbar-user-wrap')) userDrop.classList.remove('show'); });
+
+/* ══ LOGOUT ══ */
+function openLogoutModal()  { document.getElementById('logoutModal').classList.add('open'); }
+function closeLogoutModal() { document.getElementById('logoutModal').classList.remove('open'); }
+
+/* ══ OVERLAY CLOSE ══ */
+['formModal','verifyModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) { this.classList.remove('open'); document.body.style.overflow = ''; }
+  });
+});
+
+/* ══ FAB ══ */
+window.addEventListener('scroll', () => { document.getElementById('fabTop').classList.toggle('show', window.scrollY > 300); });
+
+/* ══ TOAST ══ */
+function showToast(msg) {
+  const t = document.getElementById('toastNotif');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ══ ESCAPE ══ */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  ['formModal','verifyModal','logoutModal'].forEach(id => document.getElementById(id).classList.remove('open'));
+  document.body.style.overflow = '';
+});
+
+window.addEventListener('resize', renderGroups);
+    </script>
+  </body>
+</html>
