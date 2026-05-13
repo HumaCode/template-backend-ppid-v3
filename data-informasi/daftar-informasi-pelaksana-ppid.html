@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Informasi Pelaksana — PPID Kota Pekalongan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+      *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+      :root {
+        --blue        : #0072c6;
+        --blue-dark   : #005499;
+        --blue-deep   : #003d70;
+        --blue-light  : #1a8fe0;
+        --blue-soft   : rgba(0,114,198,.09);
+        --blue-glow   : rgba(0,114,198,.18);
+        --sidebar-w   : 260px;
+        --sidebar-col : 68px;
+        --topbar-h    : 62px;
+        --sidebar-bg  : #001f42;
+        --content-bg  : #f0f4f9;
+        --card-bg     : #fff;
+        --text-main   : #0f1c2e;
+        --text-sub    : #2d4060;
+        --text-muted  : #6b7a8d;
+        --border-light: rgba(0,0,0,.07);
+        --shadow-sm   : 0 2px 12px rgba(0,40,100,.07);
+        --shadow-md   : 0 6px 28px rgba(0,40,100,.12);
+        --shadow-lg   : 0 16px 48px rgba(0,40,100,.18);
+        --radius      : 14px;
+        --radius-sm   : 9px;
+        --ease        : .28s cubic-bezier(.22,1,.36,1);
+        --green       : #10b964;
+        --amber       : #f59e0b;
+        --red         : #dc3545;
+        --bg-surface  : #f8fafc;
+        --font        : 'Plus Jakarta Sans', sans-serif;
+      }
+      body { font-family:var(--font); background:var(--content-bg); color:var(--text-main); font-size:.875rem; line-height:1.6; overflow-x:hidden; }
+      a { text-decoration:none; color:inherit; }
+
+      /* ═══ SIDEBAR ═══ */
+      .sidebar { position:fixed; left:0; top:0; bottom:0; width:var(--sidebar-w); background:var(--sidebar-bg); display:flex; flex-direction:column; z-index:300; transition:transform var(--ease),width var(--ease); overflow:hidden; }
+      .sidebar.collapsed { width:var(--sidebar-col); }
+      .sidebar-brand { display:flex; align-items:center; gap:.8rem; padding:1.1rem 1rem 1rem; border-bottom:1px solid rgba(255,255,255,.07); flex-shrink:0; overflow:hidden; min-height:62px; }
+      .brand-icon { width:36px; height:36px; border-radius:10px; flex-shrink:0; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:1rem; box-shadow:0 4px 14px rgba(0,114,198,.4); }
+      .brand-title { font-size:.85rem; font-weight:700; color:#fff; }
+      .brand-sub { font-size:.66rem; color:rgba(255,255,255,.45); margin-top:.05rem; }
+      .sidebar-scroll { flex:1; overflow-y:auto; overflow-x:hidden; padding:.75rem 0; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.1) transparent; }
+      .sidebar-scroll::-webkit-scrollbar { width:3px; }
+      .sidebar-scroll::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); border-radius:2px; }
+      .nav-section-label { font-size:.58rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.28); padding:.9rem 1.1rem .3rem; white-space:nowrap; overflow:hidden; }
+      .sidebar.collapsed .nav-section-label { opacity:0; }
+      .nav-item-wrapper { padding:.1rem .6rem; }
+      .nav-link-custom { display:flex; align-items:center; gap:.72rem; padding:.6rem .75rem; border-radius:10px; color:rgba(255,255,255,.6); font-size:.82rem; font-weight:500; cursor:pointer; white-space:nowrap; transition:background var(--ease),color var(--ease); }
+      .nav-link-custom:hover { background:rgba(255,255,255,.07); color:rgba(255,255,255,.9); }
+      .nav-link-custom.active { background:linear-gradient(90deg,rgba(0,114,198,.55),rgba(0,114,198,.2)); color:#fff; font-weight:700; box-shadow:inset 3px 0 0 var(--blue); }
+      .nav-icon { font-size:.95rem; flex-shrink:0; width:18px; text-align:center; }
+      .nav-label { flex:1; overflow:hidden; text-overflow:ellipsis; }
+      .nav-badge { background:var(--blue); color:#fff; font-size:.58rem; font-weight:800; padding:.12rem .45rem; border-radius:100px; flex-shrink:0; }
+      .nav-badge-amber { background:var(--amber); }
+      .sidebar.collapsed .nav-label,.sidebar.collapsed .nav-badge,.sidebar.collapsed .nav-section-label { display:none; }
+      .sidebar.collapsed .nav-link-custom { justify-content:center; padding:.65rem; }
+      .sidebar-bottom { padding:.75rem .6rem; border-top:1px solid rgba(255,255,255,.07); flex-shrink:0; display:flex; align-items:center; gap:.5rem; }
+      .sidebar-user { display:flex; align-items:center; gap:.6rem; flex:1; overflow:hidden; padding:.45rem .5rem; border-radius:9px; transition:background .2s; }
+      .sidebar-user:hover { background:rgba(255,255,255,.06); }
+      .su-avatar { width:34px; height:34px; border-radius:9px; flex-shrink:0; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:.72rem; font-weight:700; }
+      .su-name { font-size:.78rem; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .su-role { font-size:.64rem; color:rgba(255,255,255,.4); }
+      .sidebar-logout { width:32px; height:32px; border-radius:8px; flex-shrink:0; background:rgba(220,53,69,.12); border:none; color:#f87171; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .2s; font-size:.9rem; }
+      .sidebar-logout:hover { background:rgba(220,53,69,.25); }
+      .sidebar.collapsed .su-info,.sidebar.collapsed .sidebar-logout { display:none; }
+      .sidebar.collapsed .sidebar-user { justify-content:center; }
+      .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,5,20,.55); z-index:299; backdrop-filter:blur(2px); }
+      .sidebar-overlay.show { display:block; }
+
+      /* ═══ LAYOUT ═══ */
+      .app-wrapper { display:flex; min-height:100vh; }
+      .main-area { flex:1; margin-left:var(--sidebar-w); display:flex; flex-direction:column; transition:margin-left var(--ease); min-width:0; }
+      .sidebar.collapsed ~ .main-area { margin-left:var(--sidebar-col); }
+
+      /* ═══ TOPBAR ═══ */
+      .topbar { position:sticky; top:0; z-index:200; height:var(--topbar-h); background:rgba(255,255,255,.95); backdrop-filter:blur(10px); border-bottom:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between; padding:0 1.4rem; gap:1rem; flex-shrink:0; box-shadow:0 1px 12px rgba(0,40,100,.06); }
+      .topbar-left { display:flex; align-items:center; gap:.85rem; min-width:0; }
+      .topbar-toggle { width:36px; height:36px; border-radius:9px; border:none; background:var(--blue-soft); color:var(--blue); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem; flex-shrink:0; transition:background .2s; }
+      .topbar-toggle:hover { background:var(--blue-glow); }
+      .topbar-breadcrumb { display:flex; align-items:center; gap:.4rem; font-size:.78rem; min-width:0; flex-wrap:wrap; }
+      .tb-bc-item { color:var(--text-muted); white-space:nowrap; }
+      .tb-bc-item.active { color:var(--blue); font-weight:700; }
+      .tb-bc-sep { color:var(--border-light); font-size:.7rem; }
+      .topbar-right { display:flex; align-items:center; gap:.6rem; flex-shrink:0; }
+      .topbar-icon-btn { width:36px; height:36px; border-radius:9px; border:none; background:var(--blue-soft); color:var(--blue); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:.95rem; position:relative; transition:background .2s; }
+      .topbar-icon-btn:hover { background:var(--blue-glow); }
+      .notif-dot { position:absolute; top:6px; right:6px; width:7px; height:7px; background:#ef4444; border-radius:50%; border:1.5px solid #fff; }
+      .topbar-avatar { width:36px; height:36px; border-radius:9px; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); color:#fff; font-size:.72rem; font-weight:700; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,114,198,.3); }
+      .topbar-user-wrap { position:relative; }
+      .user-dropdown { position:absolute; top:calc(100% + .5rem); right:0; min-width:190px; background:#fff; border-radius:12px; border:1px solid var(--border-light); box-shadow:var(--shadow-md); padding:.4rem 0; display:none; z-index:500; }
+      .user-dropdown.show { display:block; animation:fadeDown .18s ease; }
+      @keyframes fadeDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+      .ud-item { display:flex; align-items:center; gap:.6rem; padding:.52rem 1rem; font-size:.8rem; color:var(--text-sub); cursor:pointer; transition:background .15s; }
+      .ud-item:hover { background:var(--blue-soft); color:var(--blue); }
+      .ud-item i { font-size:.85rem; width:16px; }
+      .ud-divider { height:1px; background:var(--border-light); margin:.3rem 0; }
+      .ud-item.ud-logout { color:#dc3545; }
+      .ud-item.ud-logout:hover { background:#fff1f2; }
+      .content-area { flex:1; overflow-x:hidden; }
+
+      /* ═══ CONTENT WRAPPER ═══ */
+      .page-wrap { padding:1.5rem 1.5rem 2rem; }
+      @media(max-width:768px) { .page-wrap { padding:1rem .85rem 1.5rem; } }
+
+      /* ═══ PAGE HEADER ═══ */
+      .page-header { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:1.4rem; flex-wrap:wrap; }
+      .page-header-left { }
+      .page-title { font-size:1.18rem; font-weight:800; color:var(--text-main); }
+      .page-subtitle { font-size:.76rem; color:var(--text-muted); margin-top:.15rem; }
+      .page-header-actions { display:flex; gap:.6rem; flex-wrap:wrap; }
+      .btn-verify-all {
+        display:inline-flex; align-items:center; gap:.4rem;
+        padding:.58rem 1.15rem; border-radius:var(--radius-sm);
+        background:linear-gradient(135deg,var(--green),#059652);
+        color:#fff; font-family:var(--font); font-size:.82rem; font-weight:700;
+        border:none; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,100,.3);
+        transition:opacity .2s,transform .2s; white-space:nowrap;
+      }
+      .btn-verify-all:hover { opacity:.9; transform:translateY(-1px); }
+      .btn-tambah {
+        display:inline-flex; align-items:center; gap:.4rem;
+        padding:.58rem 1.15rem; border-radius:var(--radius-sm);
+        background:linear-gradient(135deg,var(--blue),var(--blue-dark));
+        color:#fff; font-family:var(--font); font-size:.82rem; font-weight:700;
+        border:none; cursor:pointer; box-shadow:0 4px 14px rgba(0,114,198,.3);
+        transition:opacity .2s,transform .2s; white-space:nowrap;
+      }
+      .btn-tambah:hover { opacity:.9; transform:translateY(-1px); }
+
+      /* ═══ FILTER + TABLE LAYOUT ═══ */
+      .content-layout { display:grid; grid-template-columns:260px 1fr; gap:1.1rem; align-items:start; }
+      @media(max-width:991px) { .content-layout { grid-template-columns:1fr; } }
+
+      /* ═══ FILTER PANEL ═══ */
+      .filter-panel {
+        background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border-light);
+        box-shadow:var(--shadow-sm); padding:1.1rem;
+        position:sticky; top:calc(var(--topbar-h) + 1rem);
+      }
+      .filter-panel-title { font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); margin-bottom:.85rem; display:flex; align-items:center; gap:.4rem; }
+      .filter-group { margin-bottom:.75rem; }
+      .filter-group:last-of-type { margin-bottom:0; }
+      .filter-label { font-size:.72rem; font-weight:700; color:var(--text-sub); margin-bottom:.3rem; display:block; }
+      .filter-input {
+        width:100%; height:38px; border:1.5px solid var(--border-light); border-radius:var(--radius-sm);
+        padding:0 .85rem 0 2rem; font-family:var(--font); font-size:.8rem; color:var(--text-main);
+        outline:none; transition:border .2s,box-shadow .2s; background:#fff;
+      }
+      .filter-input:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-soft); }
+      .filter-input::placeholder { color:#b0bac7; }
+      .filter-input-wrap { position:relative; }
+      .filter-input-wrap i { position:absolute; left:.65rem; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:.8rem; pointer-events:none; }
+      .w-sel-filter { display:none; }
+      /* Select2 overrides */
+      .select2-container--default .select2-selection--single { height:38px; border:1.5px solid var(--border-light); border-radius:var(--radius-sm)!important; background:#fff; display:flex; align-items:center; }
+      .select2-container--default .select2-selection--single .select2-selection__rendered { line-height:36px; padding-left:.75rem; padding-right:2rem; font-family:var(--font); font-size:.8rem; color:var(--text-main); }
+      .select2-container--default .select2-selection--single .select2-selection__arrow { height:36px; right:7px; }
+      .select2-container--default.select2-container--open .select2-selection--single { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-soft); }
+      .select2-dropdown { border:1.5px solid var(--blue); border-radius:10px; box-shadow:var(--shadow-md); overflow:hidden; }
+      .select2-results__option { font-family:var(--font); font-size:.8rem; padding:.45rem .72rem; }
+      .select2-results__option--highlighted { background:var(--blue)!important; }
+      .filter-actions { display:flex; gap:.5rem; margin-top:1rem; }
+      .btn-reset-filter {
+        flex:1; height:36px; border-radius:var(--radius-sm); border:none;
+        background:var(--red); color:#fff; font-family:var(--font);
+        font-size:.8rem; font-weight:700; cursor:pointer; transition:opacity .2s;
+        display:flex; align-items:center; justify-content:center; gap:.38rem;
+      }
+      .btn-reset-filter:hover { opacity:.88; }
+      /* Filter summary badges */
+      .filter-summary { display:flex; flex-direction:column; gap:.3rem; margin-top:.85rem; padding-top:.85rem; border-top:1px solid var(--border-light); }
+      .filter-badge-item { display:flex; align-items:center; justify-content:space-between; font-size:.72rem; }
+      .filter-badge-lbl { color:var(--text-muted); }
+      .filter-badge-val { font-weight:700; color:var(--blue); background:var(--blue-soft); padding:.1rem .55rem; border-radius:100px; }
+
+      /* ═══ TABLE CARD ═══ */
+      .table-card { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border-light); box-shadow:var(--shadow-sm); overflow:hidden; }
+      .table-card-top { padding:.75rem 1rem; border-bottom:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between; gap:.65rem; flex-wrap:wrap; }
+      .table-card-info { display:flex; align-items:center; gap:.55rem; }
+      .table-card-info i { color:var(--blue); font-size:.95rem; }
+      .table-card-info h6 { font-size:.88rem; font-weight:700; color:var(--text-main); margin:0; }
+      .table-count-badge { background:var(--blue-soft); color:var(--blue); font-size:.68rem; font-weight:800; padding:.12rem .6rem; border-radius:100px; }
+      .table-card-right { display:flex; align-items:center; gap:.5rem; }
+      .btn-toggle-all {
+        height:32px; padding:0 .85rem; border-radius:var(--radius-sm);
+        border:1.5px solid var(--border-light); background:#fff;
+        color:var(--text-muted); font-family:var(--font); font-size:.76rem; font-weight:600;
+        cursor:pointer; display:flex; align-items:center; gap:.35rem; transition:all .2s;
+      }
+      .btn-toggle-all:hover { background:var(--blue-soft); color:var(--blue); border-color:rgba(0,114,198,.25); }
+      .perpage-wrap { display:flex; align-items:center; gap:.4rem; font-size:.76rem; color:var(--text-muted); }
+      .sel-perpage { display:none; }
+
+      /* ═══ TABLE HEAD ═══ */
+      .daftar-table { width:100%; border-collapse:collapse; font-size:.81rem; min-width:680px; }
+      .daftar-table thead tr { background:var(--sidebar-bg); }
+      .daftar-table thead th {
+        color:rgba(255,255,255,.82); font-size:.68rem; font-weight:700;
+        letter-spacing:.04em; padding:.68rem .85rem; text-align:left; white-space:nowrap;
+      }
+      .daftar-table thead th.th-center { text-align:center; }
+      .daftar-table thead th:first-child { width:52px; text-align:center; }
+
+      /* ═══ GROUP HEADER ROW ═══ */
+      .group-row { background:#f5f8fc; border-bottom:1px solid var(--border-light); cursor:pointer; transition:background .15s; user-select:none; }
+      .group-row:hover { background:#eef3fa; }
+      .group-row td { padding:.65rem .85rem; }
+      .group-row-inner { display:flex; align-items:center; gap:.75rem; }
+      .toggle-btn {
+        width:26px; height:26px; border-radius:7px; border:none; flex-shrink:0;
+        display:flex; align-items:center; justify-content:center;
+        cursor:pointer; font-size:.85rem; font-weight:800; transition:all .18s;
+      }
+      .toggle-btn.minus { background:var(--blue); color:#fff; box-shadow:0 2px 8px rgba(0,114,198,.35); }
+      .toggle-btn.plus  { background:#e2eaf5; color:var(--blue); }
+      .toggle-btn:hover { transform:scale(1.1); }
+      .group-no-badge {
+        width:30px; height:30px; border-radius:8px; flex-shrink:0;
+        background:var(--blue); color:#fff;
+        display:flex; align-items:center; justify-content:center;
+        font-size:.78rem; font-weight:800;
+      }
+      .group-name { font-size:.86rem; font-weight:700; color:var(--text-main); flex:1; }
+      .group-meta-badge { display:flex; align-items:center; gap:.4rem; margin-left:auto; flex-shrink:0; }
+      .gmb-count { font-size:.68rem; font-weight:700; color:var(--text-muted); background:#e8eef5; padding:.12rem .55rem; border-radius:100px; }
+      .gmb-valid { font-size:.68rem; font-weight:700; color:#065f46; background:#d1fae5; padding:.12rem .55rem; border-radius:100px; }
+
+      /* ═══ DATA ROWS ═══ */
+      .data-row { border-bottom:1px solid var(--border-light); transition:background .14s; }
+      .data-row:hover { background:rgba(0,114,198,.03); }
+      .data-row.row-valid { background:rgba(16,185,100,.04); }
+      .data-row.row-valid:hover { background:rgba(16,185,100,.07); }
+      .data-row td { padding:.72rem .85rem; vertical-align:middle; }
+      .data-row td.td-center { text-align:center; }
+      .col-no-num { text-align:center; font-size:.75rem; font-weight:600; color:var(--text-muted); }
+      .col-kelinfo { font-size:.8rem; color:var(--text-sub); line-height:1.45; min-width:160px; max-width:200px; white-space:normal; }
+      .col-instansi { font-size:.74rem; font-weight:700; color:var(--text-sub); white-space:normal; min-width:130px; line-height:1.4; }
+
+      /* File button */
+      .btn-download {
+        display:inline-flex; align-items:center; gap:.3rem;
+        padding:.3rem .75rem; border-radius:8px; font-size:.73rem; font-weight:700;
+        background:linear-gradient(135deg,var(--blue),var(--blue-dark));
+        color:#fff; border:none; cursor:pointer;
+        box-shadow:0 2px 8px rgba(0,114,198,.3); transition:all .2s; white-space:nowrap;
+      }
+      .btn-download:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,114,198,.4); }
+      .no-file { font-size:.76rem; color:#c0c8d4; font-weight:600; }
+
+      /* Status badges */
+      .badge-valid { display:inline-flex; align-items:center; gap:.25rem; background:#10b964; color:#fff; font-size:.69rem; font-weight:800; padding:.22rem .7rem; border-radius:100px; white-space:nowrap; }
+      .badge-pending { width:22px; height:22px; border-radius:6px; background:var(--red); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:.78rem; font-weight:800; cursor:pointer; transition:all .18s; }
+      .badge-pending:hover { transform:scale(1.12); background:#c0392b; }
+      .badge-proses { display:inline-flex; align-items:center; gap:.25rem; background:var(--amber); color:#fff; font-size:.69rem; font-weight:800; padding:.22rem .7rem; border-radius:100px; white-space:nowrap; }
+
+      /* Action buttons */
+      .aksi-wrap { display:flex; align-items:center; gap:.3rem; justify-content:center; flex-wrap:wrap; }
+      .btn-batal {
+        display:inline-flex; align-items:center; gap:.25rem;
+        padding:.26rem .7rem; border-radius:7px; font-size:.71rem; font-weight:800;
+        background:var(--amber); color:#fff; border:none; cursor:pointer; transition:all .18s; white-space:nowrap;
+      }
+      .btn-batal:hover { background:#d97706; }
+      .btn-act {
+        width:28px; height:28px; border-radius:7px; border:none;
+        display:flex; align-items:center; justify-content:center;
+        cursor:pointer; font-size:.8rem; transition:all .18s; flex-shrink:0;
+      }
+      .btn-view  { background:var(--blue);  color:#fff; }
+      .btn-view:hover  { background:var(--blue-dark); }
+      .btn-edit  { background:#f59e0b; color:#fff; }
+      .btn-edit:hover  { background:#d97706; }
+      .btn-upload { background:var(--green); color:#fff; }
+      .btn-upload:hover { background:#059652; }
+
+      /* ═══ EMPTY ROW ═══ */
+      .empty-row td { padding:3rem 1rem; text-align:center; color:var(--text-muted); }
+      .empty-row i { font-size:2.2rem; opacity:.2; display:block; margin-bottom:.55rem; }
+      .empty-row p { font-size:.82rem; }
+
+      /* ═══ PAGINATION ═══ */
+      .pagination-wrap { padding:.85rem 1rem; border-top:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.65rem; }
+      .pagination-info { font-size:.77rem; color:var(--text-muted); }
+      .pagination-ctrl { display:flex; gap:.28rem; }
+      .pg-btn { width:32px; height:32px; border-radius:8px; border:1.5px solid var(--border-light); background:#fff; color:var(--text-muted); font-size:.78rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .18s; }
+      .pg-btn:hover { background:var(--blue-soft); color:var(--blue); border-color:rgba(0,114,198,.25); }
+      .pg-btn.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+      .pg-btn:disabled { opacity:.4; cursor:not-allowed; }
+      .pg-dots { font-size:.8rem; color:var(--text-muted); padding:0 .2rem; line-height:32px; }
+
+      /* ═══ MODAL ═══ */
+      .modal-overlay { position:fixed; inset:0; background:rgba(0,10,30,.5); backdrop-filter:blur(4px); z-index:500; display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; pointer-events:none; transition:opacity .25s; }
+      .modal-overlay.open { opacity:1; pointer-events:all; }
+      .modal-box { background:#fff; border-radius:var(--radius); width:100%; box-shadow:var(--shadow-lg); display:flex; flex-direction:column; max-height:92vh; transform:translateY(16px); transition:transform .28s var(--ease); }
+      .modal-overlay.open .modal-box { transform:translateY(0); }
+      .modal-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; border-bottom:1px solid var(--border-light); flex-shrink:0; gap:.75rem; }
+      .modal-header-left { display:flex; align-items:center; gap:.75rem; }
+      .modal-icon-badge { width:40px; height:40px; border-radius:11px; flex-shrink:0; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:1rem; box-shadow:0 4px 14px rgba(0,114,198,.3); }
+      .modal-title { font-size:.92rem; font-weight:800; color:var(--text-main); }
+      .modal-subtitle { font-size:.73rem; color:var(--text-muted); margin-top:.05rem; }
+      .modal-close { width:32px; height:32px; border-radius:8px; border:none; background:rgba(0,0,0,.05); color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.88rem; transition:background .18s,color .18s; flex-shrink:0; }
+      .modal-close:hover { background:#fee2e2; color:var(--red); }
+      .modal-body { flex:1; overflow-y:auto; padding:1.25rem 1.5rem; }
+      .modal-footer { display:flex; align-items:center; justify-content:flex-end; gap:.6rem; padding:.9rem 1.25rem; border-top:1px solid var(--border-light); flex-shrink:0; }
+
+      /* Form modal */
+      .fm-label { display:block; font-size:.77rem; font-weight:700; color:var(--text-sub); margin-bottom:.32rem; }
+      .fm-req { color:var(--red); margin-left:.12rem; }
+      .fm-ctrl { width:100%; height:40px; border:1.5px solid var(--border-light); border-radius:var(--radius-sm); padding:0 .9rem; font-family:var(--font); font-size:.82rem; color:var(--text-main); outline:none; transition:border .2s,box-shadow .2s; background:#fff; }
+      .fm-ctrl:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-soft); }
+      .fm-ctrl::placeholder { color:#b0bac7; }
+      .fm-err { display:none; font-size:.71rem; color:var(--red); margin-top:.25rem; }
+      .fm-group { margin-bottom:.85rem; }
+      .fm-group:last-child { margin-bottom:0; }
+      .fm-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:.85rem; }
+      @media(max-width:575px) { .fm-grid2 { grid-template-columns:1fr; } }
+      .fm-section-title { font-size:.69rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:var(--blue); display:flex; align-items:center; gap:.4rem; padding-bottom:.4rem; margin-bottom:.75rem; border-bottom:1.5px solid rgba(0,114,198,.1); }
+
+      /* Upload zone */
+      .upload-zone { border:2px dashed var(--border-light); border-radius:var(--radius-sm); padding:1.2rem; text-align:center; cursor:pointer; transition:border-color .2s,background .2s; position:relative; overflow:hidden; }
+      .upload-zone:hover { border-color:var(--blue); background:var(--blue-soft); }
+      .upload-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+      .upload-zone-icon { font-size:1.5rem; color:var(--blue); margin-bottom:.3rem; }
+      .upload-zone-text { font-size:.79rem; font-weight:600; color:var(--text-main); }
+      .upload-zone-hint { font-size:.69rem; color:var(--text-muted); margin-top:.15rem; }
+      .upload-preview { display:flex; align-items:center; gap:.55rem; padding:.5rem .8rem; border:1.5px solid var(--border-light); border-radius:var(--radius-sm); }
+      .upload-preview i { color:var(--blue); }
+      .upload-preview-name { flex:1; font-size:.79rem; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .upload-preview-rm { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:.88rem; transition:color .15s; }
+      .upload-preview-rm:hover { color:var(--red); }
+
+      /* Buttons in modal */
+      .btn-primary { display:inline-flex; align-items:center; gap:.38rem; padding:.55rem 1.15rem; border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--blue),var(--blue-dark)); color:#fff; font-family:var(--font); font-size:.82rem; font-weight:700; border:none; cursor:pointer; box-shadow:0 4px 14px rgba(0,114,198,.3); transition:opacity .2s; }
+      .btn-primary:hover { opacity:.9; }
+      .btn-outline { display:inline-flex; align-items:center; gap:.38rem; padding:.53rem 1.1rem; border-radius:var(--radius-sm); border:1.5px solid var(--border-light); background:#fff; color:var(--text-muted); font-family:var(--font); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .2s; }
+      .btn-outline:hover { background:var(--blue-soft); color:var(--blue); border-color:rgba(0,114,198,.3); }
+      .btn-success { display:inline-flex; align-items:center; gap:.38rem; padding:.53rem 1.1rem; border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--green),#059652); color:#fff; font-family:var(--font); font-size:.82rem; font-weight:700; border:none; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,100,.3); transition:opacity .2s; }
+      .btn-success:hover { opacity:.9; }
+
+      /* ═══ LOGOUT MODAL ═══ */
+      .logout-overlay { position:fixed; inset:0; background:rgba(0,10,30,.55); backdrop-filter:blur(6px); z-index:600; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .3s; }
+      .logout-overlay.open { opacity:1; pointer-events:all; }
+      .logout-modal { background:#fff; border-radius:20px; padding:2.2rem 2rem; width:340px; text-align:center; box-shadow:var(--shadow-lg); transform:scale(.92); transition:transform .3s var(--ease); }
+      .logout-overlay.open .logout-modal { transform:scale(1); }
+      .logout-icon-ring { width:76px; height:76px; margin:0 auto 1.1rem; position:relative; display:flex; align-items:center; justify-content:center; }
+      .logout-icon-ring svg { position:absolute; inset:0; width:100%; height:100%; }
+      .ring-dashed { fill:none; stroke:rgba(0,114,198,.18); stroke-width:1.5; stroke-dasharray:5 4; animation:spinRing 18s linear infinite; }
+      @keyframes spinRing { to { stroke-dashoffset:-200; } }
+      .logout-icon-inner { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.3rem; box-shadow:0 6px 20px rgba(0,114,198,.4); }
+      .logout-title { font-size:1rem; font-weight:800; color:var(--text-main); margin-bottom:.4rem; }
+      .logout-desc { font-size:.8rem; color:var(--text-muted); line-height:1.6; margin-bottom:1.3rem; }
+      .logout-btns { display:flex; gap:.6rem; justify-content:center; }
+      .btn-cancel { padding:.55rem 1.25rem; border-radius:10px; border:1.5px solid var(--border-light); background:#fff; font-family:var(--font); font-size:.82rem; font-weight:700; cursor:pointer; transition:all .2s; }
+      .btn-cancel:hover { background:var(--blue-soft); border-color:rgba(0,114,198,.3); color:var(--blue); }
+      .btn-confirm-red { padding:.55rem 1.25rem; border-radius:10px; background:linear-gradient(135deg,#dc3545,#c0392b); border:none; color:#fff; font-family:var(--font); font-size:.82rem; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(220,53,69,.35); transition:opacity .2s; }
+      .btn-confirm-red:hover { opacity:.88; }
+
+      /* ═══ MISC ═══ */
+      .main-footer { background:#fff; border-top:1px solid var(--border-light); padding:.85rem 1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem; font-size:.75rem; color:var(--text-muted); }
+      .footer-link { color:var(--text-muted); transition:color .15s; }
+      .footer-link:hover { color:var(--blue); }
+      .footer-right { display:flex; gap:1rem; }
+      .fab-top { position:fixed; bottom:1.5rem; right:1.5rem; z-index:100; width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,var(--blue),var(--blue-dark)); color:#fff; border:none; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(0,114,198,.4); opacity:0; transition:opacity .3s,transform .3s; pointer-events:none; }
+      .fab-top.show { opacity:1; pointer-events:all; }
+      .fab-top:hover { transform:translateY(-3px); }
+      .toast-notif { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%) translateY(20px); background:var(--sidebar-bg); color:#fff; font-size:.8rem; font-weight:600; padding:.65rem 1.2rem; border-radius:10px; box-shadow:var(--shadow-md); z-index:800; opacity:0; transition:opacity .3s,transform .3s; white-space:nowrap; pointer-events:none; }
+      .toast-notif.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+      /* ═══ MOBILE ═══ */
+      @media(max-width:991px) {
+        .sidebar { transform:translateX(-100%); }
+        .sidebar.mobile-open { transform:translateX(0); }
+        .main-area { margin-left:0!important; }
+        .daftar-table { min-width:600px; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+    <!-- ══ LOGOUT MODAL ══ -->
+    <div class="logout-overlay" id="logoutModal">
+      <div class="logout-modal">
+        <div class="logout-icon-ring">
+          <svg viewBox="0 0 76 76"><circle class="ring-dashed" cx="38" cy="38" r="34"></circle></svg>
+          <div class="logout-icon-inner"><i class="bi bi-box-arrow-right"></i></div>
+        </div>
+        <h4 class="logout-title">Keluar dari Sistem?</h4>
+        <p class="logout-desc">Sesi Anda akan diakhiri. Pastikan semua perubahan telah tersimpan.</p>
+        <div class="logout-btns">
+          <button class="btn-cancel" onclick="closeLogoutModal()">Batal</button>
+          <button class="btn-confirm-red" onclick="window.location.href='login-ppid.html'">
+            <i class="bi bi-box-arrow-right me-1"></i>Ya, Keluar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MODAL TAMBAH / EDIT PERKELINFO ══ -->
+    <div class="modal-overlay" id="formModal">
+      <div class="modal-box" style="max-width:580px">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <div class="modal-icon-badge"><i class="bi bi-file-earmark-plus-fill" id="fmIcon"></i></div>
+            <div>
+              <div class="modal-title" id="fmTitle">Tambah Data Per Kelinfo</div>
+              <div class="modal-subtitle" id="fmSub">Isi informasi dokumen untuk kelompok informasi</div>
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeMod()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="fm-section-title"><i class="bi bi-folder2-open"></i> Kelompok Informasi</div>
+          <div class="fm-grid2 fm-group">
+            <div class="fm-group">
+              <label class="fm-label">Kelompok DIP <span class="fm-req">*</span></label>
+              <select class="fm-ctrl w-sel-form" id="fDip">
+                <option value="">-- Pilih DIP --</option>
+                <option value="1">DIP-001 — Profil Badan Publik</option>
+                <option value="2">DIP-002 — Program &amp; Kegiatan</option>
+                <option value="3">DIP-003 — Kinerja Instansi</option>
+                <option value="4">DIP-004 — Laporan Keuangan</option>
+                <option value="5">DIP-005 — Laporan Akses Info</option>
+              </select>
+              <div class="fm-err" id="errDip">DIP wajib dipilih</div>
+            </div>
+            <div class="fm-group">
+              <label class="fm-label">Tahun <span class="fm-req">*</span></label>
+              <select class="fm-ctrl w-sel-form" id="fTahun">
+                <option value="2026" selected>2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+              </select>
+            </div>
+          </div>
+          <div class="fm-group">
+            <label class="fm-label">Instansi / OPD <span class="fm-req">*</span></label>
+            <select class="fm-ctrl w-sel-form" id="fInstansi">
+              <option value="">-- Pilih Instansi --</option>
+              <option value="DINAS KOMUNIKASI DAN INFORMATIKA">DINAS KOMUNIKASI DAN INFORMATIKA</option>
+              <option value="DINAS PENDIDIKAN">DINAS PENDIDIKAN</option>
+              <option value="DINAS KESEHATAN">DINAS KESEHATAN</option>
+              <option value="DINAS PEKERJAAN UMUM DAN PENATAAN RUANG">DINAS PEKERJAAN UMUM DAN PENATAAN RUANG</option>
+              <option value="BADAN PERENCANAAN PEMBANGUNAN DAERAH">BADAN PERENCANAAN PEMBANGUNAN DAERAH</option>
+              <option value="SEKRETARIAT DAERAH KOTA PEKALONGAN">SEKRETARIAT DAERAH KOTA PEKALONGAN</option>
+            </select>
+            <div class="fm-err" id="errInstansi">Instansi wajib dipilih</div>
+          </div>
+          <div class="fm-section-title"><i class="bi bi-cloud-arrow-up-fill"></i> Upload Dokumen</div>
+          <div class="fm-group">
+            <label class="fm-label">File Dokumen</label>
+            <div class="upload-zone" id="uploadZone">
+              <input type="file" id="fFile" accept=".pdf,.doc,.docx,.xls,.xlsx" onchange="handleFile(this)"/>
+              <div class="upload-zone-icon"><i class="bi bi-cloud-arrow-up-fill"></i></div>
+              <div class="upload-zone-text">Klik atau drag &amp; drop file</div>
+              <div class="upload-zone-hint">PDF, DOC, DOCX, XLS — Maks. 10 MB</div>
+            </div>
+            <div class="upload-preview" id="uploadPreview" style="display:none">
+              <i class="bi bi-file-earmark-fill"></i>
+              <span class="upload-preview-name" id="uploadFileName"></span>
+              <button type="button" class="upload-preview-rm" onclick="clearFile()"><i class="bi bi-x-circle-fill"></i></button>
+            </div>
+          </div>
+          <div class="fm-group">
+            <label class="fm-label">Keterangan Tambahan</label>
+            <input type="text" class="fm-ctrl" id="fKet" placeholder="Opsional..."/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-outline" onclick="closeMod()"><i class="bi bi-x me-1"></i>Batal</button>
+          <button class="btn-primary" onclick="saveMod()">
+            <i class="bi bi-check-lg me-1"></i><span id="btnSaveLabel">Simpan Data</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MODAL VERIFIKASI ══ -->
+    <div class="modal-overlay" id="verifyModal">
+      <div class="modal-box" style="max-width:420px">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <div class="modal-icon-badge" style="background:linear-gradient(135deg,#10b964,#059652)">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <div>
+              <div class="modal-title">Verifikasi Dokumen</div>
+              <div class="modal-subtitle" id="verifySub">Konfirmasi validasi dokumen</div>
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeVerify()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size:.83rem;color:var(--text-muted);line-height:1.7">
+            Dokumen <strong id="verifyKelinfo" style="color:var(--text-main)"></strong> dari instansi
+            <strong id="verifyInstansi" style="color:var(--blue)"></strong> akan diubah statusnya menjadi
+            <span style="background:#d1fae5;color:#065f46;padding:.12rem .5rem;border-radius:6px;font-weight:800;font-size:.76rem">Valid</span>.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-outline" onclick="closeVerify()">Batal</button>
+          <button class="btn-success" onclick="confirmVerify()"><i class="bi bi-check-circle-fill me-1"></i>Ya, Validasi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ APP LAYOUT ══ -->
+    <div class="app-wrapper">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <a class="sidebar-brand" href="dashboard-ppid.html">
+          <div class="brand-icon"><i class="bi bi-shield-lock-fill"></i></div>
+          <div class="brand-text">
+            <div class="brand-title">PPID Pekalongan</div>
+            <div class="brand-sub">Kota Pekalongan · v2.0</div>
+          </div>
+        </a>
+        <nav class="sidebar-scroll">
+          <div class="nav-item-wrapper">
+            <a href="dashboard-ppid.html" class="nav-link-custom">
+              <i class="bi bi-grid-1x2-fill nav-icon"></i><span class="nav-label">Dashboard</span>
+            </a>
+          </div>
+          <div class="nav-section-label">Master Data</div>
+          <div class="nav-item-wrapper">
+            <a href="admin-pengelola-ppid.html" class="nav-link-custom">
+              <i class="bi bi-person-badge-fill nav-icon"></i><span class="nav-label">Admin Pengelola</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="pemohon-ppid.html" class="nav-link-custom">
+              <i class="bi bi-people-fill nav-icon"></i><span class="nav-label">Pemohon</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="instansi-opd-ppid.html" class="nav-link-custom">
+              <i class="bi bi-building nav-icon"></i><span class="nav-label">Instansi / OPD</span>
+            </a>
+          </div>
+          <div class="nav-section-label">Kelompok Informasi</div>
+          <div class="nav-item-wrapper">
+            <a href="kelinfo-dip-ppid.html" class="nav-link-custom">
+              <i class="bi bi-folder2-open nav-icon"></i><span class="nav-label">Kelinfo DIP</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="daftar-informasi-pelaksana-ppid.html" class="nav-link-custom active">
+              <i class="bi bi-list-columns-reverse nav-icon"></i>
+              <span class="nav-label">Daftar Informasi</span>
+              <span class="nav-badge nav-badge-amber">7</span>
+            </a>
+          </div>
+          <div class="nav-section-label">Permohonan</div>
+          <div class="nav-item-wrapper">
+            <a href="permohonan-masuk-ppid.html" class="nav-link-custom">
+              <i class="bi bi-inbox-fill nav-icon"></i>
+              <span class="nav-label">Permohonan Masuk</span>
+              <span class="nav-badge nav-badge-amber">3</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="riwayat-permohonan-ppid.html" class="nav-link-custom">
+              <i class="bi bi-clock-history nav-icon"></i><span class="nav-label">Riwayat Permohonan</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="laporan-statistik-ppid.html" class="nav-link-custom">
+              <i class="bi bi-bar-chart-fill nav-icon"></i><span class="nav-label">Laporan &amp; Statistik</span>
+            </a>
+          </div>
+          <div class="nav-section-label">Konten Website</div>
+          <div class="nav-item-wrapper">
+            <a href="berita-ppid.html" class="nav-link-custom">
+              <i class="bi bi-newspaper nav-icon"></i><span class="nav-label">Berita</span>
+            </a>
+          </div>
+          <div class="nav-section-label">Sistem</div>
+          <div class="nav-item-wrapper">
+            <a href="role-ppid.html" class="nav-link-custom">
+              <i class="bi bi-shield-fill-check nav-icon"></i><span class="nav-label">Role &amp; Akses</span>
+            </a>
+          </div>
+          <div class="nav-item-wrapper">
+            <a href="pengaturan-ppid.html" class="nav-link-custom">
+              <i class="bi bi-gear-fill nav-icon"></i><span class="nav-label">Pengaturan</span>
+            </a>
+          </div>
+          <div class="sidebar-bottom">
+            <a href="profile-ppid.html" class="sidebar-user">
+              <div class="su-avatar">SA</div>
+              <div class="su-info">
+                <div class="su-name">Super Admin</div>
+                <div class="su-role">Administrator</div>
+              </div>
+            </a>
+            <button class="sidebar-logout" onclick="openLogoutModal()"><i class="bi bi-box-arrow-right"></i></button>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="main-area" id="mainArea">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="topbar-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+            <div class="topbar-breadcrumb">
+              <span class="tb-bc-item">Kelompok Informasi</span>
+              <i class="bi bi-chevron-right tb-bc-sep"></i>
+              <span class="tb-bc-item active">Daftar Informasi Pelaksana</span>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <button class="topbar-icon-btn" title="Notifikasi">
+              <i class="bi bi-bell-fill"></i><span class="notif-dot"></span>
+            </button>
+            <div class="topbar-user-wrap">
+              <div class="topbar-avatar" onclick="toggleUserMenu()">SA</div>
+              <div class="user-dropdown" id="userDropdown">
+                <div class="ud-item" onclick="window.location.href='profile-ppid.html'"><i class="bi bi-person-fill"></i> Profil Saya</div>
+                <div class="ud-item"><i class="bi bi-gear-fill"></i> Pengaturan</div>
+                <div class="ud-divider"></div>
+                <div class="ud-item ud-logout" onclick="openLogoutModal()"><i class="bi bi-box-arrow-right"></i> Keluar</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="content-area">
+          <div class="page-wrap">
+
+            <!-- Page Header -->
+            <div class="page-header">
+              <div class="page-header-left">
+                <div class="page-title">Daftar Informasi</div>
+                <div class="page-subtitle">Informasi Pelaksana Manajemen per Instansi / OPD</div>
+              </div>
+              <div class="page-header-actions">
+                <button class="btn-verify-all" onclick="verifyAll()">
+                  <i class="bi bi-shield-check"></i>Verifikasi Semua
+                </button>
+                <button class="btn-tambah" onclick="openMod('tambah')">
+                  <i class="bi bi-plus-lg"></i>Tambah PerKelinfo
+                </button>
+              </div>
+            </div>
+
+            <!-- Content Layout: Filter + Table -->
+            <div class="content-layout">
+
+              <!-- ═══ FILTER PANEL ═══ -->
+              <div class="filter-panel">
+                <div class="filter-panel-title">
+                  <i class="bi bi-funnel-fill" style="color:var(--blue)"></i> Filter Data
+                </div>
+
+                <div class="filter-group">
+                  <label class="filter-label">Cari Data</label>
+                  <div class="filter-input-wrap">
+                    <i class="bi bi-search"></i>
+                    <input type="text" class="filter-input" id="searchInput" placeholder="Cari data..." oninput="applyFilter()"/>
+                  </div>
+                </div>
+
+                <div class="filter-group">
+                  <label class="filter-label">Instansi / OPD</label>
+                  <select class="w-sel-filter" id="filterInstansi" onchange="applyFilter()">
+                    <option value="">Semua Instansi</option>
+                    <option value="DINAS KOMUNIKASI DAN INFORMATIKA">DISKOMINFO</option>
+                    <option value="DINAS PENDIDIKAN">DISDIK</option>
+                    <option value="DINAS KESEHATAN">DINKES</option>
+                    <option value="DINAS PEKERJAAN UMUM DAN PENATAAN RUANG">DPUPR</option>
+                    <option value="BADAN PERENCANAAN PEMBANGUNAN DAERAH">BAPPEDA</option>
+                    <option value="SEKRETARIAT DAERAH KOTA PEKALONGAN">SETDA</option>
+                    <option value="DINAS KEPENDUDUKAN DAN PENCATATAN SIPIL">DISDUKCAPIL</option>
+                    <option value="BADAN KEPEGAWAIAN DAERAH">BKD</option>
+                  </select>
+                </div>
+
+                <div class="filter-group">
+                  <label class="filter-label">Tahun</label>
+                  <select class="w-sel-filter" id="filterTahun" onchange="applyFilter()">
+                    <option value="">Semua Tahun</option>
+                    <option value="2026" selected>2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                  </select>
+                </div>
+
+                <div class="filter-group">
+                  <label class="filter-label">Jenis Informasi</label>
+                  <select class="w-sel-filter" id="filterJenis" onchange="applyFilter()">
+                    <option value="">Semua Jenis</option>
+                    <option value="Wajib Berkala">Informasi Berkala</option>
+                    <option value="Wajib Tersedia">Informasi Wajib Tersedia</option>
+                    <option value="Serta Merta">Informasi Serta Merta</option>
+                    <option value="Dikecualikan">Informasi Dikecualikan</option>
+                  </select>
+                </div>
+
+                <div class="filter-group">
+                  <label class="filter-label">Status</label>
+                  <select class="w-sel-filter" id="filterStatus" onchange="applyFilter()">
+                    <option value="">Semua Status</option>
+                    <option value="valid">Valid</option>
+                    <option value="pending">Belum Upload</option>
+                  </select>
+                </div>
+
+                <div class="filter-actions">
+                  <button class="btn-reset-filter" onclick="resetFilter()">
+                    <i class="bi bi-arrow-counterclockwise"></i>Reset Filter
+                  </button>
+                </div>
+
+                <!-- Filter summary -->
+                <div class="filter-summary" id="filterSummary" style="display:none">
+                  <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.35rem">Filter Aktif</div>
+                  <div id="filterBadges"></div>
+                </div>
+              </div>
+
+              <!-- ═══ TABLE CARD ═══ -->
+              <div style="min-width:0">
+                <div class="table-card">
+                  <div class="table-card-top">
+                    <div class="table-card-info">
+                      <i class="bi bi-list-columns-reverse"></i>
+                      <h6>Daftar Informasi</h6>
+                      <span class="table-count-badge" id="tableCountBadge">0 item</span>
+                    </div>
+                    <div class="table-card-right">
+                      <button class="btn-toggle-all" onclick="toggleAllGroups()" id="btnToggleAll">
+                        <i class="bi bi-arrows-collapse"></i>
+                        <span class="d-none d-sm-inline">Tutup Semua</span>
+                      </button>
+                      <div class="perpage-wrap">
+                        <span>Tampilkan</span>
+                        <select class="sel-perpage" id="perPage" onchange="renderTable()">
+                          <option value="10" selected>10</option>
+                          <option value="25">25</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Table -->
+                  <div style="overflow-x:auto">
+                    <table class="daftar-table">
+                      <thead>
+                        <tr>
+                          <th style="width:42px">*</th>
+                          <th style="width:46px">No</th>
+                          <th>Kelinfo</th>
+                          <th style="min-width:155px">Instansi</th>
+                          <th style="min-width:110px;text-align:center">File</th>
+                          <th style="width:65px;text-align:center">Tahun</th>
+                          <th style="width:80px;text-align:center">Status</th>
+                          <th style="width:130px;text-align:center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tableBody">
+                        <!-- Filled by JS -->
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Pagination -->
+                  <div class="pagination-wrap">
+                    <div class="pagination-info" id="pagInfo"></div>
+                    <div class="pagination-ctrl" id="pagCtrl"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </main>
+
+        <footer class="main-footer">
+          <div>&copy; 2025 <strong>PPID Kota Pekalongan</strong> — Sistem Informasi Layanan Publik.</div>
+          <div class="footer-right">
+            <a href="#" class="footer-link">Bantuan</a>
+            <a href="#" class="footer-link">Kebijakan Privasi</a>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <button class="fab-top" id="fabTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <i class="bi bi-chevron-up"></i>
+    </button>
+    <div class="toast-notif" id="toastNotif"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+
+/* ══════════════════════════════════════════════
+   DATA — group (DIP) → rows (per instansi + kelinfo)
+══════════════════════════════════════════════ */
+let masterData = [
+  {
+    gid:1, no:1, jenis:'Wajib Berkala',
+    nama:'Informasi tentang profil Badan Publik',
+    rows:[
+      { id:1,  kelinfo:'Kedudukan domisili beserta alamat lengkap', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'profil_alamat_2026.pdf', tahun:'2026', status:'valid' },
+      { id:2,  kelinfo:'Tugas dan Fungsi', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'tupoksi_2026.pdf', tahun:'2026', status:'valid' },
+      { id:3,  kelinfo:'Struktur Organisasi, Tugas, Wewenang dan Fungsi', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'struktur_2026.pdf', tahun:'2026', status:'valid' },
+      { id:4,  kelinfo:'Profil Pimpinan Pemerintahan Kota Pekalongan', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'profil_pimpinan_2026.pdf', tahun:'2026', status:'valid' },
+      { id:5,  kelinfo:'Kedudukan domisili beserta alamat lengkap', instansi:'DINAS PENDIDIKAN', file:'disdik_profil_2026.pdf', tahun:'2026', status:'valid' },
+      { id:6,  kelinfo:'Tugas dan Fungsi', instansi:'DINAS PENDIDIKAN', file:null, tahun:'2026', status:'pending' },
+      { id:7,  kelinfo:'Visi dan Misi', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:null, tahun:'2026', status:'pending' },
+      { id:8,  kelinfo:'Kedudukan domisili beserta alamat lengkap', instansi:'DINAS KESEHATAN', file:'dinkes_profil_2026.pdf', tahun:'2026', status:'valid' },
+    ]
+  },
+  {
+    gid:2, no:2, jenis:'Wajib Berkala',
+    nama:'LHKPN dan LHKAN',
+    rows:[
+      { id:9,  kelinfo:'Menyampaikan informasi terkait profil dan struktur PPID dan PPID Pelaksana', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'ppid_struktur_2026.pdf', tahun:'2026', status:'valid' },
+      { id:10, kelinfo:'Visi dan Misi', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:null, tahun:'2026', status:'pending' },
+      { id:11, kelinfo:'Rencana Strategis (Renstra) OPD', instansi:'DINAS PENDIDIKAN', file:null, tahun:'2026', status:'pending' },
+      { id:12, kelinfo:'LHKPN Pejabat Eselon II', instansi:'BADAN KEPEGAWAIAN DAERAH', file:'lhkpn_bkd_2026.pdf', tahun:'2026', status:'valid' },
+    ]
+  },
+  {
+    gid:3, no:3, jenis:'Wajib Berkala',
+    nama:'Ringkasan informasi tentang kinerja dalam lingkup badan publik',
+    rows:[
+      { id:13, kelinfo:'Laporan Kinerja Instansi Pemerintah (LKIP/LKjIP)', instansi:'DINAS KESEHATAN', file:'lkip_dinkes_2026.pdf', tahun:'2026', status:'valid' },
+      { id:14, kelinfo:'Indeks Kepuasan Masyarakat (IKM)', instansi:'DINAS KESEHATAN', file:null, tahun:'2026', status:'pending' },
+      { id:15, kelinfo:'Standar Pelayanan Minimum (SPM)', instansi:'BADAN PERENCANAAN PEMBANGUNAN DAERAH', file:'spm_bappeda_2026.pdf', tahun:'2026', status:'valid' },
+      { id:16, kelinfo:'Capaian Program Kerja Tahunan', instansi:'DINAS PEKERJAAN UMUM DAN PENATAAN RUANG', file:'capaian_dpupr_2026.pdf', tahun:'2026', status:'valid' },
+    ]
+  },
+  {
+    gid:4, no:4, jenis:'Wajib Berkala',
+    nama:'Ringkasan laporan keuangan',
+    rows:[
+      { id:17, kelinfo:'Laporan Realisasi Anggaran (LRA)', instansi:'SEKRETARIAT DAERAH KOTA PEKALONGAN', file:'lra_setda_2026.pdf', tahun:'2026', status:'valid' },
+      { id:18, kelinfo:'Neraca Keuangan', instansi:'SEKRETARIAT DAERAH KOTA PEKALONGAN', file:null, tahun:'2026', status:'pending' },
+      { id:19, kelinfo:'Laporan Operasional (LO)', instansi:'DINAS PEKERJAAN UMUM DAN PENATAAN RUANG', file:null, tahun:'2026', status:'pending' },
+    ]
+  },
+  {
+    gid:5, no:5, jenis:'Wajib Tersedia',
+    nama:'Daftar seluruh informasi publik yang berada di bawah penguasaan badan publik',
+    rows:[
+      { id:20, kelinfo:'Daftar Informasi Publik (DIP) Lengkap', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'dip_diskominfo_2026.pdf', tahun:'2026', status:'valid' },
+      { id:21, kelinfo:'Daftar Informasi Publik (DIP) Lengkap', instansi:'DINAS PENDIDIKAN', file:null, tahun:'2026', status:'pending' },
+      { id:22, kelinfo:'Daftar Informasi Publik (DIP) Lengkap', instansi:'DINAS KESEHATAN', file:'dip_dinkes_2026.pdf', tahun:'2026', status:'valid' },
+    ]
+  },
+  {
+    gid:6, no:6, jenis:'Serta Merta',
+    nama:'Informasi yang dapat mengancam hajat hidup orang banyak',
+    rows:[
+      { id:23, kelinfo:'Informasi Bencana Alam dan Non-Alam', instansi:'DINAS KOMUNIKASI DAN INFORMATIKA', file:'bencana_info_2026.pdf', tahun:'2026', status:'valid' },
+      { id:24, kelinfo:'Prosedur Evakuasi Darurat', instansi:'SEKRETARIAT DAERAH KOTA PEKALONGAN', file:null, tahun:'2026', status:'pending' },
+    ]
+  },
+  {
+    gid:7, no:7, jenis:'Dikecualikan',
+    nama:'Informasi yang apabila dibuka dapat membahayakan pertahanan dan keamanan',
+    rows:[
+      { id:25, kelinfo:'Dokumen Pengamanan Internal', instansi:'SEKRETARIAT DAERAH KOTA PEKALONGAN', file:'pengamanan_setda_2026.pdf', tahun:'2026', status:'valid' },
+    ]
+  },
+];
+
+/* ══ STATE ══ */
+let filteredData = [];
+let groupState   = {}; // gid → true(open)/false(closed)
+let allOpen      = true;
+let verifyId     = null;
+let editId       = null;
+let curPage      = 1;
+
+/* ══ SELECT2 INIT ══ */
+$(document).ready(function() {
+  ['#filterInstansi','#filterTahun','#filterJenis','#filterStatus'].forEach(sel => {
+    const label = sel === '#filterInstansi' ? 'Semua Instansi'
+                : sel === '#filterTahun'    ? 'Semua Tahun'
+                : sel === '#filterJenis'    ? 'Semua Jenis'
+                : 'Semua Status';
+    $(sel).select2({ placeholder:label, allowClear:true, width:'100%',
+      minimumResultsForSearch: sel === '#filterInstansi' ? 0 : Infinity });
+    $(sel).on('change', applyFilter);
+  });
+
+  $('#perPage').select2({ minimumResultsForSearch:Infinity, width:'75px' });
+  $('#perPage').on('change', renderTable);
+
+  $('#fDip,#fInstansi,#fTahun').select2({ dropdownParent:$('#formModal'), width:'100%' });
+
+  // Init all groups open
+  masterData.forEach(g => { groupState[g.gid] = true; });
+
+  // Default filter: tahun 2026
+  $('#filterTahun').val('2026').trigger('change');
+});
+
+/* ══ APPLY FILTER ══ */
+function applyFilter() {
+  const q  = (document.getElementById('searchInput').value || '').toLowerCase();
+  const fi = ($('#filterInstansi').val() || '');
+  const ft = ($('#filterTahun').val() || '');
+  const fj = ($('#filterJenis').val() || '');
+  const fs = ($('#filterStatus').val() || '');
+
+  filteredData = masterData.map(g => {
+    if (fj && g.jenis !== fj) return null;
+    const rows = g.rows.filter(r => {
+      const mq = !q  || r.kelinfo.toLowerCase().includes(q) || r.instansi.toLowerCase().includes(q);
+      const mi = !fi || r.instansi === fi;
+      const mt = !ft || r.tahun === ft;
+      const ms = !fs || r.status === fs;
+      return mq && mi && mt && ms;
+    });
+    return rows.length ? { ...g, rows } : null;
+  }).filter(Boolean);
+
+  // Update filter summary
+  const activeFilters = [];
+  if (fi) activeFilters.push({ lbl:'OPD', val: fi.split(' ').slice(0,2).join(' ') });
+  if (ft) activeFilters.push({ lbl:'Tahun', val: ft });
+  if (fj) activeFilters.push({ lbl:'Jenis', val: fj });
+  if (fs) activeFilters.push({ lbl:'Status', val: fs === 'valid' ? 'Valid' : 'Belum Upload' });
+  if (q)  activeFilters.push({ lbl:'Cari', val: `"${q}"` });
+
+  const sumWrap = document.getElementById('filterSummary');
+  const badges  = document.getElementById('filterBadges');
+  if (activeFilters.length) {
+    sumWrap.style.display = 'flex';
+    badges.innerHTML = activeFilters.map(f =>
+      `<div class="filter-badge-item"><span class="filter-badge-lbl">${f.lbl}</span><span class="filter-badge-val">${f.val}</span></div>`
+    ).join('');
+  } else {
+    sumWrap.style.display = 'none';
+  }
+
+  curPage = 1;
+  renderTable();
+}
+
+function resetFilter() {
+  document.getElementById('searchInput').value = '';
+  ['#filterInstansi','#filterTahun','#filterJenis','#filterStatus'].forEach(s => $(s).val(null).trigger('change'));
+  filteredData = masterData.map(g => ({...g}));
+  curPage = 1;
+  renderTable();
+}
+
+/* ══ RENDER TABLE ══ */
+function renderTable() {
+  const tbody  = document.getElementById('tableBody');
+  const badge  = document.getElementById('tableCountBadge');
+  const pagI   = document.getElementById('pagInfo');
+  const pagC   = document.getElementById('pagCtrl');
+
+  const totalRows = filteredData.reduce((s,g) => s + g.rows.length, 0);
+  badge.textContent = `${filteredData.length} kelompok · ${totalRows} dokumen`;
+
+  if (!filteredData.length) {
+    tbody.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="8">
+          <i class="bi bi-folder2-open"></i>
+          <p>Tidak ada data yang sesuai filter.</p>
+        </td>
+      </tr>`;
+    pagI.textContent = 'Tidak ada data';
+    pagC.innerHTML = '';
+    return;
+  }
+
+  let rowCounter = 0;
+  let html = '';
+
+  filteredData.forEach(g => {
+    const isOpen    = groupState[g.gid] !== false;
+    const validCnt  = g.rows.filter(r => r.status === 'valid').length;
+    const jenisBadge = g.jenis === 'Wajib Berkala' ? '#dbeafe|#1d4ed8'
+                     : g.jenis === 'Wajib Tersedia' ? '#d1fae5|#065f46'
+                     : g.jenis === 'Serta Merta'    ? '#fef9c3|#854d0e'
+                     : '#fee2e2|#991b1b';
+    const [jBg, jFg] = jenisBadge.split('|');
+
+    /* Group header row */
+    html += `
+      <tr class="group-row" onclick="toggleGroup(${g.gid})" id="grow_${g.gid}">
+        <td colspan="8">
+          <div class="group-row-inner">
+            <button class="toggle-btn ${isOpen ? 'minus' : 'plus'}" id="gbtn_${g.gid}">
+              <i class="bi bi-${isOpen ? 'dash' : 'plus'}-lg"></i>
+            </button>
+            <div class="group-no-badge">${g.no}</div>
+            <span class="group-name">${g.nama}</span>
+            <div class="group-meta-badge">
+              <span style="background:${jBg};color:${jFg};font-size:.65rem;font-weight:700;padding:.1rem .55rem;border-radius:100px;">${g.jenis}</span>
+              <span class="gmb-count">${g.rows.length} dok</span>
+              <span class="gmb-valid">${validCnt}/${g.rows.length} valid</span>
+            </div>
+          </div>
+        </td>
+      </tr>`;
+
+    /* Data rows */
+    g.rows.forEach((r, i) => {
+      rowCounter++;
+      const show = isOpen ? '' : 'display:none';
+      const rowCls = r.status === 'valid' ? 'data-row row-valid' : 'data-row';
+
+      const fileCell = r.file
+        ? `<button class="btn-download" onclick="downloadFile(${r.id})" title="${r.file}"><i class="bi bi-download"></i>Download</button>`
+        : `<span class="no-file">—</span>`;
+
+      const statusCell = r.status === 'valid'
+        ? `<span class="badge-valid"><i class="bi bi-patch-check-fill" style="font-size:.58rem"></i>Valid</span>`
+        : `<span class="badge-pending" title="Belum upload / pending">−</span>`;
+
+      let aksiCell;
+      if (r.status === 'valid') {
+        aksiCell = `
+          <button class="btn-batal" onclick="batalValidasi(${r.id})" title="Batalkan Validasi">Batal</button>
+          <button class="btn-act btn-view" onclick="viewRow(${r.id})" title="Lihat Detail"><i class="bi bi-eye-fill"></i></button>`;
+      } else if (r.file) {
+        aksiCell = `
+          <button class="btn-act btn-view" onclick="viewRow(${r.id})" title="Lihat"><i class="bi bi-eye-fill"></i></button>
+          <button class="btn-act btn-edit" onclick="openMod('edit',${r.id})" title="Edit"><i class="bi bi-pencil-fill"></i></button>
+          <button class="btn-act btn-view" onclick="openVerify(${r.id})" title="Verifikasi" style="background:var(--green)"><i class="bi bi-check-circle-fill"></i></button>`;
+      } else {
+        aksiCell = `
+          <button class="btn-act btn-view" onclick="viewRow(${r.id})" title="Lihat"><i class="bi bi-eye-fill"></i></button>
+          <button class="btn-act btn-edit" onclick="openMod('edit',${r.id})" title="Upload File"><i class="bi bi-pencil-fill"></i></button>`;
+      }
+
+      html += `
+        <tr class="${rowCls}" id="drow_${r.id}" style="${show}" data-gid="${g.gid}">
+          <td></td>
+          <td class="col-no-num">${rowCounter}</td>
+          <td class="col-kelinfo">${r.kelinfo}</td>
+          <td class="col-instansi">${r.instansi}</td>
+          <td class="td-center">${fileCell}</td>
+          <td class="td-center" style="font-size:.78rem;font-weight:700;color:var(--text-main)">${r.tahun}</td>
+          <td class="td-center">${statusCell}</td>
+          <td class="td-center"><div class="aksi-wrap">${aksiCell}</div></td>
+        </tr>`;
+    });
+  });
+
+  tbody.innerHTML = html;
+  pagI.textContent = `${totalRows} dokumen dalam ${filteredData.length} kelompok informasi`;
+  pagC.innerHTML = '';
+}
+
+/* ══ TOGGLE GROUP ══ */
+function toggleGroup(gid) {
+  const isOpen = groupState[gid] !== false;
+  groupState[gid] = !isOpen;
+
+  const btn = document.getElementById(`gbtn_${gid}`);
+  if (btn) {
+    btn.className = `toggle-btn ${isOpen ? 'plus' : 'minus'}`;
+    btn.innerHTML = `<i class="bi bi-${isOpen ? 'plus' : 'dash'}-lg"></i>`;
+  }
+
+  document.querySelectorAll(`tr[data-gid="${gid}"]`).forEach(row => {
+    row.style.display = isOpen ? 'none' : '';
+  });
+}
+
+function toggleAllGroups() {
+  allOpen = !allOpen;
+  filteredData.forEach(g => {
+    groupState[g.gid] = allOpen;
+    const btn = document.getElementById(`gbtn_${g.gid}`);
+    if (btn) {
+      btn.className = `toggle-btn ${allOpen ? 'minus' : 'plus'}`;
+      btn.innerHTML = `<i class="bi bi-${allOpen ? 'dash' : 'plus'}-lg"></i>`;
+    }
+    document.querySelectorAll(`tr[data-gid="${g.gid}"]`).forEach(row => {
+      row.style.display = allOpen ? '' : 'none';
+    });
+  });
+  const tBtn = document.getElementById('btnToggleAll');
+  tBtn.innerHTML = allOpen
+    ? `<i class="bi bi-arrows-collapse"></i><span class="d-none d-sm-inline">Tutup Semua</span>`
+    : `<i class="bi bi-arrows-expand"></i><span class="d-none d-sm-inline">Buka Semua</span>`;
+}
+
+/* ══ VERIFY ══ */
+function openVerify(id) {
+  verifyId = id;
+  const r = masterData.flatMap(g => g.rows).find(x => x.id === id);
+  document.getElementById('verifySub').textContent    = `Dokumen #${id}`;
+  document.getElementById('verifyKelinfo').textContent = r.kelinfo;
+  document.getElementById('verifyInstansi').textContent = r.instansi;
+  document.getElementById('verifyModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeVerify() { document.getElementById('verifyModal').classList.remove('open'); document.body.style.overflow=''; verifyId=null; }
+function confirmVerify() {
+  const r = masterData.flatMap(g => g.rows).find(x => x.id === verifyId);
+  if (r) r.status = 'valid';
+  closeVerify();
+  applyFilter();
+  showToast('Dokumen berhasil diverifikasi');
+}
+function batalValidasi(id) {
+  const r = masterData.flatMap(g => g.rows).find(x => x.id === id);
+  if (r) r.status = 'pending';
+  applyFilter();
+  showToast('Validasi dibatalkan');
+}
+function verifyAll() {
+  filteredData.flatMap(g => g.rows).filter(r => r.file && r.status !== 'valid').forEach(r => r.status = 'valid');
+  // sync ke masterData
+  filteredData.forEach(fg => {
+    fg.rows.forEach(fr => {
+      const orig = masterData.flatMap(g => g.rows).find(r => r.id === fr.id);
+      if (orig) orig.status = fr.status;
+    });
+  });
+  applyFilter();
+  showToast('Semua dokumen berhasil diverifikasi');
+}
+function downloadFile(id) { showToast('Mengunduh file dokumen...'); }
+function viewRow(id) { showToast(`Membuka detail dokumen #${id}...`); }
+
+/* ══ FORM MODAL ══ */
+function openMod(mode, id) {
+  editId = id || null;
+  clearFmErr();
+  clearFile();
+  document.getElementById('fmTitle').textContent      = mode === 'tambah' ? 'Tambah Data Per Kelinfo' : 'Edit Data Per Kelinfo';
+  document.getElementById('btnSaveLabel').textContent = mode === 'tambah' ? 'Simpan Data' : 'Perbarui Data';
+  if (mode === 'tambah') {
+    $('#fDip').val(null).trigger('change');
+    $('#fInstansi').val(null).trigger('change');
+    $('#fTahun').val('2026').trigger('change');
+    document.getElementById('fKet').value = '';
+  }
+  document.getElementById('formModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMod() { document.getElementById('formModal').classList.remove('open'); document.body.style.overflow=''; editId=null; }
+function saveMod() {
+  clearFmErr(); let ok = true;
+  if (!$('#fDip').val())      { document.getElementById('errDip').style.display='block'; ok=false; }
+  if (!$('#fInstansi').val()) { document.getElementById('errInstansi').style.display='block'; ok=false; }
+  if (!ok) return;
+  closeMod();
+  showToast(editId ? 'Data berhasil diperbarui' : 'Data berhasil ditambahkan');
+}
+function clearFmErr() { document.querySelectorAll('.fm-err').forEach(e => e.style.display='none'); }
+
+/* ══ FILE ══ */
+function handleFile(input) {
+  if (!input.files.length) return;
+  document.getElementById('uploadZone').style.display = 'none';
+  document.getElementById('uploadPreview').style.display = 'flex';
+  document.getElementById('uploadFileName').textContent = input.files[0].name;
+}
+function clearFile() {
+  const fi = document.getElementById('fFile'); if(fi) fi.value='';
+  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('uploadZone').style.display = '';
+}
+
+/* ══ SIDEBAR ══ */
+const sidebarEl = document.getElementById('sidebar');
+const sidebarOv = document.getElementById('sidebarOverlay');
+let sbCollapsed = false;
+function toggleSidebar() {
+  if (window.innerWidth <= 991) {
+    const o = sidebarEl.classList.toggle('mobile-open');
+    sidebarOv.classList.toggle('show', o);
+  } else {
+    sbCollapsed = !sbCollapsed;
+    sidebarEl.classList.toggle('collapsed', sbCollapsed);
+  }
+}
+function closeMobileSidebar() { sidebarEl.classList.remove('mobile-open'); sidebarOv.classList.remove('show'); }
+
+/* ══ USER DROPDOWN ══ */
+const userDrop = document.getElementById('userDropdown');
+function toggleUserMenu() { userDrop.classList.toggle('show'); }
+document.addEventListener('click', e => { if (!e.target.closest('.topbar-user-wrap')) userDrop.classList.remove('show'); });
+
+/* ══ LOGOUT ══ */
+function openLogoutModal()  { document.getElementById('logoutModal').classList.add('open'); }
+function closeLogoutModal() { document.getElementById('logoutModal').classList.remove('open'); }
+
+/* ══ MODAL CLOSE ON OVERLAY ══ */
+['formModal','verifyModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) { this.classList.remove('open'); document.body.style.overflow=''; }
+  });
+});
+
+/* ══ FAB & TOAST ══ */
+window.addEventListener('scroll', () => { document.getElementById('fabTop').classList.toggle('show', window.scrollY > 300); });
+function showToast(msg) {
+  const t = document.getElementById('toastNotif');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    ['formModal','verifyModal'].forEach(id => document.getElementById(id).classList.remove('open'));
+    closeLogoutModal();
+    document.body.style.overflow = '';
+  }
+});
+    </script>
+  </body>
+</html>
